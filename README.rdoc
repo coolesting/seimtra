@@ -1,0 +1,3 @@
+== INTRDDUCTION
+A web application based on sinatra, sequel, slim.
+We are developing, please don't fork it.

@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+SPATH = File.expand_path('../../', __FILE__)
+
+require 'thor'
+Dir[SPATH + '/lib/bin/*.rb'].each do |file|
+	require file
+end
+Pro.start
