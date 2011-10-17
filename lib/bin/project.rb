@@ -1,14 +1,13 @@
-class Pro < Thor
+class SeimtraThor < Thor
 	include Thor::Actions
 	
-	def self.source_root
-		SPATH
-	end
-
-	desc "new project_name", "new a project with a name"
-	def new(project_name = 'seimtra_project')
+	desc "init [project_name]", "initialize a project with a specific name"
+	def init(project_name = 'seimtra_project')
 		directory 'doc', project_name
-		puts "Initializing project successfully"
+		path =  Dir.pwd + '/' + project_name
+		Dir.chdir(path)
+		run("bundle install")
+		puts "Initializing complete"
 	end
 end
 

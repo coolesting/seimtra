@@ -1,8 +1,15 @@
 #!/usr/bin/env ruby
-SPATH = File.expand_path('../../', __FILE__)
+ROOTPATH = File.expand_path('../../', __FILE__)
 
 require 'thor'
-Dir[SPATH + '/lib/bin/*.rb'].each do |file|
+
+class SeimtraThor < Thor
+	def self.source_root
+		ROOTPATH
+	end
+end
+
+Dir[ROOTPATH + '/lib/bin/*.rb'].each do |file|
 	require file
 end
-Pro.start
+SeimtraThor.start

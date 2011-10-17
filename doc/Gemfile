@@ -1,8 +1,12 @@
 source 'http://rubygems.org'
+
+gem 'seimtra', '0.0.1'
 gem 'sinatra'
 gem 'sequel'
 gem 'slim'
-gem 'rake'
 gem 'rack', '1.3.3'
+
+gem 'sqlite3'
+gem 'rake'
 gem 'terminal-table'
 
