@@ -1,12 +1,11 @@
 class SeimtraThor < Thor
-	desc "create", "create a project"
-	def create
-		puts "output : create a project"
+	desc "schema [PATH]", "Initialize a database with a schema"
+	def schema(path = nil)
+		puts "implements a schema"
 	end
 
-	desc "config", "configure specific database"
-	def config
-		puts "output : configure this project"
+	desc "migrate [PATH]", "Implement a migration record for the database"
+	def migrate(path = nil)
+		puts "implements a migration"
 	end
 end
-
