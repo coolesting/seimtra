@@ -25,5 +25,13 @@ class SeimtraThor < Thor
 	desc "list", "A list of local module"
 	def list(path = nil)
 	end
+
+	desc "log", "A list of log"
+	def log
+	end
+
+	desc "scaffold name", "A scaffold to create the application quickly"
+	def scaffold(name = nil)
+	end
 end
 

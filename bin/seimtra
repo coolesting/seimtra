@@ -4,10 +4,26 @@ ROOTPATH = File.expand_path('../../', __FILE__)
 require 'thor'
 
 class SeimtraThor < Thor
+
 	def self.source_root
 		ROOTPATH
 	end
 end
+
+=begin
+log module
+
+	@@seimfile 		= false
+	@@seimoptions 	= {}
+
+	def initialize
+		if File.exist?(SITEPATH + '/Seimfile')
+				@@seimfile = true
+				require SITEPATH + '/Seimfile'
+		end
+	end
+
+=end
 
 Dir[ROOTPATH + '/lib/bin/*.rb'].each do |file|
 	require file

@@ -46,11 +46,6 @@ end
 configure do
 	DB = Sequel.connect(ENV['DATABASE_URL'])
 
-	DB.create_table?(:posts) do 
-		primary_key	:pid
-		text		:body
-	end
-
 	#setting for rackup
 	disable :logging
 end
