@@ -1,25 +1,55 @@
 SITEPATH = Dir.pwd
-#require SITEPATH + '/lib/base.rb'
 
 require 'sinatra'
 require 'sequel'
 require 'slim'
 
-#ENV['DATABASE_URL'] = 'postgres://localhost/db/pg'
-ENV['DATABASE_URL'] = 'sqlite://db/data.db'
+DB_ENGINE = 0
+ENV['DATABASE_URL'] = case DB_ENGINE 
+	#yum install sqlite3*
+	#gem install sqlite3
+	when 0
+	'sqlite://db/data.db'
 
-configure do
+	#yum install postgres*
+	#gem install pg
 	#initdb -D db/pg
 	#postgres -D db/pg
 	#createdb db/pg
-	DB = Sequel.connect(ENV['DATABASE_URL'])
-	#DB = Sequel.connect(ENV['DATABASE_URL'] || 'postgres://localhost/db/pg?user=zcdny&password=745296')
+	when 1
+	'postgres://localhost/db/pg'	
 
-	#create table
-	#DB.create_table?(:posts) do 
-	#	primary_key	:pid
-	#	text		:body
-	#end
+	#yum install mysql*
+	#gem install mysql
+	#/etc/init.d/mysqld start
+
+	#create database and user
+	#mysql -r root -p
+	#create user 'myuser'@'localhost' identified by '123456';
+	#create database mydb;
+	#grant all privileges on *.* to 'myuser'@'localhost' with grant option;
+	#granl all on mydb.* to 'myuser'@'localhost';
+	#quit <enter>
+
+	#change the password
+	#mysql -u root -p
+	#use mysql;
+	#update user set password=PASSWORD("new-password") where User="myuser"
+	when 2
+	'mysql://localhost/mydb?user=myuser&password=123456'	
+
+	#a memory database
+	else
+	'sqlite:/'
+end
+
+configure do
+	DB = Sequel.connect(ENV['DATABASE_URL'])
+
+	DB.create_table?(:posts) do 
+		primary_key	:pid
+		text		:body
+	end
 
 	#setting for rackup
 	disable :logging
