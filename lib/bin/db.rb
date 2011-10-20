@@ -37,7 +37,57 @@ class SeimtraThor < Thor
 	end
 
 	desc "migrate [PATH]", "Implement the migrations record for the database"
-	def migrate(path = nil)
-		say "Implementing complete!"
+	def migrate(*argv)
+		path = '/db/migrations'
+		unless File.directory?(Dir.pwd + path)
+			empty_directory Dir.pwd + path
+		end
+
+		count = Dir[Dir.pwd + path + '/*.rb'].count + 1
+
+		operate, table = argv.shift.split(":")
+		file = Dir.pwd + path + "/#{count}_#{operate}_#{table}.rb"
+
+		content = "Sequel.migration do\n"
+		content << "\tchange do\n"
+		
+		if operate == "drop" or operate == "rename"
+			content << "\t\t#{operate}_table(#{argv.to_s.gsub(",", ", ")})\n"
+		else
+			content << "\t\t#{operate}_table(:#{table}) do\n"
+			argv.each do |item|
+				content << "\t\t\t#{item.sub(":", " :").gsub(",", ", ")}\n"
+			end
+			content << "\t\tend\n"
+		end
+
+		content << "\tend\n"
+		content << "end\n"
+		create_file file, content
+
+		say "Implementing complete!", "\e[32m"
 	end
+
+	desc "migration [VERSION] [OPERATE]", "Running the migrations"
+	def migration(version = nil, operate = 'up')
+		mpath = Dir.pwd + '/db/migrations'
+		epath = Dir.pwd + '/environment.rb'
+		if File.exist?(epath) and File.exist?(mpath)
+			require epath
+			dbcont = "'#{ENV['DATABASE_URL']}'"
+			if operate == 'up'
+				if version == nil
+					run("sequel -m #{mpath} #{dbcont}")
+				else
+					run("sequel -m #{mpath} -M #{version} #{dbcont}")
+				end
+			else
+				run("sequel -d #{dbcont} > #{Dir.pwd}/db/migration.rb")
+			end
+			say "Implementing complete!", "\e[32m"
+		else
+			say "No migrattion record file, please check out the correct path of the file", "\e[31m"
+		end
+	end
+
 end

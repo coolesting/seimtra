@@ -18,8 +18,8 @@ class SeimtraThor < Thor
 		say "Initializing complete!", "\e[32m"
 	end
 
-	desc "cleanup", "Cleanup local repository of the module"
-	def cleanup(path = nil)
+	desc "clean [OPTION]", "Clean something beasd on option that maybe is the module, log, or migration"
+	def clean(option = nil)
 	end
 
 	desc "list", "A list of local module"
