@@ -30,8 +30,10 @@ class SeimtraThor < Thor
 	def log
 	end
 
-	desc "scaffold name", "A scaffold to create the application quickly"
-	def scaffold(name = nil)
+	desc "scaffold option", "The scaffold for creating a application quickly"
+	def scaffold(name)
+		@name = name
+		template('docs/scaffolds/default/routes.tt', "routes/#{name}.rb")
 	end
 end
 

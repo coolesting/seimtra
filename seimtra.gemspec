@@ -14,5 +14,5 @@ Gem::Specification.new do |s|
   	s.add_dependency 'sinatra'
   	s.add_dependency 'sequel'
   	s.add_dependency 'slim'
-  	s.add_dependency 'thor'
+  	s.add_dependency 'thor', '>= 0.15.0', :git => 'git://github.com/wycats/thor.git'
 end

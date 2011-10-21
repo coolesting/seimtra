@@ -2,16 +2,11 @@ require './environment'
 
 #require SITEPATH + '/routes/index'
 get '/' do
-	@title = 'blog'
-	@post = DB[:posts].all
-	@content = ''
-	@post.each do |row|
-		@content += '<br/>' + row[:body]
-	end
+	@title = 'A seimtra application'
+	@content = 'Welcome home!'
 	slim :index
 end
 
-get '/new' do
-	@post = DB[:posts].insert(:body => 'new a post for this blog...')
-	redirect '/'
+Dir[SITEPATH + '/routes/*.rb'].each do |route|
+	require route
 end

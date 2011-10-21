@@ -44,13 +44,13 @@ class SeimtraThor < Thor
 		end
 
 		count = Dir[Dir.pwd + path + '/*.rb'].count + 1
-
+	
 		operate, table = argv.shift.split(":")
 		file = Dir.pwd + path + "/#{count}_#{operate}_#{table}.rb"
 
 		content = "Sequel.migration do\n"
 		content << "\tchange do\n"
-		
+
 		if operate == "drop" or operate == "rename"
 			content << "\t\t#{operate}_table(#{argv.to_s.gsub(",", ", ")})\n"
 		else
@@ -64,7 +64,6 @@ class SeimtraThor < Thor
 		content << "\tend\n"
 		content << "end\n"
 		create_file file, content
-
 		say "Implementing complete!", "\e[32m"
 	end
 
