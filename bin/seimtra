@@ -1,31 +1,20 @@
 #!/usr/bin/env ruby
 ROOTPATH = File.expand_path('../../', __FILE__)
+SCONFIGS = '/configs/Seimfile'
 
 require 'thor'
+require 'seimtra/scfg'
+
+SCFG.init
 
 class SeimtraThor < Thor
-
 	def self.source_root
 		ROOTPATH
 	end
 end
 
-=begin
-log module
-
-	@@seimfile 		= false
-	@@seimoptions 	= {}
-
-	def initialize
-		if File.exist?(SITEPATH + '/Seimfile')
-				@@seimfile = true
-				require SITEPATH + '/Seimfile'
-		end
-	end
-
-=end
-
 Dir[ROOTPATH + '/lib/bin/*.rb'].each do |file|
 	require file
 end
 SeimtraThor.start
+SCFG.save

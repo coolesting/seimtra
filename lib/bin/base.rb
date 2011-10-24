@@ -5,6 +5,8 @@ class SeimtraThor < Thor
 			default model is development"
 	def init(project_name = 'seimtra_project', model = 'production')
 		directory 'docs/common', project_name
+		SCFG.set 'created', Date.now
+		SCFG.set 'changed', Date.now
 
 		if model == 'production'
 			directory 'docs/production', project_name
@@ -30,10 +32,8 @@ class SeimtraThor < Thor
 	def log
 	end
 
-	desc "scaffold option", "The scaffold for creating a application quickly"
-	def scaffold(name)
-		@name = name
-		template('docs/scaffolds/default/routes.tt', "routes/#{name}.rb")
+	desc "config", "The Seimfile configuration file"
+	def config
+		SCFG.show
 	end
 end
-

@@ -1,6 +1,9 @@
 class SeimtraThor < Thor
-	desc "install module_name", "Install the module from local repository to your application with a module name"
-	def install(name = nil) 
+	desc "install module_name [OPTION]", "Install a module for your application"
+	def install(*argv) 
+		module_name = argv.shift
+		argv
+		#template('docs/modules/table/routes.tt', "routes/#{name}.rb")
 	end
 
 	desc "update", "Update your source list of module from remote to local repository "
