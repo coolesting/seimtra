@@ -1,2 +1,4 @@
 #!/usr/bin/env ruby
+
+#A copy of /bin/seimtra
 require 'seimtra/start'

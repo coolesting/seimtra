@@ -10,10 +10,12 @@ class SeimtraThor < Thor
 
 		if model == 'production'
 			directory 'docs/production', project_name
+			SCFG.set 'version_mode', 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)
 			run("bundle install")
 		else
 			directory 'docs/development', project_name
+			SCFG.set 'version_mode', 'development'
 			say "Executing the command [bundle install] in your project directory if you need", "\e[32m"
 		end
 

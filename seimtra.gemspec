@@ -9,7 +9,8 @@ Gem::Specification.new do |s|
 	s.description = "A web application based on sinatra, sequel, and slim."
   	s.summary = "A web application based on sinatra, sequel, and slim."
 
-	s.executables = ['seimtra']
+	s.executables = ['bin/seimtra', 'bin/3s']
+	s.default_executable = 'bin/seimtra'
   	s.files = `git ls-files`.split("\n")
   	s.add_dependency 'sinatra'
   	s.add_dependency 'sequel'
