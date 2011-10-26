@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
   	s.add_dependency 'sinatra'
   	s.add_dependency 'sequel'
   	s.add_dependency 'slim'
-  	s.add_dependency 'thor', '~> 0.15'
+  	s.add_dependency 'thor'
 end
