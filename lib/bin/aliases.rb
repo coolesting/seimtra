@@ -1,4 +1,5 @@
 class SeimtraThor < Thor
+
 	desc "task_alias", "See the alias name of task"
 	def task_alias(output = true)
 		old_names = SeimtraThor.instance_methods(false)
@@ -25,4 +26,5 @@ class SeimtraThor < Thor
 			new_names.each do |k,v| map k => v.to_sym end
 		end
 	end
+
 end
