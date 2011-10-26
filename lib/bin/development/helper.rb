@@ -4,8 +4,8 @@ class SeimtraThor < Thor
 	def packup(name = nil)
 	end
 
-	desc "scaffold [NAME]", "A scaffold to help you create the module"
-	def scaffold(name)
+	desc "skeleton [NAME]", "Initialize a module skeleton"
+	def skeleton(name)
 		if File.exist?(Dir.pwd + '/modules')
 			empty_directory "modules/#{name}/routes"
 			empty_directory "modules/#{name}/views"

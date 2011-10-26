@@ -43,10 +43,8 @@ class SeimtraThor < Thor
 			empty_directory Dir.pwd + path
 		end
 
-		count = Dir[Dir.pwd + path + '/*.rb'].count + 1
-	
 		operate, table = argv.shift.split(":")
-		file = Dir.pwd + path + "/#{count}_#{operate}_#{table}.rb"
+		file = Dir.pwd + path + "/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
 
 		content = "Sequel.migration do\n"
 		content << "\tchange do\n"
