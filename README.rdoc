@@ -1,3 +1,5 @@
 == INTRDDUCTION
-A web application based on sinatra, sequel, slim.
+
+A integration with sinatra, sequel, slim for web application.
+
 We are developing, please don't fork it.

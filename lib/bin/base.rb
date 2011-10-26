@@ -5,21 +5,23 @@ class SeimtraThor < Thor
 			default model is development"
 	def init(project_name = 'seimtra_project', model = 'production')
 		directory 'docs/common', project_name
-		SCFG.set 'created', Date.now
-		SCFG.set 'changed', Date.now
+		SCFG.set 'created', Time.now
+		SCFG.set 'changed', Time.now
 
+		SCFG.install
 		if model == 'production'
 			directory 'docs/production', project_name
-			SCFG.set 'version_mode', 'production'
+			SCFG.set 'status', 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)
 			run("bundle install")
 		else
 			directory 'docs/development', project_name
-			SCFG.set 'version_mode', 'development'
-			say "Executing the command [bundle install] in your project directory if you need", "\e[32m"
+			SCFG.set 'status', 'development'
+			Dir.chdir(Dir.pwd + '/' + project_name)
+			say "Executing 'bundle install' if you need", "\e[32m"
 		end
 
-		say "Initializing complete!", "\e[32m"
+		say "Initializing complete.", "\e[32m"
 	end
 
 	desc "clean [OPTION]", "Clean something beasd on option that maybe is the module, log, or migration"
