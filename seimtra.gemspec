@@ -1,8 +1,8 @@
-require File.expand_path('../lib/seimtra/version', __FILE__)
+require File.expand_path('../lib/seimtra/info', __FILE__)
 Gem::Specification.new do |s|
 	s.name = "seimtra"
 	s.date = "2011-10-13"
-	s.version = Seimtra::VERSION
+	s.version = Seimtra::Info::VERSION
 	s.email = "coolesting@gmail.com"
 	s.authors = ["bruce den coolesting"]
  	s.homepage = "http://github.com/coolesting/seimtra"

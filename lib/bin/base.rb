@@ -1,9 +1,9 @@
 class SeimtraThor < Thor
 	include Thor::Actions
 	
-	desc "project_init [NAME] [MODEL]", "Initialize your project with a name,
+	desc "project_setup [NAME] [MODEL]", "Initialize your project with a name,
 			default model is development"
-	def project_init(project_name = 'seimtra_project', model = 'production')
+	def project_setup(project_name = 'seimtra_project', model = 'production')
 		directory 'docs/common', project_name
 		SCFG.set 'created', Time.now
 		SCFG.set 'changed', Time.now
@@ -36,8 +36,18 @@ class SeimtraThor < Thor
 	def project_log
 	end
 
-	desc "project_config", "The Seimfile configuration file"
-	def project_config
-		SCFG.show
+	desc "project_information", "The information of current project"
+	def project_information
+		SCFG.get.each do |k,v|
+			say "#{k} : #{v}", "\e[33m"
+		end
+	end
+
+	desc "information", "The information of Seimtra"
+	def information
+		require 'seimtra/info'
+		Seimtra::Info::constants(false).each do |name|
+			say "#{name.to_s.downcase} : #{eval("Seimtra::Info::" + name.to_s)}", "\e[33m"
+		end
 	end
 end

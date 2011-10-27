@@ -2,7 +2,7 @@ ROOTPATH = File.expand_path('../../../', __FILE__)
 SCONFIGS = '/configs/Seimfile'
 
 require 'thor'
-require 'seimtra/version'
+require 'seimtra/info'
 require 'seimtra/scfg'
 SCFG.init
 

@@ -16,12 +16,13 @@ class SCFG
 			else
 				@@options['created'] = Time.now
 				@@options['changed'] = Time.now
-				@@options['version'] = Seimtra::VERSION
+				@@options['version'] = Seimtra::Info::VERSION
 				@@options['status'] = 'development'
 				@@options['log'] = false
 				@@options['log_path'] = Dir.pwd + '/log/command'
 				@@options['module_repos'] = File.expand_path('../SeimtraRepos', Dir.pwd)
 			end
+			@@options['local_time'] = Time.now
 		end
 
 	def set(key, val)
@@ -29,8 +30,8 @@ class SCFG
 		@@changed = true
 	end
 
-	def get(key)
-		@@options[key]
+	def get(key = nil)
+		key == nil ? @@options : @@options[key]
 	end
 
 	def save
@@ -42,11 +43,6 @@ class SCFG
 		end
 	end
 
-	def show
-		@@options.each do |k,v|
-			puts "#{k} : #{v}"
-		end
-	end
 	end
 end
 
