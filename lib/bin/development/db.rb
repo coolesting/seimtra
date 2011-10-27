@@ -1,6 +1,6 @@
 class SeimtraThor < Thor
-	desc "schema [PATH]", "Initialize a database with a schema"
-	def schema(spath = "/db/schema.rb")
+	desc "db_schema [PATH]", "Initialize a database with a schema"
+	def db_schema(spath = "/db/schema.rb")
 		spath = Dir.pwd + spath
 		epath = Dir.pwd + '/environment.rb'
 		if File.exist?(spath) and File.exist?(epath)
@@ -36,8 +36,8 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "migrate [PATH]", "Implement the migrations record for the database"
-	def migrate(*argv)
+	desc "db_migrate [PATH]", "Implement the migrations record for the database"
+	def db_migrate(*argv)
 		path = '/db/migrations'
 		unless File.directory?(Dir.pwd + path)
 			empty_directory Dir.pwd + path
@@ -65,8 +65,8 @@ class SeimtraThor < Thor
 		say "Implementing complete!", "\e[32m"
 	end
 
-	desc "migration [VERSION] [OPERATE]", "Running the migrations"
-	def migration(version = nil, operate = 'up')
+	desc "db_migration_run [VERSION] [OPERATE]", "Running the migrations"
+	def db_migration_run(version = nil, operate = 'up')
 		mpath = Dir.pwd + '/db/migrations'
 		epath = Dir.pwd + '/environment.rb'
 		if File.exist?(epath) and File.exist?(mpath)

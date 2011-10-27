@@ -1,11 +1,11 @@
 class SeimtraThor < Thor
 
-	desc "packup [NAME]", "Packup some files to be an application package"
-	def packup(name = nil)
+	desc "module_packup [NAME]", "Packup a module with some files"
+	def module_packup(name = nil)
 	end
 
-	desc "skeleton [NAME]", "Initialize a module skeleton"
-	def skeleton(name)
+	desc "module_skeleton [NAME]", "Initialize a module skeleton"
+	def module_skeleton(name)
 		if File.exist?(Dir.pwd + '/modules')
 			empty_directory "modules/#{name}/routes"
 			empty_directory "modules/#{name}/views"

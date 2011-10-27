@@ -1,7 +1,8 @@
 class SeimtraThor < Thor
 
-	desc "task_alias", "See the alias name of task"
-	def task_alias(output = true)
+	@@options = {}
+
+	def self.sinit
 		old_names = SeimtraThor.instance_methods(false)
 		new_names = {}
 
@@ -19,12 +20,13 @@ class SeimtraThor < Thor
 				retry
 			end
 		end
+		new_names.each do |k,v| map k => v.to_sym end
+		@@options = new_names
+	end
 
-		if output == true
-			new_names.each do |k,v| puts "#{v} => #{k}" end
-		else
-			new_names.each do |k,v| map k => v.to_sym end
-		end
+	desc "task_alias", "See the alias name of task"
+	def task_alias
+		@@options.each do |k,v| puts "#{v} => #{k}" end
 	end
 
 end

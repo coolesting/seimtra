@@ -21,5 +21,6 @@ if SCFG.get('status') == 'development'
 	end
 end
 
+SeimtraThor.sinit
 SeimtraThor.start
 SCFG.save

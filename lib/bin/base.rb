@@ -1,9 +1,9 @@
 class SeimtraThor < Thor
 	include Thor::Actions
 	
-	desc "init [NAME] [MODEL]", "Initialize your project with a name,
+	desc "project_init [NAME] [MODEL]", "Initialize your project with a name,
 			default model is development"
-	def init(project_name = 'seimtra_project', model = 'production')
+	def project_init(project_name = 'seimtra_project', model = 'production')
 		directory 'docs/common', project_name
 		SCFG.set 'created', Time.now
 		SCFG.set 'changed', Time.now
@@ -28,16 +28,16 @@ class SeimtraThor < Thor
 	def clean(option = nil)
 	end
 
-	desc "list", "A list of local module"
-	def list(path = nil)
+	desc "module_list", "A list of local module"
+	def module_list(path = nil)
 	end
 
-	desc "log", "A list of log"
-	def log
+	desc "project_log", "A list of log"
+	def project_log
 	end
 
-	desc "config", "The Seimfile configuration file"
-	def config
+	desc "project_config", "The Seimfile configuration file"
+	def project_config
 		SCFG.show
 	end
 end
