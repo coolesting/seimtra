@@ -1,13 +1,14 @@
 require File.expand_path('../lib/seimtra/info', __FILE__)
 Gem::Specification.new do |s|
-	s.name = "seimtra"
-	s.date = "2011-10-13"
-	s.version = Seimtra::Info::VERSION
-	s.email = "coolesting@gmail.com"
-	s.authors = ["bruce den coolesting"]
- 	s.homepage = "http://github.com/coolesting/seimtra"
-	s.description = "A web application based on sinatra, sequel, and slim."
-  	s.summary = "A web application based on sinatra, sequel, and slim."
+	s.name 		= Seimtra::Info::NAME
+	s.date 		= Seimtra::Info::DATE
+	s.version 	= Seimtra::Info::VERSION
+	s.email 	= "coolesting@gmail.com"
+	s.authors 	= Seimtra::Info::AUTHORS
+ 	s.homepage 	= "http://github.com/coolesting/seimtra"
+	s.description = Seimtra::Info::DESCRIPTION
+  	s.summary 	= Seimtra::Info::SUMMARY
+
 
 	s.executables = ['seimtra', '3s']
 	s.default_executable = 'seimtra'
