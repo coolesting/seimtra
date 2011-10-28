@@ -7,12 +7,6 @@ helpers do
 	end
 end
 
-get '/' do
-	@title = 'A seimtra application'
-	@content = 'Welcome home!'
-	slim :index
-end
-
 Dir[SITEPATH + '/modules/*/routes/*.rb'].each do |route|
 	require route
 end

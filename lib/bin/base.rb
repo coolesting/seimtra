@@ -8,20 +8,20 @@ class SeimtraThor < Thor
 		SCFG.set 'created', Time.now
 		SCFG.set 'changed', Time.now
 
-		SCFG.install
 		if model == 'production'
 			directory 'docs/production', project_name
 			SCFG.set 'status', 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)
+			SCFG.install
 			run("bundle install")
+			say "Initializing complete.", "\e[32m"
 		else
 			directory 'docs/development', project_name
 			SCFG.set 'status', 'development'
 			Dir.chdir(Dir.pwd + '/' + project_name)
-			say "Executing 'bundle install' if you need", "\e[32m"
+			SCFG.install
+			say "Executing 'bundle install' for complete installation if this is your first time using the development editor", "\e[32m"
 		end
-
-		say "Initializing complete.", "\e[32m"
 	end
 
 	desc "clean [OPTION]", "Clean something beasd on option that maybe is the module, log, or migration"

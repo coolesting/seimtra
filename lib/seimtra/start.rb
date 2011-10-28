@@ -1,10 +1,8 @@
 ROOTPATH = File.expand_path('../../../', __FILE__)
-SCONFIGS = '/configs/Seimfile'
 
 require 'thor'
 require 'seimtra/info'
 require 'seimtra/scfg'
-SCFG.init
 
 class SeimtraThor < Thor
 	def self.source_root
@@ -12,10 +10,11 @@ class SeimtraThor < Thor
 	end
 end
 
+SCFG.init
 Dir[ROOTPATH + '/lib/bin/*.rb'].each do |file|
 	require file
 end
-if SCFG.get('status') == 'development'
+if SCFG.get('status') != 'production'
 	Dir[ROOTPATH + '/lib/bin/development/*.rb'].each do |file|
 		require file
 	end

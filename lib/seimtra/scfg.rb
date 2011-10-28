@@ -3,26 +3,24 @@ class SCFG
 	@@options = {}
 	@@changed = false
 
+
 	class << self
 
 		def install
-			self.init
+			@@options['created'] = Time.now
+			@@options['changed'] = Time.now
+			@@options['version'] = Seimtra::Info::VERSION
+			@@options['status'] ||= 'development'
+			@@options['log'] = false
+			@@options['log_path'] = Dir.pwd + '/log/default'
+			@@options['module_repos'] = File.expand_path('../SeimtraRepos', Dir.pwd)
 			@@changed = true
 		end
 
 		def init
-			if File.exist?(Dir.pwd + SCONFIGS)
-				@@options = YAML.load_file(Dir.pwd + SCONFIGS)
-			else
-				@@options['created'] = Time.now
-				@@options['changed'] = Time.now
-				@@options['version'] = Seimtra::Info::VERSION
-				@@options['status'] = 'development'
-				@@options['log'] = false
-				@@options['log_path'] = Dir.pwd + '/log/command'
-				@@options['module_repos'] = File.expand_path('../SeimtraRepos', Dir.pwd)
+			if File.exist?('./Seimfile')
+				@@options = YAML.load_file('./Seimfile')
 			end
-			@@options['local_time'] = Time.now
 		end
 
 	def set(key, val)
@@ -35,9 +33,9 @@ class SCFG
 	end
 
 	def save
-		if @@changed == true
+		if @@changed == true and File.exist?('./Seimfile')
 			@@options['changed'] = Time.now
-			File.open(Dir.pwd + SCONFIGS, 'w+') do |f|
+			File.open('./Seimfile', 'w+') do |f|
 				f.write(YAML::dump(@@options))
 			end
 		end
