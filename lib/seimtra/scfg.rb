@@ -1,8 +1,8 @@
 require 'yaml'
 class SCFG
+
 	@@options = {}
 	@@changed = false
-
 
 	class << self
 
@@ -25,24 +25,25 @@ class SCFG
 			end
 		end
 
-	def set(key, val)
-		@@options[key] = val
-		@@changed = true
-	end
+		def set(key, val)
+			@@options[key] = val
+			@@changed = true
+		end
 
-	def get(key = nil)
-		key == nil ? @@options : @@options[key]
-	end
+		def get(key = nil)
+			key == nil ? @@options : @@options[key]
+		end
 
-	def save
-		if @@changed == true and File.exist?('./Seimfile')
-			@@options['changed'] = Time.now
-			File.open('./Seimfile', 'w+') do |f|
-				f.write(YAML::dump(@@options))
+		def save
+			if @@changed == true and File.exist?('./Seimfile')
+				@@options['changed'] = Time.now
+				File.open('./Seimfile', 'w+') do |f|
+					f.write(YAML::dump(@@options))
+				end
 			end
 		end
-	end
 
 	end
+
 end
 

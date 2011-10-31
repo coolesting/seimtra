@@ -39,4 +39,18 @@ class SeimtraThor < Thor
 	def module_packup(name = nil)
 	end
 
+	desc "module_focus [NAME]", "Focus on the module for developing"
+	def module_focus(name = nil)
+		if name != nil
+			SCFG.set 'current_module', name
+			say "Set the #{name} module to current developing module yet", "\e[33m"
+		else
+			if SCFG.get('current_module')
+				say "Your current module is #{SCFG.get('current_module')}", "\e[33m"
+			else
+				say "No module be focused on.", "\e[31m"
+			end
+		end
+	end
+
 end

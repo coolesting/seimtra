@@ -26,7 +26,7 @@ class SeimtraThor < Thor
 
 	desc "task_alias", "See the alias name of task"
 	def task_alias
-		@@options.each do |k,v| puts "#{v} => #{k}" end
+		@@options.each do |k,v| say "#{v} => #{k}", "\e[33m" end
 	end
 
 end
