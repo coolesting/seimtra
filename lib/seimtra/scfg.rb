@@ -20,6 +20,8 @@ class SCFG
 		def init
 			if File.exist?('./Seimfile')
 				@@options = YAML.load_file('./Seimfile')
+			else
+				false
 			end
 		end
 

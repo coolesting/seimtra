@@ -24,25 +24,6 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "clean [OPTION]", "Clean something beasd on option that maybe is the module, log, or migration"
-	def clean(option = nil)
-	end
-
-	desc "module_list", "A list of local module"
-	def module_list(path = nil)
-	end
-
-	desc "project_log", "A list of log"
-	def project_log
-	end
-
-	desc "project_information", "The information of current project"
-	def project_information
-		SCFG.get.each do |k,v|
-			say "#{k} : #{v}", "\e[33m"
-		end
-	end
-
 	desc "information", "The information of Seimtra"
 	def information
 		require 'seimtra/info'

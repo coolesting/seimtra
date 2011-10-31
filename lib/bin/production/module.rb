@@ -1,4 +1,5 @@
 class SeimtraThor < Thor
+
 	desc "module_setup [NAME] [OPTION]", "Install a module for your application"
 	def module_setup(*argv) 
 		module_name = argv.shift
@@ -13,5 +14,17 @@ class SeimtraThor < Thor
 	desc "module_remove [NAME]", "Remove the module in your appliction with a module name"
 	def module_remove(name = nil)
 	end
-end
 
+	desc "module_list", "A list of local module"
+	def module_list(path = nil)
+	end
+
+	desc "module_information [NAME]", "the information of current module"
+	def module_information(name = nil)
+	end
+
+	desc "module_packup [NAME]", "Packup a module with some files"
+	def module_packup(name = nil)
+	end
+
+end
