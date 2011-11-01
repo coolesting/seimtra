@@ -2,13 +2,28 @@ class SeimtraThor < Thor
 
 	desc "module_born [NAME] [ALL]", "Initialize a module skeleton"
 	def module_born(name, all = nil)
-		if File.exist?(Dir.pwd + '/modules')
-			empty_directory "modules/#{name}/routes"
-			empty_directory "modules/#{name}/views"
-			empty_directory "modules/#{name}/migrations"
-			empty_directory "modules/#{name}/configs"
-		else
-			ask 'You need to enter root directory of your project'
+		unless File.exist?(Dir.pwd + '/modules')
+			empty_directory Dir.pwd + '/modules'
+		end
+
+		empty_directory "modules/#{name}/routes"
+		empty_directory "modules/#{name}/views"
+		empty_directory "modules/#{name}/migrations"
+		info = {}
+		create_file "modules/#{name}/info" do
+			info['name'] = name
+			info['created'] = Time.now
+			info['version'] = '0.0.1'
+
+			info['email'] 	= SCFG.get('email')  
+			info['author'] 	= SCFG.get('author')  
+
+			info['email'] 	||= ask("What is the email of your ?")
+			info['author']	||= ask("What is your name ?")
+
+			info['website'] = ask("What is the website of the module ?")
+			info['description'] = ask("The description of the module ?")
+			YAML::dump(info)
 		end
 	end
 
@@ -32,7 +47,22 @@ class SeimtraThor < Thor
 	end
 
 	desc "module_information [NAME]", "the information of current module"
-	def module_information(name = nil)
+	def module_information(name = nil, *argv)
+		name = SCFG.get('current_module') if name == nil
+		path = Dir.pwd + "/modules/#{name}/info"
+
+		if argv.count > 0
+			info = YAML.load_file path
+			argv.each do |item|
+				i = item.split(":")
+				info[i.first] = i.last
+			end
+			SCFG.save path, info, true
+		end
+
+		if File.exist?(path)
+			SCFG.show path
+		end
 	end
 
 	desc "module_packup [NAME]", "Packup a module with some files"

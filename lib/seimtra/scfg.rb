@@ -34,12 +34,22 @@ class SCFG
 			key == nil ? @@options : @@options[key]
 		end
 
-		def save
-			if @@changed == true and File.exist?('./Seimfile')
-				@@options['changed'] = Time.now
-				File.open('./Seimfile', 'w+') do |f|
-					f.write(YAML::dump(@@options))
+		def save(path = nil, content = nil, changed = nil)
+			path 	= './Seimfile' if path == nil
+			content = @@options if content == nil
+			changed = @@changed if changed == nil
+
+			if changed == true and File.exist?(path)
+				content['changed'] = Time.now
+				File.open(path, 'w+') do |f|
+					f.write(YAML::dump(content))
 				end
+			end
+		end
+
+		def show(path)
+			YAML.load_file(path).each do |k, v|
+				puts "#{k} : #{v}"
 			end
 		end
 
