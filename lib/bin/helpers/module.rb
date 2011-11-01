@@ -1,15 +1,16 @@
 class SeimtraThor < Thor
 
-	desc "module_born [NAME] [ALL]", "Initialize a module skeleton"
-	def module_born(name, all = nil)
+	desc "module_born [NAME]", "Initialize a module skeleton"
+	def module_born(name = nil)
 		unless File.exist?(Dir.pwd + '/modules')
 			empty_directory Dir.pwd + '/modules'
 		end
 
+		info = {}
+		name = "module_#{Time.now}" if name == nil
 		empty_directory "modules/#{name}/routes"
 		empty_directory "modules/#{name}/views"
 		empty_directory "modules/#{name}/migrations"
-		info = {}
 		create_file "modules/#{name}/info" do
 			info['name'] = name
 			info['created'] = Time.now
@@ -46,9 +47,9 @@ class SeimtraThor < Thor
 	def module_list(path = nil)
 	end
 
-	desc "module_information [NAME]", "the information of current module"
-	def module_information(name = nil, *argv)
-		name = SCFG.get('current_module') if name == nil
+	desc "module_info [NAME]", "the information of current module"
+	def module_info(name = nil, *argv)
+		name = SCFG.get('module_focus') if name == nil
 		path = Dir.pwd + "/modules/#{name}/info"
 
 		if argv.count > 0
@@ -72,15 +73,27 @@ class SeimtraThor < Thor
 	desc "module_focus [NAME]", "Focus on the module for developing"
 	def module_focus(name = nil)
 		if name != nil
-			SCFG.set 'current_module', name
-			say "Set the #{name} module to current developing module yet", "\e[33m"
+			SCFG.set 'module_focus', name
+			say "The #{name} module is focused", "\e[33m"
 		else
-			if SCFG.get('current_module')
-				say "Your current module is #{SCFG.get('current_module')}", "\e[33m"
+			if SCFG.get('module_focus')
+				say "Your current module is #{SCFG.get('module_focus')}", "\e[33m"
 			else
 				say "No module be focused on.", "\e[31m"
 			end
 		end
+	end
+
+	desc "module_helper [OPTION]", "The helper to create the module"
+	method_options :mode => 'table', :focus => 'default'
+	def module_helper(*argv)
+		focus	= options[:focus] == 'default' ? SCFG.get('module_focus') : options[:focus]
+		mode 	= options[:mode]
+		name 	= argv.first.split(":").last
+		data 	= argv
+
+		#template 'docs/modules/table/routes.tt', "modules/#{name}/routes/#{name}.rb"
+		#implement the migration
 	end
 
 end

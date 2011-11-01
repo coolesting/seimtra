@@ -1,7 +1,7 @@
 class SeimtraThor < Thor
 
-	desc "project_information [OPTION]", "The information of current project"
-	def project_information(*argv)
+	desc "project_info [OPTION]", "The information of current project"
+	def project_info(*argv)
 		if argv.count > 0 
 			argv.each do |item|
 				i = item.split(":")

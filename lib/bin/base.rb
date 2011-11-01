@@ -1,14 +1,15 @@
 class SeimtraThor < Thor
 	include Thor::Actions
 	
-	desc "project_setup [NAME] [MODEL]", "Initialize your project with a name,
+	desc "project_setup [NAME]", "Initialize your project with a name,
 			default model is development"
-	def project_setup(project_name = 'seimtra_project', model = 'production')
+	method_options :dev => :boolean
+	def project_setup(project_name = 'seimtra_project')
 		directory 'docs/common', project_name
 		SCFG.set 'created', Time.now
 		SCFG.set 'changed', Time.now
 
-		if model == 'production'
+		unless options.dev?
 			directory 'docs/production', project_name
 			SCFG.set 'status', 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)
@@ -24,8 +25,8 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "information", "The information of Seimtra"
-	def information
+	desc "info", "The information of Seimtra"
+	def info
 		require 'seimtra/info'
 		Seimtra::Info::constants(false).each do |name|
 			say "#{name.to_s.downcase} : #{eval("Seimtra::Info::" + name.to_s)}", "\e[33m"
