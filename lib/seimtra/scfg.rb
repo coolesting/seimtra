@@ -47,12 +47,6 @@ class SCFG
 			end
 		end
 
-		def show(path)
-			YAML.load_file(path).each do |k, v|
-				puts "#{k} : #{v}"
-			end
-		end
-
 	end
 
 end

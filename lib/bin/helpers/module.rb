@@ -48,21 +48,30 @@ class SeimtraThor < Thor
 	end
 
 	desc "module_info [NAME]", "the information of current module"
-	def module_info(name = nil, *argv)
-		name = SCFG.get('module_focus') if name == nil
+	method_options :name => "index"
+	def module_info(*argv)
+		name = options[:name] == 'index' ? SCFG.get('module_focus') : options[:name]
 		path = Dir.pwd + "/modules/#{name}/info"
 
 		if argv.count > 0
-			info = YAML.load_file path
+			file = YAML.load_file path
+			info = file != false ? file : {}
 			argv.each do |item|
-				i = item.split(":")
-				info[i.first] = i.last
+				key, val = item.split(":")
+				info[key] = val 
 			end
 			SCFG.save path, info, true
 		end
 
 		if File.exist?(path)
-			SCFG.show path
+			file = YAML.load_file(path)
+			if file != false
+				file.each do |k, v|
+					say "#{k} : #{v}", "\e[33m"
+				end
+			else
+				say "Nothing in #{path}", "\e[31m"
+			end
 		end
 	end
 
@@ -85,14 +94,22 @@ class SeimtraThor < Thor
 	end
 
 	desc "module_helper [OPTION]", "The helper to create the module"
-	method_options :mode => 'table', :focus => 'default'
+	method_options :mode => 'table', :focus => 'index'
 	def module_helper(*argv)
-		focus	= options[:focus] == 'default' ? SCFG.get('module_focus') : options[:focus]
+		focus	= options[:focus] == 'index' ? SCFG.get('module_focus') : options[:focus]
 		mode 	= options[:mode]
-		name 	= argv.first.split(":").last
+		@name 	= argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
 		data 	= argv
+		
+		Dir[ROOTPATH + "/docs/scaffolds/#{mode}/routes/*.tt"].each do |source|
+			template source, "modules/#{focus}/routes/#{@name}_#{mode}.rb"
+		end
 
-		#template 'docs/modules/table/routes.tt', "modules/#{name}/routes/#{name}.rb"
+		Dir[ROOTPATH + "/docs/scaffolds/#{mode}/views/*.tt"].each do |source|
+			ext = source.split("/").last.split(".").first
+			template source, "modules/#{focus}/views/#{@name}_#{ext}.slim"
+		end
+
 		#implement the migration
 	end
 
