@@ -1,4 +1,6 @@
-SITEPATH = Dir.pwd
+HOMEPAGE 	= '/index'
+DB_ENGINE 	= 0
+SITEPATH 	= Dir.pwd
 
 require 'sinatra'
 require 'sequel'
@@ -48,4 +50,8 @@ configure do
 
 	#setting for rackup
 	disable :logging
+end
+
+get '/' do
+	status, headers, body = call! env.merge("PATH_INFO" => HOMEPAGE)
 end
