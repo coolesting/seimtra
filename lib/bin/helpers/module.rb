@@ -94,27 +94,35 @@ class SeimtraThor < Thor
 	end
 
 	desc "module_helper [OPTION]", "The helper to create the module"
-	method_options :mode => 'table', :focus => 'index', :run => :boolean
+	method_options :mode => 'table', :focus => :string, :run => :boolean
 	def module_helper(*argv)
 		return say("You need some options, such as,'3s mh post Integer:pid String:body'", "\e[33m") unless argv.count > 0
 
-		focus		= options[:focus] == 'index' ? SCFG.get('module_focus') : options[:focus]
-		mode 		= options[:mode]
-		@name 		= argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
-		
-		Dir[ROOTPATH + "/docs/scaffolds/#{mode}/routes/*.tt"].each do |source|
-			template source, "modules/#{focus}/routes/#{@name}_#{mode}.rb"
-		end
+		options[:focus] ||= SCFG.get('module_focus')
+		@tt_name = argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
+		temp_var = argv
+		temp_var.shift
 
-		Dir[ROOTPATH + "/docs/scaffolds/#{mode}/views/*.tt"].each do |source|
-			ext = source.split("/").last.split(".").first
-			template source, "modules/#{focus}/views/#{@name}_#{ext}.slim"
-		end
+		if temp_var.count > 0
+			@tt_argv = {}
+			temp_var.each do |item|
+				key, val = item.split(":")
+				@tt_argv[key] = val
+			end
 
-		#implement the migration
-		if options.run?
-			migration = "create:#{argv}"
-			invoke "db_migration", migration, :run => true
+			Dir[ROOTPATH + "/docs/scaffolds/#{options[:mode]}/routes/*.tt"].each do |source|
+				template source, "modules/#{options[:focus]}/routes/#{@tt_name}_#{options[:mode]}.rb"
+			end
+			Dir[ROOTPATH + "/docs/scaffolds/#{options[:mode]}/views/*.tt"].each do |source|
+				ext = source.split("/").last.split(".").first
+				template source, "modules/#{options[:focus]}/views/#{@tt_name}_#{ext}.slim"
+			end
+
+			#implement the migration
+			if options.run?
+				migration = "create:#{argv}"
+				invoke "db_migration", migration, :run => true, :focus => options[:focus]
+			end
 		end
 	end
 

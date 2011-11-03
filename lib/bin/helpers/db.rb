@@ -37,9 +37,10 @@ class SeimtraThor < Thor
 	end
 
 	desc "db_migration [PATH]", "Implement the migrations record for the database"
-	method_options :run => :boolean, :dump => :string, :v => :numeric
+	method_options :run => :boolean, :dump => :string, :v => :numeric, :focus => :string
 	def db_migration(*argv)
-		path = "/modules/#{SCFG.get("module_focus")}/migrations"
+		options[:focus] ||= SCFG.get("module_focus")
+		path = "/modules/#{options[:focus]}/migrations"
 		unless File.directory?(Dir.pwd + path)
 			empty_directory Dir.pwd + path
 		end
