@@ -94,12 +94,13 @@ class SeimtraThor < Thor
 	end
 
 	desc "module_helper [OPTION]", "The helper to create the module"
-	method_options :mode => 'table', :focus => 'index'
+	method_options :mode => 'table', :focus => 'index', :run => :boolean
 	def module_helper(*argv)
-		focus	= options[:focus] == 'index' ? SCFG.get('module_focus') : options[:focus]
-		mode 	= options[:mode]
-		@name 	= argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
-		data 	= argv
+		return say("You need some options, such as,'3s mh post Integer:pid String:body'", "\e[33m") unless argv.count > 0
+
+		focus		= options[:focus] == 'index' ? SCFG.get('module_focus') : options[:focus]
+		mode 		= options[:mode]
+		@name 		= argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
 		
 		Dir[ROOTPATH + "/docs/scaffolds/#{mode}/routes/*.tt"].each do |source|
 			template source, "modules/#{focus}/routes/#{@name}_#{mode}.rb"
@@ -111,6 +112,10 @@ class SeimtraThor < Thor
 		end
 
 		#implement the migration
+		if options.run?
+			migration = "create:#{argv}"
+			invoke "db_migration", migration, :run => true
+		end
 	end
 
 end
