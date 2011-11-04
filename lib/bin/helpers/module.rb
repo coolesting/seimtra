@@ -94,30 +94,17 @@ class SeimtraThor < Thor
 	end
 
 	desc "module_helper [OPTION]", "The helper to create the module"
-	method_options :mode => 'table', :focus => :string, :run => :boolean
+	method_options :mode => 'table', :focus => :string, :run => :boolean, :with => :string
 	def module_helper(*argv)
 		return say("You need some options, such as,'3s mh post Integer:pid String:body'", "\e[33m") unless argv.count > 0
 
 		options[:focus] ||= SCFG.get('module_focus')
 		name = argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
 		if argv.count > 0
-			require ROOTPATH + "/docs/scaffolds/#{options[:mode]}/routes/helper"
+			require "seimtra/helper"
+			require ROOTPATH + "/docs/scaffolds/#{options[:mode]}/helper"
 
-			class Shelper
-				attr_accessor :name, :keys, :vals, :vars
-				def initialize(argv)
-					@vars = {}
-					@name = argv.shift
-					@keys = @vals = []
-					argv.each do |item|
-						key, val = item.split(":")
-						@keys << key
-						@vals << val
-						@vars[val] = key 
-					end
-				end
-			end
-			@h = Shelper.new(argv)
+			@h = Shelper.new(argv, options[:with])
 			@h.init
 
 			Dir[ROOTPATH + "/docs/scaffolds/#{options[:mode]}/routes/*.tt"].each do |source|
@@ -134,6 +121,12 @@ class SeimtraThor < Thor
 				invoke "db_migration", migration, :run => true, :focus => options[:focus]
 			end
 		end
+	end
+
+	desc 'module_test', 'test'
+	method_options :with => :string
+	def module_test
+		puts options[:with] if options[:with]
 	end
 
 end
