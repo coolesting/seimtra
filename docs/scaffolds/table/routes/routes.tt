@@ -1,32 +1,31 @@
-get '/<%= @tt_name %>' do
-	@title = '<%= @tt_name %>'
-	@<%= @tt_name %> = DB[:<%= @tt_name %>].all
-	slim :<%= @tt_name %>
+get '/<%= @h.name %>' do
+	@title = '<%= @h.name %>'
+	@<%= @h.name %> = DB[:<%= @h.name %>].all
+	slim :<%= @h.name %>
 end
 
-get '/rm/<%= @tt_name %>/:k/:v' do
-	@<%= @tt_name %> = DB[:<%= @tt_name %>].filter(params[:k].to_sym => params[:v]).delete
-	redirect '/<%= @tt_name %>'
+get '/rm/<%= @h.name %>/:val' do
+	@<%= @h.name %> = DB[:<%= @h.name %>].filter(<%= @h.delete_by.to_sym %> => params[:val]).delete
+	redirect '/<%= @h.name %>'
 end
 
-#============================= get form =============================
-get '/new/<%= @tt_name %>' do
-	'edit the <%= @tt_name %> by id #{params[:id]}'
-	slim :<%= @tt_name %>_new
+#============================= apply form =============================
+get '/new/<%= @h.name %>' do
+	slim :<%= @h.name %>_new
 end
 
-get '/edit/<%= @tt_name %>' do
-	'edit the <%= @tt_name %> by id #{params[:id]}'
-	slim :<%= @tt_name %>_edit
+get '/edit/<%= @h.name %>/:val' do
+	@<%= @h.name %> = DB[:<%= @h.name %>][<%= @h.update_by.to_sym %> => params[:val]]
+	slim :<%= @h.name %>_edit
 end
 
 #============================== submit ==============================
-post '/new/<%= @tt_name %>' do
-	@<%= @tt_name %> = DB[:<%= @tt_name %>].insert(:body => 'a new post')
-	redirect '/<%= @tt_name %>'
+post '/new/<%= @h.name %>' do
+	@<%= @h.name %> = DB[:<%= @h.name %>].insert(<%= @h.strval('insert') %>)
+	redirect '/<%= @h.name %>'
 end
 
-post '/edit/<%= @tt_name %>/:id' do
-	@<%= @tt_name %> = DB[:<%= @tt_name %>].insert(:body => 'a new post')
-	redirect '/<%= @tt_name %>'
+post '/edit/<%= @h.name %>/:val' do
+	@<%= @h.name %> = DB[:<%= @h.name %>].filter(<%= @h.update_by.to_sym %> => params[:val]).update(<%= @h.strval('update') %>)
+	redirect '/<%= @h.name %>'
 end

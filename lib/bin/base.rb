@@ -1,10 +1,9 @@
 class SeimtraThor < Thor
 	include Thor::Actions
 	
-	desc "project_setup [NAME]", "Initialize your project with a name,
-			default model is development"
+	desc "project_create [NAME]", "create a project with the name given"
 	method_options :dev => :boolean
-	def project_setup(project_name = 'seimtra_project')
+	def project_create(project_name = 'seimtra_project')
 		directory 'docs/common', project_name
 		SCFG.set 'created', Time.now
 		SCFG.set 'changed', Time.now

@@ -1,6 +1,6 @@
 class SeimtraThor < Thor
 
-	desc "module_born [NAME]", "Initialize a module skeleton"
+	desc "module_born [NAME]", "born a basic scafflod for developing module"
 	def module_born(name = nil)
 		unless File.exist?(Dir.pwd + '/modules')
 			empty_directory Dir.pwd + '/modules'
@@ -28,8 +28,8 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "module_setup [NAME] [OPTION]", "Install a module for your application"
-	def module_setup(*argv) 
+	desc "module_addone [NAME] [OPTION]", "Add one of modules to your application"
+	def module_addone(*argv) 
 		module_name = argv.shift
 		argv
 		#template('docs/modules/table/routes.tt', "routes/#{name}.rb")
@@ -99,23 +99,33 @@ class SeimtraThor < Thor
 		return say("You need some options, such as,'3s mh post Integer:pid String:body'", "\e[33m") unless argv.count > 0
 
 		options[:focus] ||= SCFG.get('module_focus')
-		@tt_name = argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
-		temp_var = argv
-		temp_var.shift
+		name = argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
+		if argv.count > 0
+			require ROOTPATH + "/docs/scaffolds/#{options[:mode]}/routes/helper"
 
-		if temp_var.count > 0
-			@tt_argv = {}
-			temp_var.each do |item|
-				key, val = item.split(":")
-				@tt_argv[key] = val
+			class Shelper
+				attr_accessor :name, :keys, :vals, :vars
+				def initialize(argv)
+					@vars = {}
+					@name = argv.shift
+					@keys = @vals = []
+					argv.each do |item|
+						key, val = item.split(":")
+						@keys << key
+						@vals << val
+						@vars[val] = key 
+					end
+				end
 			end
+			@h = Shelper.new(argv)
+			@h.init
 
 			Dir[ROOTPATH + "/docs/scaffolds/#{options[:mode]}/routes/*.tt"].each do |source|
-				template source, "modules/#{options[:focus]}/routes/#{@tt_name}_#{options[:mode]}.rb"
+				template source, "modules/#{options[:focus]}/routes/#{name}_#{options[:mode]}.rb"
 			end
 			Dir[ROOTPATH + "/docs/scaffolds/#{options[:mode]}/views/*.tt"].each do |source|
 				ext = source.split("/").last.split(".").first
-				template source, "modules/#{options[:focus]}/views/#{@tt_name}_#{ext}.slim"
+				template source, "modules/#{options[:focus]}/views/#{name}_#{ext}.slim"
 			end
 
 			#implement the migration
