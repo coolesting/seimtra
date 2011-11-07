@@ -1,15 +1,19 @@
 class SeimtraThor < Thor
-	desc "db_schema [PATH]", "Initialize a database with a schema"
-	def db_schema(spath = "/db/schema.rb")
-		spath = Dir.pwd + spath
+	method_option :path, :type => :string, :default => "/db/schema.rb", :aliases => '-p'
+	method_option :output, :type => :boolean, :aliases => '-o', :banner => 'Output the db schema'
+	desc "db_schema", "Initialize a database with a schema"
+	def db_schema
+		spath = Dir.pwd + options[:path]
 		epath = Dir.pwd + '/environment.rb'
-		if File.exist?(spath) and File.exist?(epath)
-			require epath
-			require spath
-			say "Implementing complete!", "\e[32m"
+
+		return say("No schema at #{spath}", "\e[31m") unless File.exist?(spath) and File.exist?(epath)
+
+		require epath
+		require spath
+
+		if options.output?
 			say "Your database adapter is " + DB.class.adapter_scheme.to_s, "\e[32m"
 
-=begin
 			say "Your database schema as the following : ", "\e[32m"
 			say "-----------------------------------------"
 
@@ -17,36 +21,40 @@ class SeimtraThor < Thor
 			DB.tables.each do |table|
 				rows << [table.to_s]
 				DB.schema(table).each do |column, attr|
-					rows << [
-						column.to_s, 
-						attr[:type].to_s, 
-						attr[:db_type], 
-						attr[:allow_null].to_s, 
-						attr[:primary_key].to_s, 
-						attr[:default].to_s
-					]
+						rows << [
+							column.to_s, 
+							attr[:type].to_s, 
+							attr[:db_type], 
+							attr[:allow_null].to_s, 
+							attr[:primary_key].to_s, 
+							attr[:default].to_s
+						]
 				end
 			end
-			p rows
-			print_table(rows)
-=end
-
-		else
-			say "No schema at #{spath}", "\e[31m"
+			puts rows
+			#print_table(rows)
 		end
+		say "Implementing complete!", "\e[32m"
+
 	end
 
-	desc "db_migration [PATH]", "Implement the migrations record for the database"
-	method_options :run => :boolean, :dump => :string, :v => :numeric, :focus => :string
-	def db_migration(*argv)
-		options[:focus] ||= SCFG.get("module_focus")
-		path = "/modules/#{options[:focus]}/migrations"
+	method_option :run, :type => :boolean, :aliases => '-r' 
+	method_option :dump, :type => :string
+	method_option :module, :type => :string
+	method_option :version, :type => :numeric, :aliases => '-v' 
+	desc "db_migration [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations record for the database"
+	def db_migration(operate_table, *argv)
+		return say("such as, 3s dm mypost primary_key:id String:name String:email", "\e[33m") if argv == nil or operate_table == nil
+
+		module_current = options[:module] == nil ? SCFG.get("module_focus") : options[:module]
+		path = "/modules/#{module_current}/migrations"
 		unless File.directory?(Dir.pwd + path)
 			empty_directory Dir.pwd + path
 		end
 
+		operate, table = operate_table.split(":")
+
 		if argv.count > 0
-			operate, table = argv.shift.split(":")
 			file = Dir.pwd + path + 
 				"/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
 
@@ -55,8 +63,13 @@ class SeimtraThor < Thor
 				content << "\tchange do\n"
 
 				if operate == "drop" or operate == "rename"
+					#3s dm drop :table1,:table2,:table3
+					#3s dm rename :old_table,:new_table
 					content << "\t\t#{operate}_table(#{argv.to_s.gsub(",", ", ")})\n"
 				else
+					#3s dm create:table_name primary_key:uid String:name String:pawd
+					#3s dm alter:table_name drop_column:column_name
+					#3s dm alter:table_name rename_column:old_column_name,:new_column_name
 					content << "\t\t#{operate}_table(:#{table}) do\n"
 					argv.each do |item|
 						content << "\t\t\t#{item.sub(":", " :").gsub(",", ", ")}\n"
@@ -79,7 +92,7 @@ class SeimtraThor < Thor
 
 			dump 	= options[:dump] == 'd' ? '-d' : '-D'
 			dbcont 	= "'#{ENV['DATABASE_URL']}'"
-			version	= options[:v] == nil ? '' : "-M #{options[:v]}"
+			version	= options[:version] == nil ? '' : "-M #{options[:version]}"
 		end
 
  		if options.run?
@@ -87,10 +100,10 @@ class SeimtraThor < Thor
 		end
 
 		if options[:dump] != nil
-			run("sequel #{dump} #{dbcont} > #{Dir.pwd}/modules/#{SCFG.get("module_focus")}/schema_#{Time.now.strftime('%Y%m%d%H%M%S')}.rb")
+			run("sequel #{dump} #{dbcont} > #{Dir.pwd}/modules/#{module_current}/schema_#{Time.now.strftime('%Y%m%d%H%M%S')}.rb")
 		end
 
-		say "Implementing complete!", "\e[32m"
+		say "Implementing complete", "\e[32m"
 	end
 
 end

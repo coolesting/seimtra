@@ -5,9 +5,9 @@ class SeimtraThor < Thor
 		unless File.exist?(Dir.pwd + '/modules')
 			empty_directory Dir.pwd + '/modules'
 		end
+		return say("You need to enter a NAME for new module", "\e[31m") if name == nil
 
 		info = {}
-		name = "module_#{Time.now}" if name == nil
 		empty_directory "modules/#{name}/routes"
 		empty_directory "modules/#{name}/views"
 		empty_directory "modules/#{name}/migrations"
@@ -48,16 +48,16 @@ class SeimtraThor < Thor
 	end
 
 	desc "module_info [NAME]", "the information of current module"
-	method_options :name => "index"
-	def module_info(*argv)
-		name = options[:name] == 'index' ? SCFG.get('module_focus') : options[:name]
+	method_option :name, :type => :string
+	method_option :set, :type => :hash
+	def module_info
+		name = options[:name] != nil ? options[:name] : SCFG.get('module_focus')
 		path = Dir.pwd + "/modules/#{name}/info"
-
-		if argv.count > 0
+		
+		if options[:set] != nil
 			file = YAML.load_file path
 			info = file != false ? file : {}
-			argv.each do |item|
-				key, val = item.split(":")
+			options[:set].each do |key, val|
 				info[key] = val 
 			end
 			SCFG.save path, info, true
@@ -93,40 +93,57 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "module_helper [OPTION]", "The helper to create the module"
-	method_options :mode => 'table', :focus => :string, :run => :boolean, :with => :string
+	method_option :module, :type => :string
+	method_option :fields, :type => :array, :aliases => '-f'
+	method_option :run, :type => :boolean, :aliases => '-r' 
+	method_option :with, :type => :hash, :aliases => '-w' 
+	method_option :without, :type => :array, :aliases => '-wo' 
+	desc "module_helper [TABLE_NAME]", "The helper to create the module"
+	#For example, 
+	#3s mh user primary_id:uid String:name String:pawd
+	#3s mh article primary_id:aid String:title text:body --run
+	#3s mh article --fields=aid title --with=page_size:20
+	#3s mh article --fields=aid title --with=search_by:title
+	#3s mh article --fields=aid title --without=edit delete
+	#3s mh article --fields=aid title --with=page_size:10 search_by:title
+	#3s mh article primary_id:aid String:title text:body --fields=aid title --run
 	def module_helper(*argv)
-		return say("You need some options, such as,'3s mh post Integer:pid String:body'", "\e[33m") unless argv.count > 0
+		return say("You need a name for creating the module'", "\e[33m") unless argv.count > 0
+		name = argv.shift 
+		migrations = ''
+		module_current = options[:module] == nil ? SCFG.get('module_focus') : options[:module]
 
-		options[:focus] ||= SCFG.get('module_focus')
-		name = argv.first == nil ? Time.now.strftime("%Y%m%d%H%M%S") : argv.first
+		#create a mirgration record
 		if argv.count > 0
 			require "seimtra/helper"
-			require ROOTPATH + "/docs/scaffolds/#{options[:mode]}/helper"
+			require ROOTPATH + "/docs/scaffolds/#{options[:module]}/helper"
 
 			@h = Shelper.new(argv, options[:with])
 			@h.init
 
-			Dir[ROOTPATH + "/docs/scaffolds/#{options[:mode]}/routes/*.tt"].each do |source|
-				template source, "modules/#{options[:focus]}/routes/#{name}_#{options[:mode]}.rb"
+			Dir[ROOTPATH + "/docs/scaffolds/#{options[:module]}/routes/*.tt"].each do |source|
+				template source, "modules/#{options[:focus]}/routes/#{name}_#{options[:module]}.rb"
 			end
-			Dir[ROOTPATH + "/docs/scaffolds/#{options[:mode]}/views/*.tt"].each do |source|
+			Dir[ROOTPATH + "/docs/scaffolds/#{options[:module]}/views/*.tt"].each do |source|
 				ext = source.split("/").last.split(".").first
 				template source, "modules/#{options[:focus]}/views/#{name}_#{ext}.slim"
 			end
+		end
 
-			#implement the migration
-			if options.run?
-				migration = "create:#{argv}"
-				invoke "db_migration", migration, :run => true, :focus => options[:focus]
-			end
+		#create the sleksen
+
+		#implement the migrations
+		if migrations != ''
+			run = {}; run[:run] = options.run? ? true : false
+			invoke "db_migration", "create:#{name}", migrations, run, :module => module_current
 		end
 	end
 
 	desc 'module_test', 'test'
-	method_options :with => :string
+	method_option :with, :type => :string, :aliases => '-w'
+	method_option :focus, :type => :boolean, :aliases => '-f'
 	def module_test
-		puts options[:with] if options[:with]
+		puts options[:with] if options[:focus]
 	end
 
 end
