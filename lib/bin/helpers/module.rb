@@ -109,30 +109,33 @@ class SeimtraThor < Thor
 	#3s mh article primary_id:aid String:title text:body --fields=aid title --run
 	def module_helper(*argv)
 		return say("You need a name for creating the module'", "\e[33m") unless argv.count > 0
-		name = argv.shift 
-		migrations = ''
-		module_current = options[:module] == nil ? SCFG.get('module_focus') : options[:module]
+		name 			= argv.shift 
+		migrations 		= ''
+		fields			= []
+		module_current 	= options[:module] == nil ? SCFG.get('module_focus') : options[:module]
 
-		#create a mirgration record
 		if argv.count > 0
-			require "seimtra/helper"
-			require ROOTPATH + "/docs/scaffolds/#{options[:module]}/helper"
-
-			@h = Shelper.new(argv, options[:with])
-			@h.init
-
-			Dir[ROOTPATH + "/docs/scaffolds/#{options[:module]}/routes/*.tt"].each do |source|
-				template source, "modules/#{options[:focus]}/routes/#{name}_#{options[:module]}.rb"
-			end
-			Dir[ROOTPATH + "/docs/scaffolds/#{options[:module]}/views/*.tt"].each do |source|
-				ext = source.split("/").last.split(".").first
-				template source, "modules/#{options[:focus]}/views/#{name}_#{ext}.slim"
+			argv.each do |item|
+				fields << item.split(":").last
+				migrations = argv
 			end
 		end
+		fields = options[:fields] if options[:fields] != nil
 
-		#create the sleksen
+		#create the module skeleton 
+		return say('No --fields option, cannot create the module skeleton', '\e[31m') unless fields.empty?
+		require "seimtra/scaffold"
+		@h = Scaffold.new(name, fields, argv, options[:with], options[:without])
 
-		#implement the migrations
+		#create route
+		create_file "modules/#{name}/routes/#{name}.rb" @h.route_file_content
+
+		#create templates
+		@h.template_names.each do |temp|
+			create_file "modules/#{name}/views/#{name}_#{temp}.slim", @h.template_content(temp)
+		end
+
+		#create/implement the migrations
 		if migrations != ''
 			run = {}; run[:run] = options.run? ? true : false
 			invoke "db_migration", "create:#{name}", migrations, run, :module => module_current
