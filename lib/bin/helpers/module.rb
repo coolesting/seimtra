@@ -125,14 +125,14 @@ class SeimtraThor < Thor
 		#create the module skeleton 
 		return say('No --fields option, cannot create the module skeleton', '\e[31m') unless fields.empty?
 		require "seimtra/scaffold"
-		@h = Scaffold.new(name, fields, argv, options[:with], options[:without])
+		sf = Scaffold.new(name, fields, argv, options[:with], options[:without])
 
 		#create route
-		create_file "modules/#{name}/routes/#{name}.rb" @h.route_file_content
+		create_file("modules/#{name}/routes/#{name}.rb", sf.route_file_content)
 
 		#create templates
-		@h.template_names.each do |temp|
-			create_file "modules/#{name}/views/#{name}_#{temp}.slim", @h.template_content(temp)
+		sf.template_names.each do |temp|
+			create_file "modules/#{name}/views/#{name}_#{temp}.slim", sf.template_content(temp)
 		end
 
 		#create/implement the migrations
@@ -145,8 +145,8 @@ class SeimtraThor < Thor
 	desc 'module_test', 'test'
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
-	def module_test
-		puts options[:with] if options[:focus]
+	def module_test(a = nil, *args)
+		puts a if a!=nil 
 	end
 
 end

@@ -6,9 +6,9 @@ class Scaffold
 		@name 		= name
 		@argv 		= argv
 		@fields 	= fields
-		@with 		= {}
 		@with_keys 	= ['search', 'pager']
-		@actions 	= ['table', 'rm', 'new', 'edit']
+		@functions 	= ['show', 'rm', 'new', 'edit']
+		@with 		= @route_file_content = @template_names = {}
 
 		if with != nil
 			@with.each do |k,v|
@@ -17,8 +17,8 @@ class Scaffold
 		end
 
 		if without != nil
-			without.each do |action|
-				@actions.delete(action)
+			without.each do |function|
+				@functions.delete(function)
 			end
 		end
 
@@ -30,12 +30,12 @@ class Scaffold
 			@vars[val] = key 
 		end
 
-		@actions.uniq!
+		@functions.uniq!
 
-		#implement the actions one by one
-		unless @actions.empty?
-			@actions.each do |action|
-				send("action_#{action}".to_sym)
+		#implement the functions one by one
+		unless @functions.empty?
+			@functions.each do |function|
+				send("function_#{function}".to_sym)
 			end
 		end
 	end
@@ -45,15 +45,15 @@ class Scaffold
 
 	private
 
-		def action_table
+		def function_show
 		end
 
-		def action_rm
+		def function_rm
 		end
 
-		def action_new
+		def function_new
 		end
 
-		def action_edit
+		def function_edit
 		end
 end

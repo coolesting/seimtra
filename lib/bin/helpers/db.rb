@@ -1,4 +1,5 @@
 class SeimtraThor < Thor
+
 	method_option :path, :type => :string, :default => "/db/schema.rb", :aliases => '-p'
 	method_option :output, :type => :boolean, :aliases => '-o', :banner => 'Output the db schema'
 	desc "db_schema", "Initialize a database with a schema"
@@ -43,8 +44,7 @@ class SeimtraThor < Thor
 	method_option :module, :type => :string
 	method_option :version, :type => :numeric, :aliases => '-v' 
 	desc "db_migration [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations record for the database"
-	def db_migration(operate_table, *argv)
-		return say("such as, 3s dm mypost primary_key:id String:name String:email", "\e[33m") if argv == nil or operate_table == nil
+	def db_migration(operate_table = nil, *argv)
 
 		module_current = options[:module] == nil ? SCFG.get("module_focus") : options[:module]
 		path = "/modules/#{module_current}/migrations"
@@ -52,9 +52,10 @@ class SeimtraThor < Thor
 			empty_directory Dir.pwd + path
 		end
 
-		operate, table = operate_table.split(":")
+		operate = table = nil
+		operate, table = operate_table.split(":") if operate_table != nil
 
-		if argv.count > 0
+		if operate != nil and argv.count > 0
 			file = Dir.pwd + path + 
 				"/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
 
