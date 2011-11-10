@@ -1,15 +1,16 @@
 class Scaffold
 
-	attr_accessor :route_file_content, :template_names
+	attr_accessor :template_names
 
 	def initialize(name, fields, argv, with, without)
-		@name 		= name
-		@argv 		= argv
-		@fields 	= fields
-		@with_keys 	= ['search', 'pager']
-		@functions 	= ['show', 'rm', 'new', 'edit']
-		@template_names = @with = {}
-		@route_file_content = ''
+		@name 			= name
+		@argv 			= argv
+		@fields 		= fields
+		@with_keys 		= ['search', 'page']
+		@functions 		= ['show', 'rm', 'new', 'edit']
+		@with			= {}
+		@route_content 	= ''
+		@template_names = []
 
 		if with != nil
 			@with.each do |k,v|
@@ -33,28 +34,51 @@ class Scaffold
 
 		@functions.uniq!
 
-		#implement the functions one by one
+		#implement the function
 		unless @functions.empty?
 			@functions.each do |function|
-				send("function_#{function}".to_sym)
+				@route_content += get_erb_content(function, 'routes')
+				send("preprocess_#{function}")
+				#@template_names << function if check_temp(function) 
 			end
 		end
 	end
 
-	def template_content(name)
+	def get_template_content(name)
+		get_erb_content(name, 'views')
+	end
+
+	def get_route_content
+		@route_content
 	end
 
 	private
 
-		def function_show
+		def preprocess_show
 		end
 
-		def function_rm
+		def preprocess_page
+			@page_size = @with['page']
 		end
 
-		def function_new
+		def preprocess_rm
+			@delete_by = ''
 		end
 
-		def function_edit
+		def preprocess_search
+			@search_by = ''
+		end
+
+		def preprocess_new
+		end
+
+		def preprocess_edit
+		end
+
+		def get_erb_content(name, type)
+		end
+
+		#check the file, return true if the file is existing, otherwise false
+		def check_temp(name)
 		end
 end

@@ -1,0 +1,5 @@
+post '/search/<%= @s.name %>' do
+end
+
+get '/search/<%= @s.name %>/:page_id' do
+end

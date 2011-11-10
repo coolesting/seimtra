@@ -128,11 +128,11 @@ class SeimtraThor < Thor
 		sf = Scaffold.new(name, fields, argv, options[:with], options[:without])
 
 		#create route
-		create_file("modules/#{name}/routes/#{name}.rb", sf.route_file_content)
+		create_file("modules/#{name}/routes/#{name}.rb", sf.get_route_content)
 
 		#create templates
 		sf.template_names.each do |temp|
-			create_file "modules/#{name}/views/#{name}_#{temp}.slim", sf.template_content(temp)
+			create_file "modules/#{name}/views/#{name}_#{temp}.slim", sf.get_template_content(temp)
 		end
 
 		#create/implement the migrations

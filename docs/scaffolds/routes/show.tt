@@ -1,31 +1,5 @@
-get '/<%= @h.name %>' do
-	@title = '<%= @h.name %>'
-	@<%= @h.name %> = DB[:<%= @h.name %>].all
-	slim :<%= @h.name %>
-end
-
-get '/rm/<%= @h.name %>/:val' do
-	@<%= @h.name %> = DB[:<%= @h.name %>].filter(<%= @h.delete_by.to_sym %> => params[:val]).delete
-	redirect '/<%= @h.name %>'
-end
-
-#============================= apply form =============================
-get '/new/<%= @h.name %>' do
-	slim :<%= @h.name %>_new
-end
-
-get '/edit/<%= @h.name %>/:val' do
-	@<%= @h.name %> = DB[:<%= @h.name %>][<%= @h.update_by.to_sym %> => params[:val]]
-	slim :<%= @h.name %>_edit
-end
-
-#============================== submit ==============================
-post '/new/<%= @h.name %>' do
-	@<%= @h.name %> = DB[:<%= @h.name %>].insert(<%= @h.strval('insert') %>)
-	redirect '/<%= @h.name %>'
-end
-
-post '/edit/<%= @h.name %>/:val' do
-	@<%= @h.name %> = DB[:<%= @h.name %>].filter(<%= @h.update_by.to_sym %> => params[:val]).update(<%= @h.strval('update') %>)
-	redirect '/<%= @h.name %>'
+get '/<%= @s.name %>' do
+	@title = '<%= @s.name %>'
+	@<%= @s.name %> = DB[:<%= @s.name %>].all
+	slim :<%= @s.name %>
 end
