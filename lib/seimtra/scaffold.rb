@@ -8,7 +8,8 @@ class Scaffold
 		@fields 	= fields
 		@with_keys 	= ['search', 'pager']
 		@functions 	= ['show', 'rm', 'new', 'edit']
-		@with 		= @route_file_content = @template_names = {}
+		@template_names = @with = {}
+		@route_file_content = ''
 
 		if with != nil
 			@with.each do |k,v|
