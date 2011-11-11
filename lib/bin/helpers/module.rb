@@ -132,7 +132,7 @@ class SeimtraThor < Thor
 
 		#create templates
 		sf.template_names.each do |temp|
-			create_file "modules/#{name}/views/#{temp}.slim", sf.get_template_content(temp)
+			create_file "modules/#{name}/views/#{temp}.slim", sf.get_template_contents(temp)
 		end
 
 		#create/implement the migrations

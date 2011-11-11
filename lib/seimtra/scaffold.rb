@@ -8,20 +8,13 @@ class Scaffold
 		@name 			= name
 		@argv 			= argv
 		@fields 		= fields
-		@functions 		= ['show', 'rm', 'new', 'edit']
-		@with			= @template_content = {}
+		@functions 		= ['show', 'rm', 'new', 'edit', 'pager', 'search']
+		@with			= @template_contents = {}
+		@without 		= @template_names = []
 		@route_content 	= ''
-		@template_names = []
 
-		if with != nil
-			@functions += with
-		end
-
-		if without != nil
-			without.each do |function|
-				@functions.delete(function)
-			end
-		end
+		@with 			= with
+		@without 		= without
 
 		@keys = @vals = []
 		argv.each do |item|
@@ -31,19 +24,14 @@ class Scaffold
 			@vars[val] = key 
 		end
 
-		@functions.uniq!
-
-		#implement the function
-		unless @functions.empty?
-			@functions.each do |function|
-				@route_content += get_erb_content(function, 'routes')
-				send("preprocess_#{function}") if self.respond_to?("preprocess_#{function}", true)
-			end
+		#preprocess the functions
+		@functions.uniq!.each do |function|
+			send("process_#{function}") if self.respond_to?("process_#{function}", true)
 		end
 	end
 
-	def get_template_content(name)
-		@template_content[name]	
+	def get_template_contents(name)
+		@template_contents[name]	
 	end
 
 	def get_route_content
@@ -52,36 +40,48 @@ class Scaffold
 
 	private
 
-		def preprocess_show
+		def process_show
+			@route_content += "\n#== display ===============================\n"
+			@route_content += get_erb_content('show', 'routes')
 			@template_names << 'show'
-			@template_content[@name] = get_erb_content('show')
+			@template_contents[@name] = get_erb_content('show')
 		end
 
-		def preprocess_page
+		def process_page
 			@page_size = @with['page'].to_i
-			@template_content[@name] += get_erb_content('page')
+			@route_content += "\n#== pager =================================\n"
+			@route_content += get_erb_content('page', 'routes')
+			@template_contents[@name] += get_erb_content('page')
 		end
 
-		def preprocess_rm
+		def process_rm
 			@delete_by = ''
+			@route_content += "\n#== remove ================================\n"
+			@route_content += get_erb_content('rm', 'routes')
 		end
 
-		def preprocess_search
+		def process_search
 			@search_by = @with['search']
-			@template_content[@name] = get_erb_content('search') + @template_content[@name]
+			@route_content += "\n#== search ================================\n"
+			@route_content += get_erb_content('search', 'routes')
+			@template_contents[@name] = get_erb_content('search') + @template_contents[@name]
 		end
 
-		def preprocess_new
+		def process_new
 			@insert_sql = ''
+			@route_content += "\n#== new ===================================\n"
+			@route_content += get_erb_content('new', 'routes')
 			@template_names << 'new'
-			@template_content["#{@name}_new"] = get_erb_content('new')
+			@template_contents["#{@name}_new"] = get_erb_content('new')
 		end
 
-		def preprocess_edit
+		def process_edit
 			@update_by = ''
 			@update_sql = ''
+			@route_content += "\n#== edit ==================================\n"
+			@route_content += get_erb_content('edit', 'routes')
 			@template_names << 'edit'
-			@template_content["#{@name}_edit"] = get_erb_content('edit')
+			@template_contents["#{@name}_edit"] = get_erb_content('edit')
 		end
 
 		def get_erb_content(name, type = 'views')
@@ -90,7 +90,7 @@ class Scaffold
 				t = ERB.new(path)
 				t.result(binding)
 			else
-				"Nothing at path : #{path}"
+				say("Nothing at path : #{path}", "\e[31m")
 			end
 		end
 
