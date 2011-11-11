@@ -1,9 +1,9 @@
 
-get '/new/<%= @s.name %>' do
-	slim :<%= @s.name %>_new
+get '/new/<%= @name %>' do
+	slim :<%= @name %>_new
 end
 
-post '/new/<%= @s.name %>' do
-	@<%= @s.name %> = DB[:<%= @s.name %>].insert(<%= @s.strval('insert') %>)
-	redirect '/<%= @s.name %>'
+post '/new/<%= @name %>' do
+	@<%= @name %> = DB[:<%= @name %>].insert(<%= @insert_sql %>)
+	redirect '/<%= @name %>'
 end

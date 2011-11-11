@@ -1,5 +1,5 @@
-get '/<%= @s.name %>' do
-	@title = '<%= @s.name %>'
-	@<%= @s.name %> = DB[:<%= @s.name %>].all
-	slim :<%= @s.name %>
+get '/<%= @name %>' do
+	@title = '<%= @name %>'
+	@<%= @name %> = DB[:<%= @name %>].all
+	slim :<%= @name %>_show
 end
