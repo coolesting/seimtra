@@ -44,7 +44,7 @@ class SeimtraThor < Thor
 	method_option :module, :type => :string
 	method_option :version, :type => :numeric, :aliases => '-v' 
 	desc "db_migration [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations record for the database"
-	def db_migration(operate_table = nil, *argv)
+	def db_migration(operate_table, *argv)
 
 		module_current = options[:module] == nil ? SCFG.get("module_focus") : options[:module]
 		path = "/modules/#{module_current}/migrations"
@@ -53,7 +53,9 @@ class SeimtraThor < Thor
 		end
 
 		operate = table = nil
-		operate, table = operate_table.split(":") if operate_table != nil
+		default_operate	= ['create', 'alter', 'drop', 'rename']
+		operate, table 	= operate_table.split(":") if operate_table != nil
+		return say("#{operate} is a error operation", "\e[31m") unless default_operate.include?(operate)
 
 		if operate != nil and argv.count > 0
 			file = Dir.pwd + path + 

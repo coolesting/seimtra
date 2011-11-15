@@ -94,49 +94,57 @@ class SeimtraThor < Thor
 	end
 
 	method_option :module, :type => :string
-	method_option :fields, :type => :array, :aliases => '-f'
+	method_option :display, :type => :array, :aliases => '-d'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
-	method_option :without, :type => :array, :aliases => '-wo' 
-	desc "module_helper [TABLE_NAME]", "The helper to create the module"
+	method_option :level, :type => :hash, :aliases => '-lv' 
+	desc "module_helper [NAME] [OPTIONS]", "The helper to create the module"
 	#For example, 
 	#3s mh user primary_id:uid String:name String:pawd
+	#
 	#3s mh article primary_id:aid String:title text:body --run
-	#3s mh article --fields=aid title --with=page_size:20
-	#3s mh article --fields=aid title --with=search_by:title
-	#3s mh article --fields=aid title --without=edit delete
-	#3s mh article --fields=aid title --with=page_size:10 search_by:title
-	#3s mh article primary_id:aid String:title text:body --fields=aid title --run
-	def module_helper(*argv)
-		return say("You need a name for creating the module'", "\e[33m") unless argv.count > 0
-		name 			= argv.shift 
-		migrations 		= ''
-		fields			= []
+	#3s mh article --display=aid title --with=page_size:20
+	#3s mh article --display=aid title --with=search_by:title
+	#3s mh article --display=aid title --with=edit_by:aid delete_by:aid
+	#3s mh article --display=aid title --with=page_size:10 search_by:title
+	#
+	#3s mh post primary_id:pid String:title text:body --display=pid title --run
+	#3s mh --display=title body --with=display_by:pid list:title
+	def module_helper(name, *argv)
+		return say("The name can not be 'admin'", "\e[31m") if name == 'admin'
+		return say("For example, 3s mh post primary_id:pid String:title text:body --run ", "\e[33m") unless argv.count > 0
+
+		migrations 		= fields = []
 		module_current 	= options[:module] == nil ? SCFG.get('module_focus') : options[:module]
 
 		if argv.count > 0
+			migrations = argv
 			argv.each do |item|
 				fields << item.split(":").last
-				migrations = argv
 			end
 		end
-		fields = options[:fields] if options[:fields] != nil
+		fields = options[:display] if options[:display] != nil
 
-		#create the module skeleton 
-		return say('No --fields option, cannot create the module skeleton', '\e[31m') unless fields.empty?
-		require "seimtra/scaffold"
-		sf = Scaffold.new(name, fields, argv, options[:with], options[:without])
+		#create the skeleton 
+		unless fields.empty?
+			require "seimtra/scaffold"
+			sf = Scaffold.new(name, fields, argv, options[:with], options[:level])
 
-		#create route
-		create_file("modules/#{name}/routes/#{name}.rb", sf.get_route_content)
+			#create route
+			sf.route_contents.each do |route_name, route_content|
+				create_file route_name, route_content
+				#create_file("modules/#{name}/routes/#{name}.rb", sf.route_contents)
+			end
 
-		#create templates
-		sf.template_names.each do |temp|
-			create_file "modules/#{name}/views/#{temp}.slim", sf.get_template_contents(temp)
+			#create templates
+			sf.template_contents.each do |tmp_name, tmp_content|
+				create_file tmp_name, tmp_content
+				#create_file "modules/#{name}/views/#{temp}.slim", sf.get_template_contents(temp)
+			end
 		end
 
 		#create/implement the migrations
-		if migrations != ''
+		unless migrations.empty?
 			run = {}; run[:run] = options.run? ? true : false
 			invoke "db_migration", "create:#{name}", migrations, run, :module => module_current
 		end
@@ -146,7 +154,7 @@ class SeimtraThor < Thor
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
 	def module_test(a = nil, *args)
-		puts a if a!=nil 
+		puts args if a!=nil 
 	end
 
 end
