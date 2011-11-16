@@ -7,25 +7,46 @@ class Scaffold
 	def initialize(name, fields, argv, with, level)
 		@name 			= name
 		@fields 		= fields
-		@functions 		= @route_contents = @template_contents = @with = @t = {}
+		@route_contents = @template_contents = @with = @t = {}
+		@functions 		= []
 		@level 			= level
 
-		@functions['admin'] = 'enable'
 		preprocess_data(with, argv)
-		#display in frontground
-		unless @functions['display'].empty?
-		end
-		
-		#background application
-		if @functions['admin'] == 'enable'
-# 		@admin_functions.uniq!.each do |function|
-# 			send("process_#{function}") if self.respond_to?("process_#{function}", true)
+		unless @functions.empty?
+			@functions.each do |function|
+				send("process_#{function}") if self.respond_to?("process_#{function}", true)
+			end
 		end
 	end
 
 	private
 
 		def preprocess_data(with, argv)
+
+			#enable default option
+			@functions << 'admin' unless with.include?('admin')
+			@functions << 'view' unless with.include?('view')
+
+			display = {}
+			#function name => parameter name
+			display['pager'] 	= ['page_size', 'pager', 'page', 'ps']
+			display['search'] 	= ['search_by', 'search', 'src']
+			display['rm'] 		= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
+			display['edit'] 	= ['update_by', 'up', 'update', 'edit', 'edit_by']
+			display['new'] 		= ['new', 'create']
+
+			display.each do |key, val|
+				val.each do |item|
+					if with.include?(item)
+						@with[display[key][0]] = with[item] 
+						@functions << key
+						break
+					end
+				end
+			end
+
+			@t = @with
+
 			@keys = @vals = []
 			argv.each do |item|
 				key, val = item.split(":")
@@ -33,36 +54,16 @@ class Scaffold
 				@vals << val
 				@vars[val] = key 
 			end
-
-			display = {}
-			display['pager'] 	= ['page_size', 'pager', 'page', 'ps']
-			display['search'] 	= ['search_by', 'search', 'src']
-			display['rm'] 		= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
-			display['edit'] 	= ['update_by', 'up', 'update']
-			display['new'] 		= ['new', 'create']
-			display['admin']	= ['enable', 'disable']
-
-			display.each do |key, val|
-				val.each do |item|
-					if with[item]
-						@t[with[key][0]] = with[item] 
-						@functions[key] = 'enable' 
-						break
-					end
-				end
-			end
-
 			@t['insert_sql'] = ''
 			@t['update_sql'] = ''
 
-			@functions['admin'] = with['admin'] if with['admin']
 		end
 
-		def process_list
-			@route_contents += "\n#== display ===============================\n"
-			@route_contents += get_erb_content('show', 'routes')
-			@template_names << 'show'
-			@template_contents[@name] = get_erb_content('show')
+		def process_view
+			@route_contents += "\n#== view ==================================\n"
+			@route_contents += get_erb_content('view', 'routes')
+			@template_names << 'view'
+			@template_contents[@name] = get_erb_content('view')
 		end
 
 		def process_pager
@@ -94,6 +95,9 @@ class Scaffold
 			@route_contents += get_erb_content('edit', 'routes')
 			@template_names << 'edit'
 			@template_contents["#{@name}_edit"] = get_erb_content('edit')
+		end
+
+		def process_admin
 		end
 
 		def get_erb_content(name, type = 'views')
