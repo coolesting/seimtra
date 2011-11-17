@@ -5,14 +5,17 @@ class Scaffold
 	attr_accessor :template_contents, :route_contents
 
 	def initialize(name, module_name, fields, argv, with, level)
-		# @f, template variable of frontground
-		# @a, template variable of background
-		@route_contents = @template_contents = @argv = @with = @f = @a = {}
+		#@t, template variable in frontground
+		#@a, template variable in background
+		@route_contents = @template_contents = @argv = @with = @a = @t = {}
 		@name 			= name
 		@module_name	= module_name
 		@fields 		= fields
 		@functions 		= []
 		@level 			= level
+
+		#The word is a condition for deleting, updeting, editting
+		@keyword		= ''
 
 		_process_data(with, argv)
 		unless @functions.empty?
@@ -23,7 +26,8 @@ class Scaffold
 
 			@functions.each do |function|
 				#process route
-				@route_contents[grn(@name)] += "\n#\t\t\t=== #{function} ===\n"
+				foo = '='*50
+				@route_contents[grn(@name)] += "\n#== #{function} #{foo}\n"
 				@route_contents[grn(@name)] += get_erb_content(function, 'routes')
 
 				#process template
@@ -63,8 +67,9 @@ class Scaffold
 				end
 			end
 
-			@f = @a = @with
+			@t = @with
 
+			keyword = ['primary_key', 'Integer', 'index', 'foreign_key', 'unique']
 			if argv.count > 0
 				# For example,
 				# primary_key:pid
@@ -74,12 +79,27 @@ class Scaffold
 				argv.each do |item|
 					key, val = item.split(":")
 					@argv[val] = key 
+					if @keyword == ''
+						@keyword = val if keyword.include?(key)
+					end
 				end
 			end
 
-			@f['insert_sql'] = ''
-			@f['update_sql'] = ''
+			@keyword = @fields[0] if @keyword == ''
 
+		end
+
+		def preprocess_new
+			@t['insert_sql'] = ''
+		end
+
+		def preprocess_rm
+			@t['delete_by'] = @keyword unless @t.include?('delete_by')
+		end
+
+		def preprocess_edit
+			@t['update_sql'] = ''
+			@t['update_by'] = @keyword unless @t.include?('update_by')
 		end
 
 		def process_view
@@ -95,6 +115,7 @@ class Scaffold
 		end
 
 		def process_admin
+			@a = @t
 		end
 
 		#get route name
