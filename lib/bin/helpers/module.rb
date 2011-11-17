@@ -128,18 +128,16 @@ class SeimtraThor < Thor
 		#create the skeleton 
 		unless fields.empty?
 			require "seimtra/scaffold"
-			sf = Scaffold.new(name, fields, argv, options[:with], options[:level])
+			sf = Scaffold.new(name, module_current, fields, argv, options[:with], options[:level])
 
 			#create route
 			sf.route_contents.each do |route_name, route_content|
 				create_file route_name, route_content
-				#create_file("modules/#{name}/routes/#{name}.rb", sf.route_contents)
 			end
 
 			#create templates
 			sf.template_contents.each do |tmp_name, tmp_content|
 				create_file tmp_name, tmp_content
-				#create_file "modules/#{name}/views/#{temp}.slim", sf.get_template_contents(temp)
 			end
 		end
 

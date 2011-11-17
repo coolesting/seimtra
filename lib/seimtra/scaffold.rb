@@ -4,100 +4,107 @@ class Scaffold
 
 	attr_accessor :template_contents, :route_contents
 
-	def initialize(name, fields, argv, with, level)
+	def initialize(name, module_name, fields, argv, with, level)
+		# @f, template variable of frontground
+		# @a, template variable of background
+		@route_contents = @template_contents = @argv = @with = @f = @a = {}
 		@name 			= name
+		@module_name	= module_name
 		@fields 		= fields
-		@route_contents = @template_contents = @with = @t = {}
 		@functions 		= []
 		@level 			= level
 
-		preprocess_data(with, argv)
+		_process_data(with, argv)
 		unless @functions.empty?
+			#preprocess data
 			@functions.each do |function|
-				send("process_#{function}") if self.respond_to?("process_#{function}", true)
+				send("preprocess_#{function}") if self.respond_to?("preprocess_#{function}", true)
+			end
+
+			@functions.each do |function|
+				#process route
+				@route_contents[grn(@name)] += "\n#\t\t\t=== #{function} ===\n"
+				@route_contents[grn(@name)] += get_erb_content(function, 'routes')
+
+				#process template
+				if self.respond_to?("process_#{function}", true)
+					send("process_#{function}") 
+				else
+					@template_contents[gtn(function)] = get_erb_content(function)
+				end
 			end
 		end
 	end
 
 	private
 
-		def preprocess_data(with, argv)
+		def _process_data(with, argv)
 
-			#enable default option
-			@functions << 'admin' unless with.include?('admin')
-			@functions << 'view' unless with.include?('view')
-
-			display = {}
 			#function name => parameter name
+			display = {}
+			display['view'] 	= ['view_by', 'view', 'show_by', 'show']
 			display['pager'] 	= ['page_size', 'pager', 'page', 'ps']
 			display['search'] 	= ['search_by', 'search', 'src']
 			display['rm'] 		= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
 			display['edit'] 	= ['update_by', 'up', 'update', 'edit', 'edit_by']
 			display['new'] 		= ['new', 'create']
+			display['admin'] 	= ['admin']
 
+			#enable default option
+			@functions << 'view'
+			@functions << 'admin'
 			display.each do |key, val|
 				val.each do |item|
 					if with.include?(item)
-						@with[display[key][0]] = with[item] 
-						@functions << key
+						@with[display[key][0]] = with[item] if item != 'enable'
+						@functions.delete(key) if item == 'disable' and @functions.include?(key)
 						break
 					end
 				end
 			end
 
-			@t = @with
+			@f = @a = @with
 
-			@keys = @vals = []
-			argv.each do |item|
-				key, val = item.split(":")
-				@keys << key
-				@vals << val
-				@vars[val] = key 
+			if argv.count > 0
+				# For example,
+				# primary_key:pid
+				# Integer:aid
+				# String:title
+				# String:body
+				argv.each do |item|
+					key, val = item.split(":")
+					@argv[val] = key 
+				end
 			end
-			@t['insert_sql'] = ''
-			@t['update_sql'] = ''
+
+			@f['insert_sql'] = ''
+			@f['update_sql'] = ''
 
 		end
 
 		def process_view
-			@route_contents += "\n#== view ==================================\n"
-			@route_contents += get_erb_content('view', 'routes')
-			@template_names << 'view'
-			@template_contents[@name] = get_erb_content('view')
+			@template_contents[gtn('view')] = get_erb_content('view')
 		end
 
 		def process_pager
-			@route_contents += "\n#== pager =================================\n"
-			@route_contents += get_erb_content('page', 'routes')
-			@template_contents[@name] += get_erb_content('page')
-		end
-
-		def process_rm
-			@route_contents += "\n#== remove ================================\n"
-			@route_contents += get_erb_content('rm', 'routes')
+			@template_contents[gtn('view')] += get_erb_content('pager')
 		end
 
 		def process_search
-			@route_contents += "\n#== search ================================\n"
-			@route_contents += get_erb_content('search', 'routes')
-			@template_contents[@name] = get_erb_content('search') + @template_contents[@name]
-		end
-
-		def process_new
-			@route_contents += "\n#== new ===================================\n"
-			@route_contents += get_erb_content('new', 'routes')
-			@template_names << 'new'
-			@template_contents["#{@name}_new"] = get_erb_content('new')
-		end
-
-		def process_edit
-			@route_contents += "\n#== edit ==================================\n"
-			@route_contents += get_erb_content('edit', 'routes')
-			@template_names << 'edit'
-			@template_contents["#{@name}_edit"] = get_erb_content('edit')
+			@template_contents[gtn('view')] = get_erb_content('search') + @template_contents[gtn('view')]
 		end
 
 		def process_admin
+		end
+
+		#get route name
+		def grn(name)
+			"modules/#{@module_name}/routes/#{name}.rb"
+		end
+
+		#get template name
+		def gtn(name)
+			"modules/#{@module_name}/views/#{@name}_#{name}.slim"
 		end
 
 		def get_erb_content(name, type = 'views')
