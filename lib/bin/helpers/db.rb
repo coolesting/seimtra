@@ -39,6 +39,7 @@ class SeimtraThor < Thor
 
 	end
 
+	method_option :auto, :type => :boolean, :aliases => '-a'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :dump, :type => :string
 	method_option :module, :type => :string
@@ -58,8 +59,11 @@ class SeimtraThor < Thor
 		return say("#{operate} is a error operation", "\e[31m") unless default_operate.include?(operate)
 
 		if operate != nil and argv.count > 0
-			file = Dir.pwd + path + 
-				"/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
+			file = Dir.pwd + path + "/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
+
+			#auto add the primary_key and time to migrating record
+			if options.auto?
+			end
 
 			create_file file do
 				content = "Sequel.migration do\n"
@@ -83,6 +87,7 @@ class SeimtraThor < Thor
 				content << "\tend\n"
 				content << "end\n"
 			end
+
 		end
 
 		if options.run? or options[:dump] != nil
@@ -90,7 +95,7 @@ class SeimtraThor < Thor
 			epath 	= Dir.pwd + '/environment.rb'
 
 			return say "No migrattion record file, please check #{mpath}",
-				"\e[31m" unless File.exist?(epath) and File.exist?(mpath)
+					"\e[31m" unless File.exist?(epath) and File.exist?(mpath)
 			require epath
 
 			dump 	= options[:dump] == 'd' ? '-d' : '-D'

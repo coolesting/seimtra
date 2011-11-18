@@ -4,17 +4,17 @@ class Scaffold
 
 	attr_accessor :template_contents, :route_contents
 
-	def initialize(name, module_name, fields, argv, with, level)
+	def initialize(name, mode, module_name, fields, argv, with, level)
 		#@t, template variable in frontground
-		#@a, template variable in background
-		@route_contents = @template_contents = @argv = @with = @a = @t = {}
+		@route_contents = @template_contents = @argv = @with = @t = {}
 		@name 			= name
 		@module_name	= module_name
 		@fields 		= fields
 		@functions 		= []
 		@level 			= level
+		@mode 			= mode
 
-		#The word is a condition for deleting, updeting, editting
+		#A condition for deleting, updeting, editting the record
 		@keyword		= ''
 
 		_process_data(with, argv)
@@ -52,11 +52,9 @@ class Scaffold
 			display['rm'] 		= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
 			display['edit'] 	= ['update_by', 'up', 'update', 'edit', 'edit_by']
 			display['new'] 		= ['new', 'create']
-			display['admin'] 	= ['admin']
 
 			#enable default option
 			@functions << 'view'
-			@functions << 'admin'
 			display.each do |key, val|
 				val.each do |item|
 					if with.include?(item)
@@ -70,6 +68,7 @@ class Scaffold
 			@t = @with
 
 			keyword = ['primary_key', 'Integer', 'index', 'foreign_key', 'unique']
+			filter 	= ['index', 'foreign_key', 'unique']
 			if argv.count > 0
 				# For example,
 				# primary_key:pid
@@ -78,19 +77,24 @@ class Scaffold
 				# String:body
 				argv.each do |item|
 					key, val = item.split(":")
-					@argv[val] = key 
-					if @keyword == ''
-						@keyword = val if keyword.include?(key)
+					unless filter.include?(key)
+						@argv[val] = key 
+					end
+					if @keyword == '' and keyword.include?(key)
+						@keyword = val.index(',') ? val.sub(/[,]/, '') : val
 					end
 				end
 			end
 
 			@keyword = @fields[0] if @keyword == ''
-
 		end
 
 		def preprocess_new
-			@t['insert_sql'] = ''
+			@t['insert_sql'] = insert_sql = ''
+			@fields.each do |item|
+				insert_sql += ":#{item} => params[:#{item}],"
+			end
+			@t['insert_sql'] = insert_sql.chomp(',')
 		end
 
 		def preprocess_rm
@@ -112,10 +116,6 @@ class Scaffold
 
 		def process_search
 			@template_contents[gtn('view')] = get_erb_content('search') + @template_contents[gtn('view')]
-		end
-
-		def process_admin
-			@a = @t
 		end
 
 		#get route name

@@ -93,7 +93,9 @@ class SeimtraThor < Thor
 		end
 	end
 
+	method_option :mode, :type => :string, :default => 'table'
 	method_option :module, :type => :string
+	method_option :auto, :type => :boolean, :aliases => '-a'
 	method_option :display, :type => :array, :aliases => '-d'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
@@ -103,13 +105,14 @@ class SeimtraThor < Thor
 	#3s mh user primary_id:uid String:name String:pawd
 	#
 	#3s mh article primary_id:aid String:title text:body --run
+	#3s mh article String:title text:body --with=all:enable --run
 	#3s mh article --display=aid title --with=page_size:20
 	#3s mh article --display=aid title --with=search_by:title
 	#3s mh article --display=aid title --with=edit_by:aid delete_by:aid
 	#3s mh article --display=aid title --with=page_size:10 search_by:title
 	#
 	#3s mh post primary_id:pid String:title text:body --display=pid title --run
-	#3s mh --display=title body --with=display_by:pid list:title
+	#3s mh --display=title body --with=display_by:pid --mode=list
 	def module_helper(name, *argv)
 		return say("The name can not be 'admin'", "\e[31m") if name == 'admin'
 		return say("For example, 3s mh post primary_id:pid String:title text:body --run ", "\e[33m") unless argv.count > 0
@@ -117,6 +120,9 @@ class SeimtraThor < Thor
 		migrations 		= fields = []
 		module_current 	= options[:module] == nil ? SCFG.get('module_focus') : options[:module]
 
+		#auto add the primary_key and time to migrating record
+		if options.auto?
+		end
 		if argv.count > 0
 			migrations = argv
 			argv.each do |item|
@@ -128,7 +134,7 @@ class SeimtraThor < Thor
 		#create the skeleton 
 		unless fields.empty?
 			require "seimtra/scaffold"
-			sf = Scaffold.new(name, module_current, fields, argv, options[:with], options[:level])
+			sf = Scaffold.new(name, options[:mode], module_current, fields, argv, options[:with], options[:level])
 
 			#create route
 			sf.route_contents.each do |route_name, route_content|
