@@ -4,7 +4,7 @@ class Scaffold
 
 	attr_accessor :template_contents, :route_contents
 
-	def initialize(name, mode, module_name, fields, argv, with, level)
+	def initialize(name, module_name, fields, argv, with, level)
 		#@t, template variable in frontground
 		@route_contents = @template_contents = @argv = @with = @t = {}
 		@name 			= name
@@ -12,7 +12,7 @@ class Scaffold
 		@fields 		= fields
 		@functions 		= []
 		@level 			= level
-		@mode 			= mode
+		@view			= 'table'
 
 		#A condition for deleting, updeting, editting the record
 		@keyword		= ''
@@ -44,21 +44,23 @@ class Scaffold
 
 		def _process_data(with, argv)
 
-			#function name => parameter name
-			display = {}
-			display['view'] 	= ['view_by', 'view', 'show_by', 'show']
-			display['pager'] 	= ['page_size', 'pager', 'page', 'ps']
-			display['search'] 	= ['search_by', 'search', 'src']
-			display['rm'] 		= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
-			display['edit'] 	= ['update_by', 'up', 'update', 'edit', 'edit_by']
-			display['new'] 		= ['new', 'create']
+			#function name => [parameter, parameter_alias, parameter_alias, ...]
+			dwith = {}
+			dwith['display']= ['display', 'mode']
+			dwith['view']	= ['view_by', 'view', 'show_by', 'show']
+			dwith['pager'] 	= ['page_size', 'pager', 'page', 'ps']
+			dwith['search'] = ['search_by', 'search', 'src']
+			dwith['rm'] 	= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
+			dwith['edit'] 	= ['update_by', 'up', 'update', 'edit', 'edit_by']
+			dwith['new'] 	= ['new', 'create']
 
 			#enable default option
+			@functions << 'display'
 			@functions << 'view'
-			display.each do |key, val|
+			dwith.each do |key, val|
 				val.each do |item|
 					if with.include?(item)
-						@with[display[key][0]] = with[item] if item != 'enable'
+						@with[dwith[key][0]] = with[item] if item != 'enable'
 						@functions.delete(key) if item == 'disable' and @functions.include?(key)
 						break
 					end
@@ -89,6 +91,12 @@ class Scaffold
 			@keyword = @fields[0] if @keyword == ''
 		end
 
+		def preprocess_display
+			display = []
+			display = ['table', 'list']
+			@view = @with.include?('display') and display.include?(@with['display']) ? @with['display'] : 'table'
+		end
+
 		def preprocess_new
 			@t['insert_sql'] = insert_sql = ''
 			@fields.each do |item|
@@ -107,15 +115,15 @@ class Scaffold
 		end
 
 		def process_view
-			@template_contents[gtn('view')] = get_erb_content('view')
+			@template_contents[gtn(@view)] = get_erb_content(@view)
 		end
 
 		def process_pager
-			@template_contents[gtn('view')] += get_erb_content('pager')
+			@template_contents[gtn(@view)] += get_erb_content('pager')
 		end
 
 		def process_search
-			@template_contents[gtn('view')] = get_erb_content('search') + @template_contents[gtn('view')]
+			@template_contents[gtn(i@view)] = get_erb_content('search') + @template_contents[gtn(@view)]
 		end
 
 		#get route name

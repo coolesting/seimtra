@@ -4,12 +4,11 @@ class SeimtraThor < Thor
 	method_option :output, :type => :boolean, :aliases => '-o', :banner => 'Output the db schema'
 	desc "db_schema", "Initialize a database with a schema"
 	def db_schema
-		spath = Dir.pwd + options[:path]
-		epath = Dir.pwd + '/environment.rb'
+		spath 	= Dir.pwd + options[:path]
+		dh 		= Db_helper.new
+		return say(dh.msg, '\e[31m') if dh.error
 
-		return say("No schema at #{spath}", "\e[31m") unless File.exist?(spath) and File.exist?(epath)
-
-		require epath
+		return say("No schema at #{spath}", "\e[31m") unless File.exist?(spath)
 		require spath
 
 		if options.output?
@@ -39,7 +38,7 @@ class SeimtraThor < Thor
 
 	end
 
-	method_option :auto, :type => :boolean, :aliases => '-a'
+	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :dump, :type => :string
 	method_option :module, :type => :string
@@ -47,6 +46,7 @@ class SeimtraThor < Thor
 	desc "db_migration [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations record for the database"
 	def db_migration(operate_table, *argv)
 
+		#initialize data
 		module_current = options[:module] == nil ? SCFG.get("module_focus") : options[:module]
 		path = "/modules/#{module_current}/migrations"
 		unless File.directory?(Dir.pwd + path)
@@ -56,15 +56,20 @@ class SeimtraThor < Thor
 		operate = table = nil
 		default_operate	= ['create', 'alter', 'drop', 'rename']
 		operate, table 	= operate_table.split(":") if operate_table != nil
-		return say("#{operate} is a error operation", "\e[31m") unless default_operate.include?(operate)
+		unless default_operate.include?(operate) 
+			return say("#{operate} is a error operation, you allow to use create, alter, rename and drop", "\e[31m") 
+		end
 
+		#create file for migrating record
 		if operate != nil and argv.count > 0
 			file = Dir.pwd + path + "/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
 
 			#auto add the primary_key and time to migrating record
-			if options.auto?
+			if options.autocomplete?
+				dh = Db_helper.new
+				argv = dh.autocomplete(table, argv) if operate == 'create'
 			end
-
+	
 			create_file file do
 				content = "Sequel.migration do\n"
 				content << "\tchange do\n"
@@ -87,26 +92,28 @@ class SeimtraThor < Thor
 				content << "\tend\n"
 				content << "end\n"
 			end
-
 		end
 
+		#setting the running environment
 		if options.run? or options[:dump] != nil
 			mpath 	= Dir.pwd + path
-			epath 	= Dir.pwd + '/environment.rb'
+			dh = Db_helper.new
+			return say(dh.msg, '\e[31m') if dh.error
 
 			return say "No migrattion record file, please check #{mpath}",
-					"\e[31m" unless File.exist?(epath) and File.exist?(mpath)
-			require epath
+					"\e[31m" unless File.exist?(mpath)
 
 			dump 	= options[:dump] == 'd' ? '-d' : '-D'
 			dbcont 	= "'#{ENV['DATABASE_URL']}'"
 			version	= options[:version] == nil ? '' : "-M #{options[:version]}"
 		end
 
+		#implement the migrations
  		if options.run?
 			run("sequel -m #{mpath} #{version} #{dbcont}")
 		end
 
+		#dump the mrgrations
 		if options[:dump] != nil
 			run("sequel #{dump} #{dbcont} > #{Dir.pwd}/modules/#{module_current}/schema_#{Time.now.strftime('%Y%m%d%H%M%S')}.rb")
 		end

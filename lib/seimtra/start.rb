@@ -3,6 +3,7 @@ ROOTPATH = File.expand_path('../../../', __FILE__)
 require 'thor'
 require 'seimtra/info'
 require 'seimtra/scfg'
+require 'seimtra/db_helper'
 
 class SeimtraThor < Thor
 	def self.source_root

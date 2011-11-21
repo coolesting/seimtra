@@ -93,10 +93,9 @@ class SeimtraThor < Thor
 		end
 	end
 
-	method_option :mode, :type => :string, :default => 'table'
 	method_option :module, :type => :string
-	method_option :auto, :type => :boolean, :aliases => '-a'
-	method_option :display, :type => :array, :aliases => '-d'
+	method_option :autocomplete, :type => :boolean, :aliases => '-a'
+	method_option :fields, :type => :array, :aliases => '-f'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :level, :type => :hash, :aliases => '-lv' 
@@ -106,13 +105,13 @@ class SeimtraThor < Thor
 	#
 	#3s mh article primary_id:aid String:title text:body --run
 	#3s mh article String:title text:body --with=all:enable --run
-	#3s mh article --display=aid title --with=page_size:20
-	#3s mh article --display=aid title --with=search_by:title
-	#3s mh article --display=aid title --with=edit_by:aid delete_by:aid
-	#3s mh article --display=aid title --with=page_size:10 search_by:title
+	#3s mh article --fields=aid title --with=page_size:20
+	#3s mh article --fields=aid title --with=search_by:title
+	#3s mh article --fields=aid title --with=edit_by:aid delete_by:aid
+	#3s mh article --fields=aid title --with=page_size:10 search_by:title
 	#
-	#3s mh post primary_id:pid String:title text:body --display=pid title --run
-	#3s mh --display=title body --with=display_by:pid --mode=list
+	#3s mh post primary_id:pid String:title text:body --fields=pid title --run
+	#3s mh --fields=title body --with=fields_by:pid --mode=list
 	def module_helper(name, *argv)
 		return say("The name can not be 'admin'", "\e[31m") if name == 'admin'
 		return say("For example, 3s mh post primary_id:pid String:title text:body --run ", "\e[33m") unless argv.count > 0
@@ -121,20 +120,23 @@ class SeimtraThor < Thor
 		module_current 	= options[:module] == nil ? SCFG.get('module_focus') : options[:module]
 
 		#auto add the primary_key and time to migrating record
-		if options.auto?
-		end
 		if argv.count > 0
+			if options.autocomplete?
+				dh = Db_helper.new
+				return say(dh.msg, '\e[31m') if dh.error
+				argv = dh.autocomplete(name, argv)
+			end
 			migrations = argv
 			argv.each do |item|
 				fields << item.split(":").last
 			end
 		end
-		fields = options[:display] if options[:display] != nil
+		fields = options[:fields] if options[:fields] != nil
 
 		#create the skeleton 
 		unless fields.empty?
 			require "seimtra/scaffold"
-			sf = Scaffold.new(name, options[:mode], module_current, fields, argv, options[:with], options[:level])
+			sf = Scaffold.new(name, module_current, fields, argv, options[:with], options[:level])
 
 			#create route
 			sf.route_contents.each do |route_name, route_content|
