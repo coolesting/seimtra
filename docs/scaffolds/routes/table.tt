@@ -1,4 +1,5 @@
 get '/<%= @name %>' do
+	#table view
 	@title = '<%= @name %>'
 	@<%= @name %> = DB[:<%= @name %>].all
 	slim :<%= @name %>_show

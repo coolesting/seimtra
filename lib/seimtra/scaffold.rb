@@ -46,8 +46,8 @@ class Scaffold
 
 			#function name => [parameter, parameter_alias, parameter_alias, ...]
 			dwith = {}
-			dwith['display']= ['display', 'mode']
-			dwith['view']	= ['view_by', 'view', 'show_by', 'show']
+			dwith['mode']	= ['mode']
+			dwith['view']	= ['view_by', 'show_by', 'display_by', 'view', 'mode', 'show', 'display']
 			dwith['pager'] 	= ['page_size', 'pager', 'page', 'ps']
 			dwith['search'] = ['search_by', 'search', 'src']
 			dwith['rm'] 	= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
@@ -55,7 +55,6 @@ class Scaffold
 			dwith['new'] 	= ['new', 'create']
 
 			#enable default option
-			@functions << 'display'
 			@functions << 'view'
 			dwith.each do |key, val|
 				val.each do |item|
@@ -91,12 +90,6 @@ class Scaffold
 			@keyword = @fields[0] if @keyword == ''
 		end
 
-		def preprocess_display
-			display = []
-			display = ['table', 'list']
-			@view = @with.include?('display') and display.include?(@with['display']) ? @with['display'] : 'table'
-		end
-
 		def preprocess_new
 			@t['insert_sql'] = insert_sql = ''
 			@fields.each do |item|
@@ -112,6 +105,13 @@ class Scaffold
 		def preprocess_edit
 			@t['update_sql'] = ''
 			@t['update_by'] = @keyword unless @t.include?('update_by')
+		end
+
+		def preprocess_mode
+			#@t['mode_by'] = ''
+			mode = []
+			mode = ['table', 'list']
+			@view = @with.include?('mode') and mode.include?(@with['mode']) ? @with['mode'] : 'table'
 		end
 
 		def process_view
