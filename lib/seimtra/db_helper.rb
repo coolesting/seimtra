@@ -28,10 +28,10 @@ class Db_healer
 	#@argv array, such as ['String:title', 'text:body']
 	def autocomplete(name, argv)
 		#match a id
-		i = 0
+		i = 1
 		while i
 			id = ''
-			(0..i).each do |j| id += name[j] end
+			i.times do |j| id += name[j] end
 			id += 'id'
 			i = check_column(id.to_sym) ? (i + 1) : 0
 		end
