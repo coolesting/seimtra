@@ -1,8 +1,8 @@
 class SeimtraThor < Thor
 
-	desc "project_info [NAME]", "The information of current project or module"
+	desc "info [MODULE_NAME]", "The information of current project or module"
 	method_option :set, :type => :hash
-	def project_info(module_name = nil)
+	def info(module_name = nil)
 		SCFG.load module_name if module_name != nil
 
 		#set config

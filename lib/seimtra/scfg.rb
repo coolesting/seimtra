@@ -8,33 +8,37 @@ class SCFG
 
 	class << self
 
-		def setpath(name)
-			@path = name == nil ? './Seimfile' : "./modules/#{name}/info"
+		#@name, string, file name
+		#@custom, boolean,  a path you specify
+		def setpath(name, custom = false)
+			if custom == false 
+				@path = name == nil ? 'Seimfile' : "modules/#{name}/info"
+			else
+				@path = name 
+			end
+			@@options[@path] = {}
 		end
 
-		def init(name)
-			setpath(name)
+		def init(name = nil, custom = false)
+			setpath(name, custom)
 			@@options[@path]['created'] = Time.now
 			@@options[@path]['changed'] = Time.now
 			@@options[@path]['version'] = Seimtra::Info::VERSION
 			@@options[@path]['status'] 	= 'development'
-			@@options[@path]['email']	= ''
-			@@options[@path]['author'] 	= ''
+			@@options[@path]['email']	= 'null'
+			@@options[@path]['author'] 	= 'anonymous'
 			@@changed << @path
 		end
 
-		def load(name = nil)
-			setpath(name)
+		def load(name = nil, custom = false)
+			setpath(name, custom)
 			if File.exist?(@path)
 				@@options[@path] = YAML.load_file(@path)
-			else
-				@@msg[@path] = "No such file #{@path}"
-				false
 			end
 		end
 
 		def set(key, val)
-			@@options[@path] << {key => val}
+			@@options[@path][key] = val
 			@@changed << @path
 		end
 
