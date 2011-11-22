@@ -2,29 +2,27 @@ class SeimtraThor < Thor
 
 	desc "module_born [NAME]", "born a basic scafflod for developing module"
 	def module_born(name = nil)
+		return say("Need a name for new module", "\e[31m") if name == nil
+
 		unless File.exist?(Dir.pwd + '/modules')
 			empty_directory Dir.pwd + '/modules'
 		end
-		return say("You need to enter a NAME for new module", "\e[31m") if name == nil
-
-		info = {}
 		empty_directory "modules/#{name}/routes"
 		empty_directory "modules/#{name}/views"
 		empty_directory "modules/#{name}/migrations"
-		create_file "modules/#{name}/info" do
-			info['name'] = name
-			info['created'] = Time.now
-			info['version'] = '0.0.1'
+		create_file "modules/#{name}/info"
 
-			info['email'] 	= SCFG.get('email')  
-			info['author'] 	= SCFG.get('author')  
-
-			info['email'] 	||= ask("What is the email of your ?")
-			info['author']	||= ask("What is your name ?")
-
-			info['website'] = ask("What is the website of the module ?")
-			info['description'] = ask("The description of the module ?")
-			YAML::dump(info)
+		info = {}
+		info['name'] 		= name
+		info['created'] 	= Time.now
+		info['version'] 	= '0.0.1'
+		info['email'] 		= ask("What is the email of your ?")
+		info['author']		= ask("What is your name ?")
+		info['website'] 	= ask("What is the website of the module ?")
+		info['description'] = ask("The description of the module ?")
+		SCFG.load name
+		info.each do |k,v|
+			SCFG.set(k,v)
 		end
 	end
 
@@ -47,50 +45,8 @@ class SeimtraThor < Thor
 	def module_list(path = nil)
 	end
 
-	desc "module_info [NAME]", "the information of current module"
-	method_option :name, :type => :string
-	method_option :set, :type => :hash
-	def module_info
-		name = options[:name] != nil ? options[:name] : SCFG.get('module_focus')
-		path = Dir.pwd + "/modules/#{name}/info"
-		
-		if options[:set] != nil
-			file = YAML.load_file path
-			info = file != false ? file : {}
-			options[:set].each do |key, val|
-				info[key] = val 
-			end
-			SCFG.save path, info, true
-		end
-
-		if File.exist?(path)
-			file = YAML.load_file(path)
-			if file != false
-				file.each do |k, v|
-					say "#{k} : #{v}", "\e[33m"
-				end
-			else
-				say "Nothing in #{path}", "\e[31m"
-			end
-		end
-	end
-
 	desc "module_packup [NAME]", "Packup a module with some files"
 	def module_packup(name = nil)
-	end
-
-	desc "module_focus [NAME]", "Focus on the module for developing"
-	def module_focus(name = nil)
-		if name != nil
-			SCFG.set 'module_focus', name
-			say "The #{name} module is focused", "\e[33m"
-		else
-			if SCFG.get('module_focus')
-				say "Your current module is #{SCFG.get('module_focus')}", "\e[33m"
-			else
-				say "No module be focused on.", "\e[31m"
-			end
-		end
 	end
 
 	method_option :module, :type => :string

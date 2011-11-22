@@ -11,7 +11,7 @@ class SeimtraThor < Thor
 	end
 end
 
-file_exsit = SCFG.init
+file_exsit = SCFG.load
 Dir[ROOTPATH + '/lib/bin/*.rb'].each do |file|
 	require file
 end

@@ -1,48 +1,54 @@
 require 'yaml'
 class SCFG
 
-	@@options = {}
-	@@changed = false
+	attr_accessor :msg
+
+	@@options = @@msg = {}
+	@@changed = []
 
 	class << self
 
-		def install
-			@@options['created'] = Time.now
-			@@options['changed'] = Time.now
-			@@options['version'] = Seimtra::Info::VERSION
-			@@options['status'] ||= 'development'
-			@@options['log'] = false
-			@@options['log_path'] = Dir.pwd + '/log/default'
-			@@options['module_repos'] = File.expand_path('../SeimtraRepos', Dir.pwd)
-			@@changed = true
+		def setpath(name)
+			@path = name == nil ? './Seimfile' : "./modules/#{name}/info"
 		end
 
-		def init
-			if File.exist?('./Seimfile')
-				@@options = YAML.load_file('./Seimfile')
+		def init(name)
+			setpath(name)
+			@@options[@path]['created'] = Time.now
+			@@options[@path]['changed'] = Time.now
+			@@options[@path]['version'] = Seimtra::Info::VERSION
+			@@options[@path]['status'] 	= 'development'
+			@@options[@path]['email']	= ''
+			@@options[@path]['author'] 	= ''
+			@@changed << @path
+		end
+
+		def load(name = nil)
+			setpath(name)
+			if File.exist?(@path)
+				@@options[@path] = YAML.load_file(@path)
 			else
+				@@msg[@path] = "No such file #{@path}"
 				false
 			end
 		end
 
 		def set(key, val)
-			@@options[key] = val
-			@@changed = true
+			@@options[@path] << {key => val}
+			@@changed << @path
 		end
 
 		def get(key = nil)
-			key == nil ? @@options : @@options[key]
+			key == nil ? @@options[@path] : @@options[@path][key]
 		end
 
-		def save(path = nil, content = nil, changed = nil)
-			path 	= './Seimfile' if path == nil
-			content = @@options if content == nil
-			changed = @@changed if changed == nil
-
-			if changed == true and File.exist?(path)
-				content['changed'] = Time.now
-				File.open(path, 'w+') do |f|
-					f.write(YAML::dump(content))
+		def save
+			unless @@changed.empty?
+				@@changed.each do |path|
+					@@options[path]['changed'] = Time.now
+					File.open(path, 'w+') do |f|
+						f.write(YAML::dump(@@options[path]))
+					end
 				end
 			end
 		end

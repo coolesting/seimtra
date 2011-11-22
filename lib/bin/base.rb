@@ -5,21 +5,22 @@ class SeimtraThor < Thor
 	method_options :dev => :boolean
 	def project_create(project_name = 'seimtra_project')
 		directory 'docs/common', project_name
-		SCFG.set 'created', Time.now
-		SCFG.set 'changed', Time.now
+		SCFG.init
+		SCFG.set 'log', 'off'
+		SCFG.set 'log_path', Dir.pwd + '/log/default'
+		SCFG.set 'module_focus', 'index'
+		SCFG.set 'module_repository', File.expand_path('../SeimRepos', Dir.pwd)
 
 		unless options.dev?
 			directory 'docs/production', project_name
 			SCFG.set 'status', 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)
-			SCFG.install
 			run("bundle install")
 			say "Initializing complete.", "\e[32m"
 		else
 			directory 'docs/development', project_name
 			SCFG.set 'status', 'development'
 			Dir.chdir(Dir.pwd + '/' + project_name)
-			SCFG.install
 			say "Executing 'bundle install' for complete installation if this is your first time using the development editor", "\e[32m"
 		end
 	end
