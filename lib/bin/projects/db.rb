@@ -5,8 +5,8 @@ class SeimtraThor < Thor
 	desc "db_schema", "Initialize a database with a schema"
 	def db_schema
 		spath 	= Dir.pwd + options[:path]
-		dh 		= Db_helper.new
-		return say(dh.msg, '\e[31m') if dh.error
+		db 		= Db.new
+		return say(db.msg, '\e[31m') if db.error
 
 		return say("No schema at #{spath}", "\e[31m") unless File.exist?(spath)
 		require spath
@@ -66,8 +66,8 @@ class SeimtraThor < Thor
 
 			#auto add the primary_key and time to migrating record
 			if options.autocomplete?
-				dh = Db_helper.new
-				argv = dh.autocomplete(table, argv) if operate == 'create'
+				db = Db.new
+				argv = db.autocomplete(table, argv) if operate == 'create'
 			end
 	
 			create_file file do
@@ -97,8 +97,8 @@ class SeimtraThor < Thor
 		#setting the running environment
 		if options.run? or options[:dump] != nil
 			mpath 	= Dir.pwd + path
-			dh = Db_helper.new
-			return say(dh.msg, '\e[31m') if dh.error
+			db 		= Db.new
+			return say(db.msg, '\e[31m') if db.error
 
 			return say "No migrattion record file, please check #{mpath}",
 					"\e[31m" unless File.exist?(mpath)

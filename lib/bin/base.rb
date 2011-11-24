@@ -25,7 +25,7 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "version", "The information of Seimtra"
+	desc "version", "The version of Seimtra"
 	def version
 		require 'seimtra/info'
 		Seimtra::Info::constants(false).each do |name|
@@ -33,7 +33,7 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "config", "The global config of custom info"
+	desc "config", "The global config for your info"
 	method_option :set, :type => :hash
 	def config
 		path = '../3sgcfg'

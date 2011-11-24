@@ -1,4 +1,4 @@
-class Db_healer
+class Db
 
 	attr_accessor :msg, :error
 

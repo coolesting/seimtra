@@ -2,7 +2,10 @@ class SeimtraThor < Thor
 
 	desc "module_born [NAME]", "born a basic scafflod for developing module"
 	def module_born(name = nil)
-		return say("Need a name for new module", "\e[31m") if name == nil
+
+		unless Stools.check_module(name)
+			return say(Stools.error, "\e[31m")
+		end
 
 		unless File.exist?(Dir.pwd + '/modules')
 			empty_directory Dir.pwd + '/modules'
@@ -69,7 +72,9 @@ class SeimtraThor < Thor
 	#3s mh post primary_id:pid String:title text:body --fields=pid title --run
 	#3s mh --fields=title body --with=fields_by:pid --mode=list
 	def module_helper(name, *argv)
-		return say("The name can not be 'admin'", "\e[31m") if name == 'admin'
+		unless Stools.check_module(name)
+			return say(Stools.error, "\e[31m")
+		end
 		return say("For example, 3s mh post primary_id:pid String:title text:body --run ", "\e[33m") unless argv.count > 0
 
 		migrations 		= fields = []
@@ -78,9 +83,9 @@ class SeimtraThor < Thor
 		#auto add the primary_key and time to migrating record
 		if argv.count > 0
 			if options.autocomplete?
-				dh = Db_helper.new
-				return say(dh.msg, '\e[31m') if dh.error
-				argv = dh.autocomplete(name, argv)
+				db = Db.new
+				return say(db.msg, '\e[31m') if db.error
+				argv = db.autocomplete(name, argv)
 			end
 			migrations = argv
 			argv.each do |item|

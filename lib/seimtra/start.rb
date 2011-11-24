@@ -3,7 +3,8 @@ ROOTPATH = File.expand_path('../../../', __FILE__)
 require 'thor'
 require 'seimtra/info'
 require 'seimtra/scfg'
-require 'seimtra/db_helper'
+require 'seimtra/db'
+require 'seimtra/stools'
 
 class SeimtraThor < Thor
 	def self.source_root
@@ -15,8 +16,9 @@ file_exsit = SCFG.load
 Dir[ROOTPATH + '/lib/bin/*.rb'].each do |file|
 	require file
 end
-if file_exsit != false
-	Dir[ROOTPATH + '/lib/bin/helpers/*.rb'].each do |file|
+
+if file_exsit
+	Dir[ROOTPATH + '/lib/bin/projects/*.rb'].each do |file|
 		require file
 	end
 end
