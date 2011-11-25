@@ -7,8 +7,8 @@ class Stools
 			case name
 			when nil
 				@msg = ' The name could be not null'
-			when 'core'
-				@msg = ' The name could be call "core"'
+			when 'admin'
+				@msg = ' The name could be call "admin"'
 			end
 			@msg != '' ? false : true
 		end

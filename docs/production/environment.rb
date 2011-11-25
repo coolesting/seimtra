@@ -1,6 +1,5 @@
 HOMEPAGE 	= '/index'
 DB_ENGINE 	= 0
-SITEPATH 	= Dir.pwd
 
 require 'sinatra'
 require 'sequel'
