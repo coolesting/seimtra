@@ -1,3 +1,3 @@
 before do
-	redirect '/' if Disable_routes.include?(request.path_info)
+	redirect '/' if settings.disable_routes.include?(request.path_info)
 end

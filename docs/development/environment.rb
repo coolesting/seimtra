@@ -1,9 +1,9 @@
-HOMEPAGE 	= '/index'
-DB_ENGINE 	= 0
-
 require 'sinatra'
 require 'sequel'
 require 'slim'
+HOMEPAGE 	= '/index'
+DB_ENGINE 	= 0
+
 
 DB_ENGINE = 0
 ENV['DATABASE_URL'] = case DB_ENGINE 
