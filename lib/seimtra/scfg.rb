@@ -14,7 +14,8 @@ class SCFG
 			if custom == false 
 				@path = name == nil ? 'Seimfile' : "modules/#{name}/info"
 			else
-				@path = name 
+				@path = name
+				@path = File.expand_path(name) unless File.exist?(name)
 			end
 			@@options[@path] = {}
 		end
@@ -33,7 +34,9 @@ class SCFG
 		def load(name = nil, custom = false)
 			setpath(name, custom)
 			if File.exist?(@path)
-				@@options[@path] = YAML.load_file(@path)
+				if content = YAML.load_file(@path)
+					@@options[@path] = content
+				end
 			end
 		end
 

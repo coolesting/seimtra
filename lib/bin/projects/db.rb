@@ -47,10 +47,11 @@ class SeimtraThor < Thor
 	def db_migration(operate_table, *argv)
 
 		#initialize data
-		module_current = options[:module] == nil ? SCFG.get("module_focus") : options[:module]
-		path = "/modules/#{module_current}/migrations"
-		unless File.directory?(Dir.pwd + path)
-			empty_directory Dir.pwd + path
+		module_current	= options[:module] == nil ? SCFG.get("module_focus") : options[:module]
+		path 			= "/modules/#{module_current}/migrations"
+		mpath 			= Dir.pwd + path
+		unless File.directory?(mpath)
+			empty_directory mpath
 		end
 
 		operate = table = nil
@@ -62,7 +63,7 @@ class SeimtraThor < Thor
 
 		#create file for migrating record
 		if operate != nil and argv.count > 0
-			file = Dir.pwd + path + "/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
+			file = mpath + "/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
 
 			#auto add the primary_key and time to migrating record
 			if options.autocomplete?
@@ -96,8 +97,7 @@ class SeimtraThor < Thor
 
 		#setting the running environment
 		if options.run? or options[:dump] != nil
-			mpath 	= Dir.pwd + path
-			db 		= Db.new
+			db = Db.new
 			return say(db.msg, '\e[31m') if db.error
 
 			return say "No migrattion record file, please check #{mpath}",

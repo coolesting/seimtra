@@ -33,17 +33,24 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "config", "The global config for your info"
+	desc "config", "Setting your global configuration"
 	method_option :set, :type => :hash
 	def config
-		path = '../3sgcfg'
+		path = Dir.pwd
+		#windows
+		if /\w:\\?/.match(path)
+			path = 'c:\.Seimtra'
+			file = 'echo '' > C:\.Semitra'
+		#others
+		else
+			path = '~/.Seimtra'
+			file = 'touch ~/.Seimtra'
+		end
+		run (file) unless File.exists?(File.expand_path(path))
 		SCFG.load path, true
 
 		#set config
 		if options[:set] != nil 
-			unless File.exist?(path)
-				File.open(path, 'w') {}
-			end
 			options[:set].each do |key,val|
 				SCFG.set key, val 
 			end
