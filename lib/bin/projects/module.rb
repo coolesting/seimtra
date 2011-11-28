@@ -10,19 +10,22 @@ class SeimtraThor < Thor
 		unless File.exist?(Dir.pwd + '/modules')
 			empty_directory Dir.pwd + '/modules'
 		end
-		empty_directory "modules/#{name}/routes"
-		empty_directory "modules/#{name}/views"
+		empty_directory "modules/#{name}/application"
+		empty_directory "modules/#{name}/templates"
 		empty_directory "modules/#{name}/migrations"
-		create_file "modules/#{name}/info"
+		empty_directory "modules/#{name}/others"
+		create_file "modules/#{name}/others/info"
 
+		SCFG.load path, true
 		info = {}
 		info['name'] 		= name
 		info['created'] 	= Time.now
 		info['version'] 	= '0.0.1'
-		info['email'] 		= ask("What is the email of your ?")
-		info['author']		= ask("What is your name ?")
-		info['website'] 	= ask("What is the website of the module ?")
+		info['email'] 		= SCFG.get('email') ? SCFG.get('email') : ask("What is the email of your ?")
+		info['author']		= SCFG.get('author') ? SCFG.get('author') : ask("What is your name ?")
+		info['website'] 	= SCFG.get('website') ? SCFG.get('website') : ask("What is the website of the module ?")
 		info['description'] = ask("The description of the module ?")
+
 		SCFG.load name
 		info.each do |k,v|
 			SCFG.set(k,v)

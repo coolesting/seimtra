@@ -12,7 +12,7 @@ class SCFG
 		#@custom, boolean,  a path you specify
 		def setpath(name, custom = false)
 			if custom == false 
-				@path = name == nil ? 'Seimfile' : "modules/#{name}/info"
+				@path = name == nil ? 'Seimfile' : "modules/#{name}/others/info"
 			else
 				@path = name
 				@path = File.expand_path(name) unless File.exist?(name)
