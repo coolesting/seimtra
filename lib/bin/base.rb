@@ -8,7 +8,7 @@ class SeimtraThor < Thor
 		SCFG.init
 		SCFG.set 'log', 'off'
 		SCFG.set 'log_path', Dir.pwd + '/log/default'
-		SCFG.set 'module_focus', 'index'
+		SCFG.set 'module_focus', 'custom'
 		SCFG.set 'module_repository', File.expand_path('../SeimRepos', Dir.pwd)
 
 		if options[:mode] == 'production'

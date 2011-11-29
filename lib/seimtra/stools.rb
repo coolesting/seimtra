@@ -8,7 +8,9 @@ class Stools
 			when nil
 				@msg = ' The name could be not null'
 			when 'admin'
-				@msg = ' The name could be call "admin"'
+				@msg = " The name could be call '#{name}'"
+			when 'custom'
+				@msg = " The name could be call '#{name}'"
 			end
 			@msg != '' ? false : true
 		end

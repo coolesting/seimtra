@@ -1,6 +1,7 @@
 class SeimtraThor < Thor
 
 	desc "born [NAME]", "Born a module"
+	method_option :focus, :type => :boolean, :aliases => '-f'
 	def born(name = nil)
 
 		unless Stools.check_module(name)
@@ -30,13 +31,19 @@ class SeimtraThor < Thor
 		info['version'] 	= '0.0.1'
 		info['email'] 		= SCFG.get('email') ? SCFG.get('email') : ask("What is the email of your ?")
 		info['author']		= SCFG.get('author') ? SCFG.get('author') : ask("What is your name ?")
-		info['website'] 	= SCFG.get('website') ? SCFG.get('website') : ask("What is the website of the module ?")
+		info['website'] 	= SCFG.get('website') ? SCFG.get('website') : ask("The website of the module ?")
 		info['description'] = ask("The description of the module ?")
 
 		SCFG.load name
 		info.each do |k,v|
 			SCFG.set(k,v)
 		end
+
+		if options.focus?
+			SCFG.load
+			SCFG.set('module_focus', name)
+		end
+
 	end
 
 	desc "addone [NAME] [OPTION]", "Add one of modules to your application"

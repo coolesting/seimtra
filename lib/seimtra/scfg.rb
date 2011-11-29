@@ -17,7 +17,7 @@ class SCFG
 				@path = name
 				@path = File.expand_path(name) unless File.exist?(name)
 			end
-			@@options[@path] = {}
+			@@options[@path] = {} unless @@options.include? @path
 		end
 
 		def init(name = nil, custom = false)
