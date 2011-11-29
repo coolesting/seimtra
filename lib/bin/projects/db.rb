@@ -2,8 +2,8 @@ class SeimtraThor < Thor
 
 	method_option :path, :type => :string, :default => "/db/schema.rb", :aliases => '-p'
 	method_option :output, :type => :boolean, :aliases => '-o', :banner => 'Output the db schema'
-	desc "db_schema", "Initialize a database with a schema"
-	def db_schema
+	desc "schema", "Initialize a database with a schema"
+	def schema
 		spath 	= Dir.pwd + options[:path]
 		db 		= Db.new
 		return say(db.msg, '\e[31m') if db.error
@@ -43,8 +43,8 @@ class SeimtraThor < Thor
 	method_option :dump, :type => :string
 	method_option :module, :type => :string
 	method_option :version, :type => :numeric, :aliases => '-v' 
-	desc "db_migration [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations record for the database"
-	def db_migration(operate_table, *argv)
+	desc "migration [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations record for the database"
+	def migration(operate_table, *argv)
 
 		#initialize data
 		module_current	= options[:module] == nil ? SCFG.get("module_focus") : options[:module]

@@ -36,16 +36,7 @@ class SeimtraThor < Thor
 	desc "config", "Setting your global configuration"
 	method_option :set, :type => :hash
 	def config
-		path = Dir.pwd
-		#windows
-		if /\w:\\?/.match(path)
-			path = 'c:\.Seimtra'
-			file = 'echo '' > C:\.Semitra'
-		#others
-		else
-			path = '~/.Seimtra'
-			file = 'touch ~/.Seimtra'
-		end
+		path, file = Stools.check_path
 		run (file) unless File.exists?(File.expand_path(path))
 		SCFG.load path, true
 

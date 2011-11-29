@@ -1,7 +1,7 @@
 class SeimtraThor < Thor
 
-	desc "module_born [NAME]", "born a basic scafflod for developing module"
-	def module_born(name = nil)
+	desc "born [NAME]", "Born a module"
+	def born(name = nil)
 
 		unless Stools.check_module(name)
 			return say(Stools.error, "\e[31m")
@@ -11,11 +11,18 @@ class SeimtraThor < Thor
 			empty_directory Dir.pwd + '/modules'
 		end
 		empty_directory "modules/#{name}/application"
+		create_file "modules/#{name}/application/assets.rb"
+		create_file "modules/#{name}/application/configures.rb"
+		create_file "modules/#{name}/application/filter.rb"
+		create_file "modules/#{name}/application/helpers.rb"
+		create_file "modules/#{name}/application/routes.rb"
+
 		empty_directory "modules/#{name}/templates"
 		empty_directory "modules/#{name}/migrations"
 		empty_directory "modules/#{name}/others"
 		create_file "modules/#{name}/others/info"
 
+		path = Stools.check_path.first
 		SCFG.load path, true
 		info = {}
 		info['name'] 		= name
@@ -32,27 +39,27 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "module_addone [NAME] [OPTION]", "Add one of modules to your application"
-	def module_addone(*argv) 
+	desc "addone [NAME] [OPTION]", "Add one of modules to your application"
+	def addone(*argv) 
 		module_name = argv.shift
 		argv
 		#template('docs/modules/table/routes.tt', "routes/#{name}.rb")
 	end
 
-	desc "module_update", "Update your source list of module from remote to local repository "
-	def module_update
+	desc "update", "Update your source list of module from remote to local repository "
+	def update
 	end
 
-	desc "module_remove [NAME]", "Remove the module in your appliction with a module name"
-	def module_remove(name = nil)
+	desc "remove [NAME]", "Remove the module in your appliction with a module name"
+	def remove(name = nil)
 	end
 
-	desc "module_list", "A list of local module"
-	def module_list(path = nil)
+	desc "list", "A list of local module"
+	def list(path = nil)
 	end
 
-	desc "module_packup [NAME]", "Packup a module with some files"
-	def module_packup(name = nil)
+	desc "packup [NAME]", "Packup a module with some files"
+	def packup(name = nil)
 	end
 
 	method_option :module, :type => :string
@@ -61,7 +68,7 @@ class SeimtraThor < Thor
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :level, :type => :hash, :aliases => '-lv' 
-	desc "module_helper [NAME] [OPTIONS]", "The helper to create the module"
+	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	#For example, 
 	#3s mh user primary_id:uid String:name String:pawd
 	#
@@ -74,7 +81,7 @@ class SeimtraThor < Thor
 	#
 	#3s mh post primary_id:pid String:title text:body --fields=pid title --run
 	#3s mh --fields=title body --with=fields_by:pid --mode=list
-	def module_helper(name, *argv)
+	def generate(name, *argv)
 		unless Stools.check_module(name)
 			return say(Stools.error, "\e[31m")
 		end
@@ -116,14 +123,14 @@ class SeimtraThor < Thor
 		#create/implement the migrations
 		unless migrations.empty?
 			run = {}; run[:run] = options.run? ? true : false
-			invoke "db_migration", "create:#{name}", migrations, run, :module => module_current
+			invoke "migration", "create:#{name}", migrations, run, :module => module_current
 		end
 	end
 
-	desc 'module_test', 'test'
+	desc 'test', 'test'
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
-	def module_test(a = nil, *args)
+	def test(a = nil, *args)
 		puts args if a!=nil 
 	end
 
