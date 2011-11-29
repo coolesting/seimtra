@@ -21,7 +21,7 @@ class SeimtraThor < Thor
 		empty_directory "modules/#{name}/templates"
 		empty_directory "modules/#{name}/migrations"
 		empty_directory "modules/#{name}/others"
-		create_file "modules/#{name}/others/info"
+		create_file "modules/#{name}/others/info.yml"
 
 		path = Stools.check_path.first
 		SCFG.load path, true
