@@ -59,7 +59,7 @@ class SeimtraThor < Thor
 	def packup(name = nil)
 	end
 
-	method_option :module, :type => :string
+	method_option :module, :type => :boolean, :aliases => '-m'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :fields, :type => :array, :aliases => '-f'
 	method_option :run, :type => :boolean, :aliases => '-r' 
@@ -67,17 +67,20 @@ class SeimtraThor < Thor
 	method_option :level, :type => :hash, :aliases => '-lv' 
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	#For example, 
-	#3s mh user primary_id:uid String:name String:pawd
+	#3s g user primary_id:uid String:name String:pawd
+	#3s g article primary_id:aid String:title text:body --run
 	#
-	#3s mh article primary_id:aid String:title text:body --run
-	#3s mh article String:title text:body --with=all:enable --run
-	#3s mh article --fields=aid title --with=page_size:20
-	#3s mh article --fields=aid title --with=search_by:title
-	#3s mh article --fields=aid title --with=edit_by:aid delete_by:aid
-	#3s mh article --fields=aid title --with=page_size:10 search_by:title
+	#3s g article -f=aid title --with=page_size:20
+	#3s g article -f=aid title --with=search_by:title
+	#3s g article -f=aid title --with=edit_by:aid delete_by:aid
+	#3s g article -f=aid title --with=page_size:10 search_by:title
+	#3s g article String:title text:body --with=all:enable --run
 	#
-	#3s mh post primary_id:pid String:title text:body --fields=pid title --run
-	#3s mh --fields=title body --with=fields_by:pid --mode=list
+	#3s g post primary_id:pid String:title text:body -f=pid title --run
+	#3s g -f=title body --with=view_by:pid --with=mode:list
+	#
+	#create a message box
+	#
 	def generate(name, *argv)
 		unless Stools.check_module(name)
 			return say(Stools.error, "\e[31m")
@@ -85,7 +88,15 @@ class SeimtraThor < Thor
 		return say("For example, 3s mh post primary_id:pid String:title text:body --run ", "\e[33m") unless argv.count > 0
 
 		migrations 		= fields = []
-		module_current 	= options[:module] == nil ? SCFG.get('module_focus') : options[:module]
+		module_current 	= ''
+
+		#create a new module
+		if options.module? 
+			module_current = name
+			invoke 'new', SCFG.get('status')
+		else
+			module_current = SCFG.get('module_focus')
+		end
 
 		#auto add the primary_key and time to migrating record
 		if argv.count > 0
