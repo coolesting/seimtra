@@ -2,16 +2,15 @@ class SeimtraThor < Thor
 	include Thor::Actions
 	
 	desc "new [NAME]", "Create a project with the name given"
-	method_option :mode, :type => :string, :default => 'production', :aliases => '-m'
-	def new(project_name = 'seimtra_project')
+	def new(project_name = 'seimtra_project', mode = 'production')
 		directory 'docs/common', project_name
 		SCFG.init
-		SCFG.set 'log', 'off'
+		SCFG.set 'log', false
 		SCFG.set 'log_path', Dir.pwd + '/log/default'
 		SCFG.set 'module_focus', 'custom'
-		SCFG.set 'module_repository', File.expand_path('../SeimRepos', Dir.pwd)
+		SCFG.set 'module_repository', File.expand_path('~/SeimRepos')
 
-		if options[:mode] == 'production'
+		if mode == 'production'
 			directory 'docs/production', project_name
 			SCFG.set 'status', 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)

@@ -11,17 +11,7 @@ class SeimtraThor < Thor
 		unless File.exist?(Dir.pwd + '/modules')
 			empty_directory Dir.pwd + '/modules'
 		end
-		empty_directory "modules/#{name}/application"
-		create_file "modules/#{name}/application/assets.rb"
-		create_file "modules/#{name}/application/configures.rb"
-		create_file "modules/#{name}/application/filter.rb"
-		create_file "modules/#{name}/application/helpers.rb"
-		create_file "modules/#{name}/application/routes.rb"
-
-		empty_directory "modules/#{name}/templates"
-		empty_directory "modules/#{name}/migrations"
-		empty_directory "modules/#{name}/others"
-		create_file "modules/#{name}/others/info.yml"
+		directory "docs/modules", "modules/#{name}"
 
 		path = Stools.check_path.first
 		SCFG.load path, true
