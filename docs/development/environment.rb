@@ -2,22 +2,21 @@ require 'sinatra'
 require 'sequel'
 require 'slim'
 
-HOMEPAGE 	= '/index'
-DB_ENGINE 	= 0
+set :environment, 'development'
+configure :development do
 
-ENV['DATABASE_URL'] = case DB_ENGINE 
+	set :home_page, '/index.html'
+
 	#yum install sqlite3*
 	#gem install sqlite3
-	when 0
-	'sqlite://db/data.db'
+	set :db_connect_sqlite, 'sqlite://db/data.db'
 
 	#yum install postgres*
 	#gem install pg
 	#initdb -D db/pg
 	#postgres -D db/pg
 	#createdb db/pg
-	when 1
-	'postgres://localhost/db/pg'	
+	set :db_connect_pg, 'postgres://localhost/db/pg'	
 
 	#yum install mysql*
 	#gem install mysql
@@ -35,21 +34,16 @@ ENV['DATABASE_URL'] = case DB_ENGINE
 	#mysql -u root -p
 	#use mysql;
 	#update user set password=PASSWORD("new-password") where User="myuser"
-	when 2
-	'mysql://localhost/mydb?user=myuser&password=123456'	
+	set :db_connect_mysql, 'mysql://localhost/mydb?user=myuser&password=123456'	
 
-	#a memory database
-	else
-	'sqlite:/'
-end
+	set :db_connect_memory, 'sqlite:/'
 
-configure do
-	DB = Sequel.connect(ENV['DATABASE_URL'])
+	#DB = Sequel.connect(settings.db_connect_sqlite)
 
 	#setting for rackup
 	disable :logging
 end
 
 get '/' do
-	status, headers, body = call! env.merge("PATH_INFO" => HOMEPAGE)
+	status, headers, body = call! env.merge("PATH_INFO" => settings.home_page)
 end

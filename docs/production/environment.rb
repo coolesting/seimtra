@@ -2,18 +2,20 @@ require 'sinatra'
 require 'sequel'
 require 'slim'
 
-HOMEPAGE 	= '/index'
-DB_ENGINE 	= 0
+set :environment, 'production'
+configure :production do
 
-ENV['DATABASE_URL'] = 'postgres://localhost/db/pg'
+	set :home_page, '/index.html'
+	set :db_connect_sqlite, 'sqlite://db/data.db'
+	set :db_connect_pg, 'postgres://localhost/db/pg'	
+	set :db_connect_mysql, 'mysql://localhost/mydb?user=myuser&password=123456'	
+	set :db_connect_memory, 'sqlite:/'
 
-configure do
-	DB = Sequel.connect(ENV['DATABASE_URL'])
-
+	#DB = Sequel.connect(settings.db_connect_sqlite)
 	#setting for rackup
 	disable :logging
 end
 
 get '/' do
-	status, headers, body = call! env.merge("PATH_INFO" => HOMEPAGE)
+	status, headers, body = call! env.merge("PATH_INFO" => settings.home_page)
 end
