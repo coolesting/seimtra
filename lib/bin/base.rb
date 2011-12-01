@@ -35,7 +35,7 @@ class SeimtraThor < Thor
 	desc "config", "Setting your global configuration"
 	method_option :set, :type => :hash
 	def config
-		path, file = Stools.check_path
+		path, file = Utils.check_path
 		run (file) unless File.exists?(File.expand_path(path))
 		SCFG.load path, true
 

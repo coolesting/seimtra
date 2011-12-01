@@ -1,11 +1,11 @@
 class SeimtraThor < Thor
 
-	desc "born [NAME]", "Born a module"
+	desc "born [NAME]", "Generate a standard module"
 	method_option :focus, :type => :boolean, :aliases => '-f'
 	def born(name = nil)
 
-		unless Stools.check_module(name)
-			return say(Stools.error, "\e[31m")
+		unless Utils.check_module(name)
+			return say(Utils.error, "\e[31m")
 		end
 
 		unless File.exist?(Dir.pwd + '/modules')
@@ -13,7 +13,7 @@ class SeimtraThor < Thor
 		end
 		directory "docs/modules", "modules/#{name}"
 
-		path = Stools.check_path.first
+		path = Utils.check_path.first
 		SCFG.load path, true
 		info = {}
 		info['name'] 		= name
@@ -82,8 +82,8 @@ class SeimtraThor < Thor
 	#create a message box
 	#
 	def generate(name, *argv)
-		unless Stools.check_module(name)
-			return say(Stools.error, "\e[31m")
+		unless Utils.check_module(name)
+			return say(Utils.error, "\e[31m")
 		end
 		return say("For example, 3s mh post primary_id:pid String:title text:body --run ", "\e[33m") unless argv.count > 0
 

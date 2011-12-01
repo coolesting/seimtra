@@ -4,7 +4,7 @@ require 'thor'
 require 'seimtra/info'
 require 'seimtra/scfg'
 require 'seimtra/db'
-require 'seimtra/stools'
+require 'seimtra/utils'
 
 class SeimtraThor < Thor
 	def self.source_root

@@ -1,4 +1,4 @@
-class Stools
+class Utils
 	
 	class << self
 		
