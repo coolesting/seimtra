@@ -1,27 +1,61 @@
 class SeimtraThor < Thor
 
-	desc "addone [NAME] [OPTION]", "Add one of modules to your application"
-	def addone(*argv) 
-		module_name = argv.shift
-		argv
-		#template('docs/modules/table/routes.tt', "routes/#{name}.rb")
-	end
-
-	desc "update", "Update your source list of module from remote to local repository "
-	def update
-	end
-
-	desc "remove [NAME]", "Remove the module in your appliction with a module name"
-	def remove(name = nil)
-	end
-
-	desc "list", "A list of local module"
-	def list(path = nil)
-	end
-
-	desc "packup [NAME]", "Packup a module with some files"
-	def packup(name = nil)
-	end
+	##
+	# = generating module
+	#
+	#
+	# == arguments
+	#
+	# name, 		string, required
+	# mrgration, 	string, choose, like user primary_key:uid, String:name
+	# 				more details see the migration method 
+	#
+	#
+	# == options
+	#
+	# --module, -m	by default, this options is null, so the generator will
+	# 				create the new module, if the option be set, the generating
+	# 				files will be puts into that module you specifying by option
+	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
+	# 				automatically
+	# --field, -f	display the specifying fields.
+	# --run, -r		run the migrating record of specifying module
+	# --with, -w	by default, the generator will display a table, you could add
+	# 				extre function with this options, 
+	# --level, -lv	assign the privilege levles to the extra function for user
+	# 
+	#
+	# == Example 
+	#
+	# generate a standard module called books
+	#
+	# 	3s g books
+	#
+	# generate a module with creating some fields
+	#
+	#	3s g user primary_id:uid String:name String:pawd
+	#
+	# the function likes above, and runs the migration record
+	#
+	#	3s g article primary_id:aid String:title text:body --run
+	#
+	# generate a module with existing field
+	#
+	#	3s g article -f=aid title
+	#
+	# generate a module with pager, search, edit, delete and so on
+	#
+	#	3s g article -f=aid title --with=search_by:title
+	#	3s g article -f=aid title --with=edit_by:aid delete_by:aid
+	#	3s g article -f=aid title --with=page_size:10 search_by:title
+	#	3s g article String:title text:body --with=all:enable --run
+	#
+	# display the specifying field in view, by default, if you have not used
+	# the -f option, it will displays origin filed you type in prompt line
+	#
+	#	3s g post primary_id:pid String:title text:body -f=pid title --run
+	#	3s g -f=title body --with=view_by:pid --with=mode:list
+	#
 
 	method_option :module, :type => :string, :aliases => '-m'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
@@ -30,26 +64,6 @@ class SeimtraThor < Thor
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :level, :type => :hash, :aliases => '-lv' 
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
-	##
-	# == Example, 
-	#
-	#	generates a standard module
-	# 	3s g books
-	#
-	#	3s g user primary_id:uid String:name String:pawd
-	#	3s g article primary_id:aid String:title text:body --run
-	#
-	#3s g article -f=aid title --with=page_size:20
-	#3s g article -f=aid title --with=search_by:title
-	#3s g article -f=aid title --with=edit_by:aid delete_by:aid
-	#3s g article -f=aid title --with=page_size:10 search_by:title
-	#3s g article String:title text:body --with=all:enable --run
-	#
-	#3s g post primary_id:pid String:title text:body -f=pid title --run
-	#3s g -f=title body --with=view_by:pid --with=mode:list
-	#
-	#create a message box
-	#
 	def generate(name, *argv)
 		return say(Utils.error, "\e[31m") unless Utils.check_module(name)
 
@@ -122,6 +136,29 @@ class SeimtraThor < Thor
 			run = {}; run[:run] = options.run? ? true : false
 			invoke "migration", "create:#{name}", migrations, run, :module => module_current
 		end
+	end
+
+	desc "addone [NAME] [OPTION]", "Add one of modules to your application"
+	def addone(*argv) 
+		module_name = argv.shift
+		argv
+		#template('docs/modules/table/routes.tt', "routes/#{name}.rb")
+	end
+
+	desc "update", "Update your source list of module from remote to local repository "
+	def update
+	end
+
+	desc "remove [NAME]", "Remove the module in your appliction with a module name"
+	def remove(name = nil)
+	end
+
+	desc "list", "A list of local module"
+	def list(path = nil)
+	end
+
+	desc "packup [NAME]", "Packup a module with some files"
+	def packup(name = nil)
 	end
 
 	desc 'test', 'test'
