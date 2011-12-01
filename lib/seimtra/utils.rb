@@ -4,14 +4,12 @@ class Utils
 		
 		def check_module(name = nil)
 			@msg = ''
-			case name
-			when nil
-				@msg = ' The name could be not null'
-			when 'admin'
-				@msg = " The name could be call '#{name}'"
-			when 'custom'
-				@msg = " The name could be call '#{name}'"
+			names = ['admin', 'base', nil]
+
+			if names.include?(name)
+				@msg = " The name could be call '#{name.to_s}'"
 			end
+
 			@msg != '' ? false : true
 		end
 

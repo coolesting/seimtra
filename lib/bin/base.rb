@@ -5,10 +5,10 @@ class SeimtraThor < Thor
 	def new(project_name = 'seimtra_project', mode = 'production')
 		directory 'docs/common', project_name
 		SCFG.init
-		SCFG.set 'log', false
-		SCFG.set 'log_path', Dir.pwd + '/log/default'
-		SCFG.set 'module_focus', 'custom'
-		SCFG.set 'module_repository', File.expand_path('~/SeimRepos')
+		SCFG.set 'log', SCFG.cfg('log')
+		SCFG.set 'log_path', SCFG.cfg('log_path')
+		SCFG.set 'module_focus', SCFG.cfg('module_focus')
+		SCFG.set 'module_repository', SCFG.cfg('module_repos')
 
 		if mode == 'production'
 			directory 'docs/production', project_name

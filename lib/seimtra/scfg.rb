@@ -1,9 +1,7 @@
 require 'yaml'
 class SCFG
 
-	attr_accessor :msg
-
-	@@options = @@msg = {}
+	@@options = @@cfg = {}
 	@@changed = []
 
 	class << self
@@ -25,9 +23,9 @@ class SCFG
 			@@options[@path]['created'] = Time.now
 			@@options[@path]['changed'] = Time.now
 			@@options[@path]['version'] = Seimtra::Info::VERSION
-			@@options[@path]['status'] 	= 'development'
-			@@options[@path]['email']	= 'null'
-			@@options[@path]['author'] 	= 'anonymous'
+			@@options[@path]['status'] 	= cfg('status')
+			@@options[@path]['email']	= cfg('email')
+			@@options[@path]['author'] 	= cfg('author') 
 			@@changed << @path
 		end
 
@@ -58,6 +56,17 @@ class SCFG
 					end
 				end
 			end
+		end
+
+		def cfg(key)
+			@@cfg['status'] 	= 'development'
+			@@cfg['email']		= 'null'
+			@@cfg['author'] 	= 'administrator'
+			@@cfg['log'] 		= false
+			@@cfg['log_path'] 	= Dir.pwd + '/log/default'
+			@@cfg['module_focus'] = 'admin'
+			@@cfg['module_repos'] = File.expand_path('~/SeimRepos')
+			@@cfg.include?(key) ? @@cfg[key] : ''
 		end
 
 	end

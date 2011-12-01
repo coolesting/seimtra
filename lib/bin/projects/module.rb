@@ -1,41 +1,5 @@
 class SeimtraThor < Thor
 
-	desc "born [NAME]", "Generate a standard module"
-	method_option :focus, :type => :boolean, :aliases => '-f'
-	def born(name = nil)
-
-		unless Utils.check_module(name)
-			return say(Utils.error, "\e[31m")
-		end
-
-		unless File.exist?(Dir.pwd + '/modules')
-			empty_directory Dir.pwd + '/modules'
-		end
-		directory "docs/modules", "modules/#{name}"
-
-		path = Utils.check_path.first
-		SCFG.load path, true
-		info = {}
-		info['name'] 		= name
-		info['created'] 	= Time.now
-		info['version'] 	= '0.0.1'
-		info['email'] 		= SCFG.get('email') ? SCFG.get('email') : ask("What is the email of your ?")
-		info['author']		= SCFG.get('author') ? SCFG.get('author') : ask("What is your name ?")
-		info['website'] 	= SCFG.get('website') ? SCFG.get('website') : ask("The website of the module ?")
-		info['description'] = ask("The description of the module ?")
-
-		SCFG.load name
-		info.each do |k,v|
-			SCFG.set(k,v)
-		end
-
-		if options.focus?
-			SCFG.load
-			SCFG.set('module_focus', name)
-		end
-
-	end
-
 	desc "addone [NAME] [OPTION]", "Add one of modules to your application"
 	def addone(*argv) 
 		module_name = argv.shift
@@ -59,16 +23,21 @@ class SeimtraThor < Thor
 	def packup(name = nil)
 	end
 
-	method_option :module, :type => :boolean, :aliases => '-m'
+	method_option :module, :type => :string, :aliases => '-m'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :fields, :type => :array, :aliases => '-f'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :level, :type => :hash, :aliases => '-lv' 
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
-	#For example, 
-	#3s g user primary_id:uid String:name String:pawd
-	#3s g article primary_id:aid String:title text:body --run
+	##
+	# == Example, 
+	#
+	#	generates a standard module
+	# 	3s g books
+	#
+	#	3s g user primary_id:uid String:name String:pawd
+	#	3s g article primary_id:aid String:title text:body --run
 	#
 	#3s g article -f=aid title --with=page_size:20
 	#3s g article -f=aid title --with=search_by:title
@@ -82,20 +51,40 @@ class SeimtraThor < Thor
 	#create a message box
 	#
 	def generate(name, *argv)
-		unless Utils.check_module(name)
-			return say(Utils.error, "\e[31m")
-		end
-		return say("For example, 3s mh post primary_id:pid String:title text:body --run ", "\e[33m") unless argv.count > 0
+		return say(Utils.error, "\e[31m") unless Utils.check_module(name)
 
 		migrations 		= fields = []
-		module_current 	= ''
+		module_current 	= name
 
-		#create a new module
-		if options.module? 
-			module_current = name
-			invoke 'new', SCFG.get('status')
+		unless File.exist?(Dir.pwd + '/modules')
+			empty_directory Dir.pwd + '/modules'
+		end
+
+		if options[:module] != nil
+			module_current 	= options[:module] 
 		else
-			module_current = SCFG.get('module_focus')
+			#generate new module
+			directory "docs/modules", "modules/#{name}"
+
+			path = Utils.check_path.first
+			SCFG.load path, true
+			info = {}
+			info['name'] 		= name
+			info['created'] 	= Time.now
+			info['version'] 	= '0.0.1'
+			info['email'] 		= SCFG.get('email') ? SCFG.get('email') : ask("What is the email of your ?")
+			info['author']		= SCFG.get('author') ? SCFG.get('author') : ask("What is your name ?")
+			info['website'] 	= SCFG.get('website') ? SCFG.get('website') : ask("The website of the module ?")
+			info['description'] = ask("The description of the module ?")
+
+			#set module config
+			SCFG.load name
+			info.each do |k,v|
+				SCFG.set(k,v)
+			end
+
+			SCFG.load
+			SCFG.set('module_focus', name)
 		end
 
 		#auto add the primary_key and time to migrating record
