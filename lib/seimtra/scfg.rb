@@ -1,9 +1,19 @@
 require 'yaml'
 class SCFG
 
-	@@options = @@cfg = {}
+	@@options = {}
 	@@changed = []
 
+	OPTIONS = {
+		'status' 		=> 'development'
+		'email'			=> 'null'
+		'author' 		=> 'administrator'
+		'log' 			=> false
+		'log_path' 		=> Dir.pwd + '/log/default'
+		'module_focus' 	=> 'admin'
+		'module_repos' 	=> File.expand_path('~/SeimRepos')
+	}
+	
 	class << self
 
 		#@name, string, file name
@@ -23,9 +33,9 @@ class SCFG
 			@@options[@path]['created'] = Time.now
 			@@options[@path]['changed'] = Time.now
 			@@options[@path]['version'] = Seimtra::Info::VERSION
-			@@options[@path]['status'] 	= cfg('status')
-			@@options[@path]['email']	= cfg('email')
-			@@options[@path]['author'] 	= cfg('author') 
+			@@options[@path]['status'] 	= SCFG::OPTIONS['status']
+			@@options[@path]['email']	= SCFG::OPTIONS['email']
+			@@options[@path]['author'] 	= SCFG::OPTIONS['author']
 			@@changed << @path
 		end
 
@@ -56,17 +66,6 @@ class SCFG
 					end
 				end
 			end
-		end
-
-		def cfg(key)
-			@@cfg['status'] 	= 'development'
-			@@cfg['email']		= 'null'
-			@@cfg['author'] 	= 'administrator'
-			@@cfg['log'] 		= false
-			@@cfg['log_path'] 	= Dir.pwd + '/log/default'
-			@@cfg['module_focus'] = 'admin'
-			@@cfg['module_repos'] = File.expand_path('~/SeimRepos')
-			@@cfg.include?(key) ? @@cfg[key] : ''
 		end
 
 	end

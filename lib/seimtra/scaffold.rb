@@ -123,17 +123,17 @@ class Scaffold
 		end
 
 		def process_search
-			@template_contents[gtn(i@view)] = get_erb_content('search') + @template_contents[gtn(@view)]
+			@template_contents[gtn(@view)] = get_erb_content('search') + @template_contents[gtn(@view)]
 		end
 
 		#get route name
 		def grn(name)
-			"modules/#{@module_name}/routes/#{name}.rb"
+			"modules/#{@module_name}/application/#{name}.rb"
 		end
 
 		#get template name
 		def gtn(name)
-			"modules/#{@module_name}/views/#{@name}_#{name}.slim"
+			"modules/#{@module_name}/templates/#{@name}_#{name}.slim"
 		end
 
 		def get_erb_content(name, type = 'views')
