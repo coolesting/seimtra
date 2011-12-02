@@ -65,7 +65,6 @@ class SeimtraThor < Thor
 	method_option :level, :type => :hash, :aliases => '-lv' 
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	def generate(name, *argv)
-		return say(Utils.error, "\e[31m") unless Utils.check_module(name)
 
 		migrations 		= fields = []
 		module_current 	= name
@@ -75,9 +74,12 @@ class SeimtraThor < Thor
 		end
 
 		if options[:module] != nil
-			module_current 	= options[:module] 
+			module_current = options[:module] 
+			return say(Utils.message, "\e[31m") unless Utils.check_module(module_current)
+
+		#generate new module
 		else
-			#generate new module
+			return say(Utils.message, "\e[31m") if Utils.check_module(name)
 			directory "docs/modules", "modules/#{name}"
 
 			path = Utils.check_path.first
@@ -122,7 +124,7 @@ class SeimtraThor < Thor
 
 			#create route
 			sf.route_contents.each do |route_name, route_content|
-				create_file route_name, route_content
+				prepend_to_file route_name, route_content
 			end
 
 			#create templates
