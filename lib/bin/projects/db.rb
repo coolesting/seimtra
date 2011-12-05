@@ -13,7 +13,6 @@ class SeimtraThor < Thor
 
 		if options.output?
 			say "Your database adapter is " + DB.class.adapter_scheme.to_s, "\e[32m"
-
 			say "Your database schema as the following : ", "\e[32m"
 			say "-----------------------------------------"
 
@@ -44,21 +43,24 @@ class SeimtraThor < Thor
 	method_option :module, :type => :string
 	method_option :version, :type => :numeric, :aliases => '-v' 
 	desc "migration [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations record for the database"
-	def migration(operate_table, *argv)
+	def migration(operate_table = nil, *argv)
 
 		#initialize data
 		module_current	= options[:module] == nil ? SCFG.get("module_focus") : options[:module]
 		path 			= "/modules/#{module_current}/migrations"
 		mpath 			= Dir.pwd + path
+		operate 		= table = nil
+		default_operate	= ['create', 'alter', 'drop', 'rename']
+
 		unless File.directory?(mpath)
 			empty_directory mpath
 		end
 
-		operate = table = nil
-		default_operate	= ['create', 'alter', 'drop', 'rename']
-		operate, table 	= operate_table.split(":") if operate_table != nil
-		unless default_operate.include?(operate) 
-			return say("#{operate} is a error operation, you allow to use create, alter, rename and drop", "\e[31m") 
+ 		if operate_table != nil
+			operate, table 	= operate_table.split(":")
+			unless default_operate.include?(operate) 
+				return say("#{operate} is a error operation, you allow to use create, alter, rename and drop", "\e[31m") 
+			end
 		end
 
 		#create file for migrating record
@@ -68,6 +70,7 @@ class SeimtraThor < Thor
 			#auto add the primary_key and time to migrating record
 			if options.autocomplete?
 				db = Db.new
+				return say(db.msg, "\e[31m") if db.error
 				argv = db.autocomplete(table, argv) if operate == 'create'
 			end
 	
@@ -104,7 +107,8 @@ class SeimtraThor < Thor
 					"\e[31m" unless File.exist?(mpath)
 
 			dump 	= options[:dump] == 'd' ? '-d' : '-D'
-			dbcont 	= "'#{ENV['DATABASE_URL']}'"
+# 			dbcont 	= "'#{ENV['DATABASE_URL']}'"
+			dbcont 	= "'#{settings.db_connect}'"
 			version	= options[:version] == nil ? '' : "-M #{options[:version]}"
 		end
 

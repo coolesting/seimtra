@@ -2,11 +2,12 @@ require 'erb'
 
 class Scaffold
 
-	attr_accessor :template_contents, :route_contents
+	attr_accessor :template_contents, :app_contents
 
 	def initialize(name, module_name, fields, argv, with, level)
+
 		#@t, template variable in frontground
-		@route_contents = @template_contents = @argv = @with = @t = {}
+		@app_contents = @template_contents = @argv = @with = @t = {}
 		@name 			= name
 		@module_name	= module_name
 		@fields 		= fields
@@ -27,8 +28,8 @@ class Scaffold
 			@functions.each do |function|
 				#process route
 				foo = '='*50
-				@route_contents[grn(@name)] += "\n#== #{function} #{foo}\n"
-				@route_contents[grn(@name)] += get_erb_content(function, 'routes')
+				@app_contents[grn(@name)] += "\n#== #{function} #{foo}\n"
+				@app_contents[grn(@name)] += get_erb_content(function, 'routes')
 
 				#process template
 				if self.respond_to?("process_#{function}", true)

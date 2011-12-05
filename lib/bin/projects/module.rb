@@ -25,7 +25,7 @@ class SeimtraThor < Thor
 	# --level, -lv	assign the privilege levles to the extra function for user
 	# 
 	#
-	# == Example 
+	# == Examples 
 	#
 	# generate a standard module called books
 	#
@@ -123,7 +123,7 @@ class SeimtraThor < Thor
 			sf = Scaffold.new(name, module_current, fields, argv, options[:with], options[:level])
 
 			#create route
-			sf.route_contents.each do |route_name, route_content|
+			sf.app_contents.each do |route_name, route_content|
 				prepend_to_file route_name, route_content
 			end
 

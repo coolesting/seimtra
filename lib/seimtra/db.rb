@@ -2,10 +2,10 @@ class Db
 
 	attr_accessor :msg, :error
 
-	def initialize(path = '/environment.rb')
+	def initialize(path = './environment.rb')
 		@msg 	= ''
 		@error 	= false
-		epath = Dir.pwd + path
+		epath = File.expand_path(path)
 		if File.exist?(epath)
 			require epath
 		else

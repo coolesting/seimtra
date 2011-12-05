@@ -5,19 +5,20 @@ class SCFG
 	@@changed = []
 
 	OPTIONS = {
-		'status' 		=> 'development'
-		'email'			=> 'null'
-		'author' 		=> 'administrator'
-		'log' 			=> false
-		'log_path' 		=> Dir.pwd + '/log/default'
-		'module_focus' 	=> 'admin'
+		'status' 		=> 'development',
+		'email'			=> 'empty',
+		'author' 		=> 'administrator',
+		'log' 			=> false,
+		'log_path' 		=> Dir.pwd + '/log/default',
+		'module_focus' 	=> 'admin',
 		'module_repos' 	=> File.expand_path('~/SeimRepos')
 	}
 	
 	class << self
 
-		#@name, string, file name
-		#@custom, boolean,  a path you specify
+		##
+		# @name, string, file name
+		# @custom, boolean,  a path you specify
 		def setpath(name, custom = false)
 			if custom == false 
 				@path = name == nil ? 'Seimfile' : "modules/#{name}/others/info.yml"
