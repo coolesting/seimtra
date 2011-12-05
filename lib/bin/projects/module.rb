@@ -166,13 +166,12 @@ class SeimtraThor < Thor
 	desc 'test', 'test'
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
-	def test(a = nil, *args)
-		db = Db.new
-		name = 'bookmark'
-		argv = ["String:name", "String:title"]
-
-		puts db.check_column(name)
-		puts db.autocomplete(name, argv)
+	def test(func_name)
+		Dir[ROOTPATH + "/test/*"].each do | file |
+			require file
+		end
+		return say("No function name #{func_name}", "\e[31m") if respond_to?("preprocess_#{func_name}")
+		send(func_name)
 	end
 
 end
