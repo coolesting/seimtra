@@ -167,7 +167,12 @@ class SeimtraThor < Thor
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
 	def test(a = nil, *args)
-		puts args if a!=nil 
+		db = Db.new
+		name = 'bookmark'
+		argv = ["String:name", "String:title"]
+
+		puts db.check_column(name)
+		puts db.autocomplete(name, argv)
 	end
 
 end

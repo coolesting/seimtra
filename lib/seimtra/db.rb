@@ -32,14 +32,15 @@ class Db
 		while i
 			id = ''
 			i.times do |j| id += name[j] end
-			id += 'id'
 			i = check_column(id.to_sym) ? (i + 1) : 0
 		end
+		id += 'id'
 		argv.unshift("primary_key:#{id}")
 
 		#match time field
 		argv << 'Time:created'
 		argv << 'Time:changed'
+		argv
 	end
 
 end
