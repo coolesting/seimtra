@@ -17,20 +17,22 @@ class Db
 	#@name symbol
 	def check_column(name)
 		columns = get_columns
-		columns.include?(name) ? true : false
+		columns.include?(name.to_sym) ? true : false
 	end
 
-	#@name string, the table name
-	#@argv array, such as ['String:title', 'text:body']
+	## 
+	# autocomplete field of database
+	#
+	# name string, the table name
+	# argv array, such as ['String:title', 'text:body']
+	#
 	def autocomplete(name, argv)
 		#match a id
 		i = 1
-		while i > 0 do
-			id = ''
-			i.times do |j| id += name[j] end
-			i = check_column(id.to_sym) ? (i + 1) : 0
+		while i > 0 
+			id 	= name[0, i] + 'id'
+			i 	= check_column(id.to_sym) ? (i + 1) : 0
 		end
-		id += 'id'
 		argv.unshift("primary_key:#{id}")
 
 		#match time field
@@ -55,7 +57,7 @@ class Db
 		if table == nil
 			argv = []
 			get_tables.each do | table |
-				argv << DB[table.to_sym].columns!
+				argv += DB[table.to_sym].columns!
 			end
 			argv
 		else

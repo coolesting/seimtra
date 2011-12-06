@@ -10,7 +10,7 @@ class SCFG
 		'author' 		=> 'administrator',
 		'log' 			=> false,
 		'log_path' 		=> Dir.pwd + '/log/default',
-		'module_focus' 	=> 'admin',
+		'module_focus' 	=> 'custom',
 		'module_repos' 	=> File.expand_path('~/SeimRepos')
 	}
 	

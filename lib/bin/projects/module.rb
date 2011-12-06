@@ -13,7 +13,7 @@ class SeimtraThor < Thor
 	#
 	# == options
 	#
-	# --module, -m	by default, this options is null, so the generator will
+	# --to, -t		by default, this options is null, so the generator will
 	# 				create the new module, if the option be set, the generating
 	# 				files will be puts into that module you specifying by option
 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
@@ -57,7 +57,7 @@ class SeimtraThor < Thor
 	#	3s g -f=title body --with=view_by:pid --with=mode:list
 	#
 
-	method_option :module, :type => :string, :aliases => '-m'
+	method_option :to, :type => :string, :aliases => '-t'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :fields, :type => :array, :aliases => '-f'
 	method_option :run, :type => :boolean, :aliases => '-r' 
@@ -73,8 +73,9 @@ class SeimtraThor < Thor
 			empty_directory Dir.pwd + '/modules'
 		end
 
-		if options[:module] != nil
-			module_current = options[:module] 
+		#add the generation to existing module
+		if options[:to] != nil
+			module_current = options[:to] 
 			return error(Utils.message) unless Utils.check_module(module_current)
 
 		#generate new module
