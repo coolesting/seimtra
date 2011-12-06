@@ -37,6 +37,39 @@ class SeimtraThor < Thor
 
 	end
 
+	##
+	# = migration database record
+	#
+	# 
+	# == arguments
+	#
+	# operate_table, string, such as, create:books, alter:books/
+	# fields, 		 array, ["String:name","String:password"]	
+	#
+	#
+	# == options
+	#
+	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
+	# 				automatically
+	# --run, -r		run the migration record
+	# --dump		rollback the migration record, as the parameter of sequel
+	# --module		specify a module for implementing the migrating action
+	# --version, -v	specify a version for migrating record
+	#
+	# == examples
+	#
+	#	3s m drop :table1,:table2,:table3
+	#	3s m rename :old_table,:new_table
+	#
+	#	3s m create:table_name primary_key:uid String:name String:pawd
+	#	3s m alter:table_name drop_column:column_name
+	#	3s m alter:table_name rename_column:old_column_name,:new_column_name
+	#
+	# create and run the migration records
+	#
+	# 	3s m table String:title text:body -a -r
+	#
+
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :dump, :type => :string
@@ -49,7 +82,7 @@ class SeimtraThor < Thor
 		module_current	= options[:module] == nil ? SCFG.get("module_focus") : options[:module]
 		path 			= "/modules/#{module_current}/migrations"
 		mpath 			= Dir.pwd + path
-		operate 		= table = nil
+		operate 		= table = ''
 		default_operate	= ['create', 'alter', 'drop', 'rename']
 
 		unless File.directory?(mpath)
@@ -57,14 +90,20 @@ class SeimtraThor < Thor
 		end
 
  		if operate_table != nil
-			operate, table 	= operate_table.split(":")
+			if operate_table.index(':')
+				operate, table = operate_table.split(":")
+			else
+				operate = 'create'
+				table	= operate_table
+			end
+
 			unless default_operate.include?(operate) 
 				return error("#{operate} is a error operation, you allow to use create, alter, rename and drop") 
 			end
 		end
 
 		#create file for migrating record
-		if operate != nil and argv.count > 0
+		if operate != '' and table != '' and argv.count > 0
 			file = mpath + "/#{Time.now.strftime("%Y%m%d%H%M%S")}_#{operate}_#{table}.rb"
 
 			#auto add the primary_key and time to migrating record
@@ -79,13 +118,8 @@ class SeimtraThor < Thor
 				content << "\tchange do\n"
 
 				if operate == "drop" or operate == "rename"
-					#3s dm drop :table1,:table2,:table3
-					#3s dm rename :old_table,:new_table
 					content << "\t\t#{operate}_table(#{argv.to_s.gsub(",", ", ")})\n"
 				else
-					#3s dm create:table_name primary_key:uid String:name String:pawd
-					#3s dm alter:table_name drop_column:column_name
-					#3s dm alter:table_name rename_column:old_column_name,:new_column_name
 					content << "\t\t#{operate}_table(:#{table}) do\n"
 					argv.each do |item|
 						content << "\t\t\t#{item.sub(":", " :").gsub(",", ", ")}\n"
