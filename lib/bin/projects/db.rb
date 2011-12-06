@@ -6,20 +6,20 @@ class SeimtraThor < Thor
 	def schema
 		spath 	= Dir.pwd + options[:path]
 		db 		= Db.new
-		return say(db.msg, '\e[31m') if db.error
+		return error(db.msg) if db.error
 
-		return say("No schema at #{spath}", "\e[31m") unless File.exist?(spath)
+		return error("No schema at #{spath}") unless File.exist?(spath)
 		require spath
 
 		if options.output?
-			say "Your database adapter is " + DB.class.adapter_scheme.to_s, "\e[32m"
+			say "Your database adapter is " + db.scheme, "\e[32m"
 			say "Your database schema as the following : ", "\e[32m"
-			say "-----------------------------------------"
+			say "\n"
 
 			rows = []
-			DB.tables.each do |table|
+			db.tables.each do |table|
 				rows << [table.to_s]
-				DB.schema(table).each do |column, attr|
+				db.schema(table).each do |column, attr|
 						rows << [
 							column.to_s, 
 							attr[:type].to_s, 
@@ -59,7 +59,7 @@ class SeimtraThor < Thor
  		if operate_table != nil
 			operate, table 	= operate_table.split(":")
 			unless default_operate.include?(operate) 
-				return say("#{operate} is a error operation, you allow to use create, alter, rename and drop", "\e[31m") 
+				return error("#{operate} is a error operation, you allow to use create, alter, rename and drop") 
 			end
 		end
 
@@ -70,7 +70,7 @@ class SeimtraThor < Thor
 			#auto add the primary_key and time to migrating record
 			if options.autocomplete?
 				db = Db.new
-				return say(db.msg, "\e[31m") if db.error
+				return error db.msg if db.error
 				argv = db.autocomplete(table, argv) if operate == 'create'
 			end
 	
@@ -101,10 +101,9 @@ class SeimtraThor < Thor
 		#setting the running environment
 		if options.run? or options[:dump] != nil
 			db = Db.new
-			return say(db.msg, '\e[31m') if db.error
+			return error(db.msg) if db.error
 
-			return say "No migrattion record file, please check #{mpath}",
-					"\e[31m" unless File.exist?(mpath)
+			return error "No migrattion record file, please check #{mpath}" unless File.exist?(mpath)
 
 			dump 	= options[:dump] == 'd' ? '-d' : '-D'
 # 			dbcont 	= "'#{ENV['DATABASE_URL']}'"

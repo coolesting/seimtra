@@ -49,4 +49,11 @@ class SeimtraThor < Thor
 		#get config
 		SCFG.get.each do |k,v| say "#{k} : #{v}", "\e[33m" end
 	end
+
+	no_tasks do
+		def error(msg)
+			say(msg, "\e[31m")
+		end
+	end
+
 end

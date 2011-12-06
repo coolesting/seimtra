@@ -75,11 +75,11 @@ class SeimtraThor < Thor
 
 		if options[:module] != nil
 			module_current = options[:module] 
-			return say(Utils.message, "\e[31m") unless Utils.check_module(module_current)
+			return error(Utils.message) unless Utils.check_module(module_current)
 
 		#generate new module
 		else
-			return say(Utils.message, "\e[31m") if Utils.check_module(name)
+			return error(Utils.message) if Utils.check_module(name)
 			directory "docs/modules", "modules/#{name}"
 
 			path = Utils.check_path.first
@@ -107,7 +107,7 @@ class SeimtraThor < Thor
 		if argv.count > 0
 			if options.autocomplete?
 				db = Db.new
-				return say(db.msg, '\e[31m') if db.error
+				return error(db.msg) if db.error
 				argv = db.autocomplete(name, argv)
 			end
 			migrations = argv
@@ -163,15 +163,17 @@ class SeimtraThor < Thor
 	def packup(name = nil)
 	end
 
-	desc 'test', 'test'
+	desc 'test [NAME]', 'Make a test, and output the result'
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
-	def test(func_name)
+	def test(func_name = nil)
+		return error("Enter your test name likes this, 3s test db") if func_name == nil
+		require "seimtra/test"
 		Dir[ROOTPATH + "/test/*"].each do | file |
 			require file
 		end
-		return say("No function name #{func_name}", "\e[31m") if respond_to?("preprocess_#{func_name}")
-		send(func_name)
+		t = Stest.new(func_name)
+		error t.msg if t.error
 	end
 
 end
