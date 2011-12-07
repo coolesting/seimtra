@@ -1,26 +1,41 @@
 class SeimtraThor < Thor
 
-	method_option :path, :type => :string, :default => "/db/schema.rb", :aliases => '-p'
-	method_option :output, :type => :boolean, :aliases => '-o', :banner => 'Output the db schema'
+	##
+	# = Schema
+	#
+	# == examples
+	#
+	#	3s schema
+	#	3s schema -d
+	method_option :details, :type => :boolean, :aliases => '-d'
 	desc "schema", "Initialize a database with a schema"
-	def schema
-		spath 	= Dir.pwd + options[:path]
+	def schema(path = nil)
+		
 		db 		= Db.new
+		output	= true
 		return error(db.msg) if db.error
 
-		return error("No schema at #{spath}") unless File.exist?(spath)
-		require spath
+		#implement a schema with the specifing path
+		if path != nil
+			spath 	= Dir.pwd + path
+			return error("No schema at #{spath}") unless File.exist?(spath)
+			require spath
+		end
 
-		if options.output?
-			say "Your database adapter is " + db.scheme, "\e[32m"
-			say "Your database schema as the following : ", "\e[32m"
-			say "\n"
-
-			rows = []
-			db.tables.each do |table|
-				rows << [table.to_s]
-				db.schema(table).each do |column, attr|
-						rows << [
+		if output
+			say "The adapter :  #{db.get_scheme}.", "\e[32m"
+			say "The schema as the following.", "\e[32m"
+			say "Header info \n [column_name, type, real_type, alllow_null, is_primary_key, default_value] \n", "\e[32m" if options.details?
+			puts "\n"
+			
+			#puts the tables of database to array of hash
+			rows = {}
+			tables = db.get_tables
+			tables.each do |table|
+				if options.details?
+					rows[table.to_s] = []
+					db.get_schema(table).each do |column, attr|
+						rows[table.to_s] << [
 							column.to_s, 
 							attr[:type].to_s, 
 							attr[:db_type], 
@@ -28,12 +43,29 @@ class SeimtraThor < Thor
 							attr[:primary_key].to_s, 
 							attr[:default].to_s
 						]
+					end
+				else
+					rows[table.to_s] = db.get_columns(table)	
 				end
 			end
-			puts rows
-			#print_table(rows)
+
+			#print the result of schema
+			rows.each do | table, row |
+				if options.details?
+					puts table.to_s
+					row.each do | r |
+						print r
+						puts "\n"
+					end
+				else
+					print table.to_s.ljust(20, ' ')
+					print row
+				end
+				puts "\n"
+			end
+
 		end
-		say "Implementing complete!", "\e[32m"
+		say "\n"
 
 	end
 

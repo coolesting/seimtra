@@ -53,6 +53,8 @@ class Db
 		DB.schema(table)
 	end
 
+	##
+	# table, string
 	def get_columns(table = nil)
 		if table == nil
 			argv = []
