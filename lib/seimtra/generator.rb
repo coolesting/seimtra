@@ -1,6 +1,5 @@
 require 'erb'	
-
-class Scaffold
+class Generator
 
 	attr_accessor :template_contents, :app_contents
 
@@ -26,10 +25,10 @@ class Scaffold
 			end
 
 			@functions.each do |function|
-				#process route
-				foo = '='*50
-				@app_contents[grn(@name)] += "\n#== #{function} #{foo}\n"
-				@app_contents[grn(@name)] += get_erb_content(function, 'routes')
+				#process app
+				foo = '='*30
+				@app_contents[grn] += "\n# == #{function} #{Time.now} #{foo}\n"
+				@app_contents[grn] += get_erb_content(function, 'applications')
 
 				#process template
 				if self.respond_to?("process_#{function}", true)
@@ -48,6 +47,7 @@ class Scaffold
 			#function name => [parameter, parameter_alias, parameter_alias, ...]
 			dwith = {}
 			dwith['mode']	= ['mode']
+			dwith['all']	= ['all']
 			dwith['view']	= ['view_by', 'show_by', 'display_by', 'view', 'mode', 'show', 'display']
 			dwith['pager'] 	= ['page_size', 'pager', 'page', 'ps']
 			dwith['search'] = ['search_by', 'search', 'src']
@@ -60,8 +60,12 @@ class Scaffold
 			dwith.each do |key, val|
 				val.each do |item|
 					if with.include?(item)
-						@with[dwith[key][0]] = with[item] if item != 'enable'
-						@functions.delete(key) if item == 'disable' and @functions.include?(key)
+						if item == 'disable' and @functions.include?(key)
+							@functions.delete(key) 
+						else
+							@with[dwith[key][0]] = with[item] if item != 'enable'
+							@functions << key
+						end
 						break
 					end
 				end
@@ -127,17 +131,18 @@ class Scaffold
 			@template_contents[gtn(@view)] = get_erb_content('search') + @template_contents[gtn(@view)]
 		end
 
-		#get route name
-		def grn(name)
-			"modules/#{@module_name}/application/#{name}.rb"
+		#get the name of appliction path
+		def grn(name = "routes", suffix = nil)
+			name = "#{name}_#{suffix}" if suffix != nil 
+			"modules/#{@module_name}/applications/#{name}.rb"
 		end
 
-		#get template name
+		#get the name of template path
 		def gtn(name)
 			"modules/#{@module_name}/templates/#{@name}_#{name}.slim"
 		end
 
-		def get_erb_content(name, type = 'views')
+		def get_erb_content(name, type = 'templates')
 			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name}.tt"
 			if File.exists?(path)
 				t = ERB.new(path)

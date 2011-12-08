@@ -120,17 +120,21 @@ class SeimtraThor < Thor
 
 		#create the skeleton 
 		unless fields.empty?
-			require "seimtra/scaffold"
-			sf = Scaffold.new(name, module_current, fields, argv, options[:with], options[:level])
+			require "seimtra/generator"
+			g = Generator.new(name, module_current, fields, argv, options[:with], options[:level])
 
-			#create route
-			sf.app_contents.each do |route_name, route_content|
-				prepend_to_file route_name, route_content
+			#generate the app
+			g.app_contents.each do |path, content|
+				if File.exsit? path
+					prepend_to_file path, content
+				else
+					create_file path, content
+				end
 			end
 
-			#create templates
-			sf.template_contents.each do |tmp_name, tmp_content|
-				create_file tmp_name, tmp_content
+			#generate templates
+			g.template_contents.each do |path, content|
+				create_file path, content
 			end
 		end
 

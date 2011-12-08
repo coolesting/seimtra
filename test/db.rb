@@ -18,5 +18,12 @@ class Stest
 	def tables
 		puts @db.get_tables
 	end
+
+	def dump_schema
+		require "sequel/extensions/schema_dumper"
+		sd = Sequel::Database.new
+		puts sd.dump_schema_migration
+		#puts sd.dump_table_schema('books')
+	end
 end
 
