@@ -66,4 +66,14 @@ class Db
 			DB[table.to_sym].columns!
 		end
 	end
+
+	def dump_schema(table)
+		Sequel.extension :schema_dumper
+		DB.dump_table_schema(table)
+	end
+
+	def dump_schema_migration
+		Sequel.extension :schema_dumper
+		DB.dump_schema_migration
+	end
 end

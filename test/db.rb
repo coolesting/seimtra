@@ -19,11 +19,19 @@ class Stest
 		puts @db.get_tables
 	end
 
-	def dump_schema
-		require "sequel/extensions/schema_dumper"
-		sd = Sequel::Database.new
-		puts sd.dump_schema_migration
-		#puts sd.dump_table_schema('books')
+	def schema(tables = nil)
+		name = "books"
+		if tables != nil
+			tables.each do |name|
+				puts @db.dump_schema(name.to_sym)
+			end
+		else
+			puts @db.dump_schema(name.to_sym)
+		end
+	end
+
+	def migrate
+		puts @db.dump_schema_migration
 	end
 end
 
