@@ -1,16 +1,15 @@
 class SeimtraThor < Thor
 
-	##
 	# = generating module
 	#
-	#
+	# Create the application quickly
+
 	# == arguments
 	#
 	# name, 		string, required
 	# mrgration, 	string, choose, like user primary_key:uid, String:name
 	# 				more details see the migration method 
-	#
-	#
+	
 	# == options
 	#
 	# --to, -t		by default, this options is null, so the generator will
@@ -23,8 +22,7 @@ class SeimtraThor < Thor
 	# --with, -w	by default, the generator will display a table, you could add
 	# 				extre function with this options, 
 	# --level, -lv	assign the privilege levles to the extra function for user
-	# 
-	#
+
 	# == Examples 
 	#
 	# generate a standard module called books
@@ -55,7 +53,6 @@ class SeimtraThor < Thor
 	#
 	#	3s g post primary_id:pid String:title text:body -f=pid title --run
 	#	3s g -f=title body --with=view_by:pid --with=mode:list
-	#
 
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
