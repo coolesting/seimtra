@@ -2,3 +2,5 @@
 
 An integration with sinatra, sequel, slim for developing web application.
 We are developing, please don't fork it.
+
+	the code of .rdoc is tested
