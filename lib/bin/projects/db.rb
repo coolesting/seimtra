@@ -7,6 +7,7 @@ class SeimtraThor < Thor
 	#
 	#	3s schema
 	#	3s schema -d
+
 	method_option :details, :type => :boolean, :aliases => '-d'
 	desc "schema", "Initialize a database with a schema"
 	def schema(path = nil)
@@ -25,45 +26,18 @@ class SeimtraThor < Thor
 		if output
 			say "The adapter :  #{db.get_scheme}.", "\e[32m"
 			say "The schema as the following.", "\e[32m"
-			say "Header info \n [column_name, type, real_type, alllow_null, is_primary_key, default_value] \n", "\e[32m" if options.details?
 			puts "\n"
-			
+
 			#puts the tables of database to array of hash
-			rows = {}
-			tables = db.get_tables
-			tables.each do |table|
-				if options.details?
-					rows[table.to_s] = []
-					db.get_schema(table).each do |column, attr|
-						rows[table.to_s] << [
-							column.to_s, 
-							attr[:type].to_s, 
-							attr[:db_type], 
-							attr[:allow_null].to_s, 
-							attr[:primary_key].to_s, 
-							attr[:default].to_s
-						]
-					end
-				else
-					rows[table.to_s] = db.get_columns(table)	
-				end
-			end
-
-			#print the result of schema
-			rows.each do | table, row |
-				if options.details?
-					puts table.to_s
-					row.each do | r |
-						print r
-						puts "\n"
-					end
-				else
+			unless options.details?
+				db.get_tables.each do |table|
 					print table.to_s.ljust(20, ' ')
-					print row
+					print db.get_columns(table)
+					print "\n"
 				end
-				puts "\n"
+			else
+				print db.dump_schema_migration
 			end
-
 		end
 		say "\n"
 
@@ -184,7 +158,11 @@ class SeimtraThor < Thor
 
 		#dump the mrgrations
 		if options[:dump] != nil
-			run("sequel #{dump} #{dbcont} > #{Dir.pwd}/modules/#{module_current}/schema_#{Time.now.strftime('%Y%m%d%H%M%S')}.rb")
+			mpath = Dir.pwd + "/migrations"
+			unless File.exist?(mpath)
+				empty_directory mpath
+			end
+			run("sequel #{dump} #{dbcont} > #{Dir.pwd}/db/migrations/start_at_#{Time.now.strftime('%Y%m%d%H%M%S')}.rb")
 		end
 
 		say "Implementing complete", "\e[32m"
