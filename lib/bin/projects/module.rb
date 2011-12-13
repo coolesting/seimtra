@@ -66,9 +66,7 @@ class SeimtraThor < Thor
 		migrations 		= fields = []
 		module_current 	= name
 
-		unless File.exist?(Dir.pwd + '/modules')
-			empty_directory Dir.pwd + '/modules'
-		end
+		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 
 		#add the generation to existing module
 		if options[:to] != nil
@@ -101,7 +99,7 @@ class SeimtraThor < Thor
 			SCFG.set('module_focus', name)
 		end
 
-		#auto add the primary_key and time to migrating record
+		#create the migrations
 		if argv.count > 0
 			if options.autocomplete?
 				db = Db.new
@@ -115,12 +113,10 @@ class SeimtraThor < Thor
 		end
 		fields = options[:fields] if options[:fields] != nil
 
-		#create the skeleton 
+		#generate the skeleton 
 		unless fields.empty?
 			require "seimtra/generator"
 			g = Generator.new(name, module_current, fields, argv, options[:with], options[:level])
-
-			#generate the app
 			g.app_contents.each do |path, content|
 				if File.exsit? path
 					prepend_to_file path, content
@@ -129,16 +125,15 @@ class SeimtraThor < Thor
 				end
 			end
 
-			#generate templates
 			g.template_contents.each do |path, content|
 				create_file path, content
 			end
 		end
 
-		#create/implement the migrations
+		#implement/run the migrations to database
 		unless migrations.empty?
-			run = {}; run[:run] = options.run? ? true : false
-			invoke "migration", "create:#{name}", migrations, run, :module => module_current
+			args = {}; args[:run] = options.run? ? true : false
+			invoke "db", "create:#{name}", migrations, args, :module => module_current
 		end
 	end
 
