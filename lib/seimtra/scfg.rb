@@ -8,7 +8,7 @@ class SCFG
 		'log' 			=> false,
 		'log_path' 		=> Dir.pwd + '/log/default',
 		'module_focus' 	=> 'custom',
-		'module_repos' 	=> File.expand_path('~/SeimRepos')
+		'module_repos' 	=> File.expand_path('~/SeimRepos'),
 		'website' 		=> "https://github.com/coolesting"
 	}
 end
