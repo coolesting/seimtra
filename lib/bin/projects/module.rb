@@ -7,7 +7,7 @@ class SeimtraThor < Thor
 	# == arguments
 	#
 	# name, 		string, required
-	# mrgration, 	string, choose, like user primary_key:uid, String:name
+	# mrgration, 	string, option, such as, primary_key:uid, String:name
 	# 				more details see the migration method 
 	
 	# == options
@@ -17,10 +17,10 @@ class SeimtraThor < Thor
 	# 				files will be puts into that module you specifying by option
 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
 	# 				automatically
-	# --field, -f	display the specifying fields.
+	# --display, -d	display the specifying display.
 	# --run, -r		run the migrating record of specifying module
 	# --with, -w	by default, the generator will display a table, you could add
-	# 				extre function with this options, 
+	# 				extre function with the option, 
 	# --level, -lv	assign the privilege levles to the extra function for user
 
 	# == Examples 
@@ -39,24 +39,24 @@ class SeimtraThor < Thor
 	#
 	# generate a module with existing field
 	#
-	#	3s g article -f=aid title
+	#	3s g article -d=aid title
 	#
 	# generate a module with pager, search, edit, delete and so on
 	#
-	#	3s g article -f=aid title --with=search_by:title
-	#	3s g article -f=aid title --with=edit_by:aid delete_by:aid
-	#	3s g article -f=aid title --with=page_size:10 search_by:title
+	#	3s g article -d=aid title --with=search_by:title
+	#	3s g article -d=aid title --with=edit_by:aid delete_by:aid
+	#	3s g article -d=aid title --with=page_size:10 search_by:title
 	#	3s g article String:title text:body --with=all:enable --run
 	#
 	# display the specifying field in view, by default, if you have not used
-	# the -f option, it will displays origin filed you type in prompt line
+	# the -d option, it will displays origin filed you type in prompt line
 	#
-	#	3s g post primary_id:pid String:title text:body -f=pid title --run
-	#	3s g -f=title body --with=view_by:pid --with=mode:list
+	#	3s g post primary_id:pid String:title text:body -d=pid title --run
+	#	3s g -d=title body --with=view_by:pid --with=mode:list
 
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
-	method_option :fields, :type => :array, :aliases => '-f'
+	method_option :display, :type => :array, :aliases => '-d'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :level, :type => :hash, :aliases => '-lv' 
@@ -111,7 +111,7 @@ class SeimtraThor < Thor
 				fields << item.split(":").last
 			end
 		end
-		fields = options[:fields] if options[:fields] != nil
+		fields = options[:display] if options[:display] != nil
 
 		#generate the skeleton 
 		unless fields.empty?
