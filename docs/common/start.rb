@@ -1,3 +1,5 @@
+#
+# please don't modify the file unless you know what are you doing.
 require './environment'
 
 set :views, Dir[settings.root + '/modules/*/templates']

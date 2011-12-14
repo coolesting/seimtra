@@ -3,6 +3,9 @@ require 'sequel'
 require 'slim'
 
 set :environment, 'production'
+
+# Note: you must keep the settings.db_connect value available if you 
+# need the database
 configure :production do
 
 	set :home_page, '/index.html'
@@ -14,10 +17,11 @@ configure :production do
 
 	DB = Sequel.connect(settings.db_connect)
 
-	#setting for rackup
+	#set for rackup
 	disable :logging
 end
 
-get '/' do
-	status, headers, body = call! env.merge("PATH_INFO" => settings.home_page)
-end
+# rewrite the root route
+# get '/' do
+# 	status, headers, body = call! env.merge("PATH_INFO" => settings.home_page)
+# end

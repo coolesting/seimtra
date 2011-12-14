@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sequel'
 require 'slim'
 
+# Note: you must keep the settings.db_connect value available if you 
+# need the database
 set :environment, 'development'
 configure :development do
 
@@ -30,7 +32,7 @@ configure :development do
 	#	yum install mysql*
 	#	gem install mysql
 	#	/etc/init.d/mysqld start
-
+	#
 	# create database and user
 	#
 	#	mysql -r root -p
@@ -39,7 +41,7 @@ configure :development do
 	#	grant all privileges on *.* to 'myuser'@'localhost' with grant option;
 	#	granl all on mydb.* to 'myuser'@'localhost';
 	#	quit
-
+	#
 	# change the password
 	#
 	#	mysql -u root -p
@@ -53,7 +55,7 @@ configure :development do
 
 	DB = Sequel.connect(settings.db_connect)
 
-	#setting for rackup
+	#set for rackup
 	disable :logging
 end
 
