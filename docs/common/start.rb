@@ -9,6 +9,6 @@ helpers do
 	end
 end
 
-Dir[settings.root + '/modules/*/application/*.rb'].each do |route|
+Dir[settings.root + '/modules/*/applications/*.rb'].each do |route|
 	require route
 end
