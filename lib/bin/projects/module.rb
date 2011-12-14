@@ -86,7 +86,7 @@ class SeimtraThor < Thor
 			info['version'] 	= '0.0.1'
 			info['email'] 		= SCFG.get('email') ? SCFG.get('email') : ask("What is the email of your ?")
 			info['author']		= SCFG.get('author') ? SCFG.get('author') : ask("What is your name ?")
-			info['website'] 	= "https://github.com/coolesting/seimtra-#{name}"
+			info['website'] 	= SCFG::OPTIONS['website'] + "/seimtra-#{name}"
 			info['description'] = ask("The description of the module ?")
 
 			#set module config

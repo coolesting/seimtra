@@ -1,9 +1,6 @@
 require 'yaml'
+
 class SCFG
-
-	@@options = {}
-	@@changed = []
-
 	OPTIONS = {
 		'status' 		=> 'development',
 		'email'			=> 'empty',
@@ -12,8 +9,15 @@ class SCFG
 		'log_path' 		=> Dir.pwd + '/log/default',
 		'module_focus' 	=> 'custom',
 		'module_repos' 	=> File.expand_path('~/SeimRepos')
+		'website' 		=> "https://github.com/coolesting"
 	}
-	
+end
+
+class SCFG
+
+	@@options = {}
+	@@changed = []
+
 	class << self
 
 		##
