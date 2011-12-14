@@ -22,12 +22,13 @@ class SeimtraThor < Thor
 	# --with, -w	by default, the generator will display a table, you could add
 	# 				extre function with the option, 
 	# --level, -lv	assign the privilege levles to the extra function for user
+	# --module, -m	create a module skeleton
 
 	# == Examples 
 	#
-	# generate a standard module called books
+	# generate a module skeleton with given books
 	#
-	# 	3s g books
+	# 	3s g books -m
 	#
 	# generate a module with creating some fields
 	#
@@ -40,6 +41,7 @@ class SeimtraThor < Thor
 	# generate a module with existing field
 	#
 	#	3s g article -d=aid title
+	#	3s g user --display=username email
 	#
 	# generate a module with pager, search, edit, delete and so on
 	#
@@ -60,6 +62,7 @@ class SeimtraThor < Thor
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :level, :type => :hash, :aliases => '-lv' 
+	method_option :module, :type => :boolean, :aliases => '-m' 
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	def generate(name, *argv)
 
@@ -72,9 +75,12 @@ class SeimtraThor < Thor
 		if options[:to] != nil
 			module_current = options[:to] 
 			return error(Utils.message) unless Utils.check_module(module_current)
+		else
+			module_current = SCFG.get('module_focus')
+		end
 
 		#generate new module
-		else
+		if options.module?
 			return error(Utils.message) if Utils.check_module(name)
 			directory "docs/modules", "modules/#{name}"
 
