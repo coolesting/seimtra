@@ -124,7 +124,7 @@ class SeimtraThor < Thor
 			require "seimtra/generator"
 			g = Generator.new(name, module_current, fields, argv, options[:with], options[:level])
 			g.app_contents.each do |path, content|
-				if File.exsit? path
+				if File.exist? path
 					prepend_to_file path, content
 				else
 					create_file path, content

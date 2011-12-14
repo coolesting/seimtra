@@ -26,9 +26,10 @@ class Generator
 
 			@functions.each do |function|
 				#process app
-				foo = '='*30
-				@app_contents[grn] += "\n# == #{function} #{Time.now} #{foo}\n"
+				foo = '='*10
+				@app_contents[grn] += "# == #{function} #{Time.now} #{foo}\n"
 				@app_contents[grn] += get_erb_content(function, 'applications')
+				@app_contents[grn] += "\n"
 
 				#process template
 				if self.respond_to?("process_#{function}", true)
@@ -57,16 +58,18 @@ class Generator
 
 			#enable default option
 			@functions << 'view'
-			dwith.each do |key, val|
-				val.each do |item|
-					if with.include?(item)
-						if item == 'disable' and @functions.include?(key)
-							@functions.delete(key) 
-						else
-							@with[dwith[key][0]] = with[item] if item != 'enable'
-							@functions << key
+			if with != nil
+				dwith.each do |key, val|
+					val.each do |item|
+						if with.include?(item)
+							if item == 'disable' and @functions.include?(key)
+								@functions.delete(key) 
+							else
+								@with[dwith[key][0]] = with[item] if item != 'enable'
+								@functions << key
+							end
+							break
 						end
-						break
 					end
 				end
 			end
@@ -131,10 +134,11 @@ class Generator
 			@template_contents[gtn(@view)] = get_erb_content('search') + @template_contents[gtn(@view)]
 		end
 
-		#get the name of appliction path
-		def grn(name = "routes", suffix = nil)
-			name = "#{name}_#{suffix}" if suffix != nil 
-			"modules/#{@module_name}/applications/#{name}.rb"
+		#get the name path of appliction
+		def grn(file = "routes")
+			path = "modules/#{@module_name}/applications/#{file}.rb"
+			@app_contents[path] = "" unless @app_contents.include? path
+			path
 		end
 
 		#get the name of template path
@@ -144,12 +148,9 @@ class Generator
 
 		def get_erb_content(name, type = 'templates')
 			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name}.tt"
-			if File.exists?(path)
-				t = ERB.new(path)
-				t.result(binding)
-			else
-				say("Nothing at path : #{path}", "\e[31m")
-			end
+			return "nothing about the #{path}" unless File.exists?(path)
+			t = ERB.new(path)
+			t.result(binding)
 		end
 
 end
