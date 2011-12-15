@@ -1,6 +1,0 @@
-get '/<%= @name %>' do
-	#list view
-	@title = '<%= @name %>'
-	@<%= @name %> = DB[:<%= @name %>].all
-	slim :<%= @name %>_show
-end

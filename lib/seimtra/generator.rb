@@ -10,9 +10,10 @@ class Generator
 		@name 			= name
 		@module_name	= module_name
 		@fields 		= fields
-		@functions 		= []
+		@functions 		= @mode = []
 		@level 			= level
-		@view			= 'table'
+		@mode 			= ['table', 'list']
+		@view			= "table"
 
 		#A condition for deleting, updeting, editting the record
 		@keyword		= ''
@@ -29,11 +30,11 @@ class Generator
 				foo = '='*10
 				@app_contents[grn] += "# == #{function} #{Time.now} #{foo}\n"
 				@app_contents[grn] += get_erb_content(function, 'applications')
-				@app_contents[grn] += "\n"
+				@app_contents[grn] += "\n\n"
 
 				#process template
-				if self.respond_to?("process_#{function}", true)
-					send("process_#{function}") 
+				if self.respond_to?("process_template_#{function}", true)
+					send("process_template_#{function}") 
 				else
 					@template_contents[gtn(function)] = get_erb_content(function)
 				end
@@ -49,7 +50,7 @@ class Generator
 			dwith = {}
 			dwith['mode']	= ['mode']
 			dwith['all']	= ['all']
-			dwith['view']	= ['view_by', 'show_by', 'display_by', 'view', 'mode', 'show', 'display']
+			dwith['view']	= ['view_by', 'show_by', 'display_by', 'view',  'show', 'display']
 			dwith['pager'] 	= ['page_size', 'pager', 'page', 'ps']
 			dwith['search'] = ['search_by', 'search', 'src']
 			dwith['rm'] 	= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
@@ -115,42 +116,42 @@ class Generator
 			@t['update_by'] = @keyword unless @t.include?('update_by')
 		end
 
-		def preprocess_mode
-			#@t['mode_by'] = ''
-			mode = []
-			mode = ['table', 'list']
-			@view = @with.include?('mode') and mode.include?(@with['mode']) ? @with['mode'] : 'table'
+		def preprocess_view
+			@view = @with['mode'] if @with.include?('mode') and @mode.include?(@with['mode'])
 		end
 
-		def process_view
+		def process_template_view
 			@template_contents[gtn(@view)] = get_erb_content(@view)
 		end
 
-		def process_pager
+		def process_template_pager
 			@template_contents[gtn(@view)] += get_erb_content('pager')
 		end
 
-		def process_search
+		def process_template_search
 			@template_contents[gtn(@view)] = get_erb_content('search') + @template_contents[gtn(@view)]
 		end
 
-		#get the name path of appliction
+		#get the path of appliction as the name
 		def grn(file = "routes")
 			path = "modules/#{@module_name}/applications/#{file}.rb"
 			@app_contents[path] = "" unless @app_contents.include? path
 			path
 		end
 
-		#get the name of template path
+		#get the path of template as the name
 		def gtn(name)
 			"modules/#{@module_name}/templates/#{@name}_#{name}.slim"
 		end
 
 		def get_erb_content(name, type = 'templates')
 			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name}.tt"
-			return "nothing about the #{path}" unless File.exists?(path)
-			t = ERB.new(path)
-			t.result(binding)
+			if File.exist?(path)
+				t = ERB.new(path)
+				t.result(binding)
+			else
+				"No such the file #{path}" 
+			end
 		end
 
 end
