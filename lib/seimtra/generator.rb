@@ -3,10 +3,10 @@ class Generator
 
 	attr_accessor :template_contents, :app_contents
 
-	def initialize(name, module_name, fields, argv, with, level)
+	def initialize(name, module_name = 'custom', fields = [], argv = {}, with = {}, level = 0)
 
 		#@t, template variable in frontground
-		@app_contents = @template_contents = @argv = @with = @t = {}
+		@app_contents 	= @with = @t = @template_contents = @argv = {}
 		@name 			= name
 		@module_name	= module_name
 		@fields 		= fields
@@ -14,6 +14,14 @@ class Generator
 		@level 			= level
 		@mode 			= ['table', 'list']
 		@view			= "table"
+
+				@app_contents['ss'] = 'aaaaa'
+				@t['cccc'] = 'cccc'
+ 				puts @app_contents
+ 				puts @template_contents
+				puts @t
+				puts @argv
+				puts @with
 
 		#A condition for deleting, updeting, editting the record
 		@keyword		= ''
@@ -25,12 +33,14 @@ class Generator
 				send("preprocess_#{function}") if self.respond_to?("preprocess_#{function}", true)
 			end
 
+			foo = '='*10
 			@functions.each do |function|
-				#process app
-				foo = '='*10
-				@app_contents[grn] += "# == #{function} #{Time.now} #{foo}\n"
-				@app_contents[grn] += get_erb_content(function, 'applications')
-				@app_contents[grn] += "\n\n"
+				#process application
+				name = grn
+				@app_contents[name] = "" unless @app_contents.has_key? name
+				@app_contents[name] += "# == #{function} #{Time.now} #{foo}\n"
+				@app_contents[name] += get_erb_content(function, 'applications')
+				@app_contents[name] += "\n\n"
 
 				#process template
 				if self.respond_to?("process_template_#{function}", true)
@@ -40,6 +50,7 @@ class Generator
 				end
 			end
 		end
+
 	end
 
 	private
@@ -134,9 +145,7 @@ class Generator
 
 		#get the path of appliction as the name
 		def grn(file = "routes")
-			path = "modules/#{@module_name}/applications/#{file}.rb"
-			@app_contents[path] = "" unless @app_contents.include? path
-			path
+			"modules/#{@module_name}/applications/#{file}.rb"
 		end
 
 		#get the path of template as the name
@@ -146,7 +155,7 @@ class Generator
 
 		def get_erb_content(name, type = 'templates')
 			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name}.tt"
-			if File.exist?(path)
+			if File.exist? path
 				t = ERB.new(path)
 				t.result(binding)
 			else

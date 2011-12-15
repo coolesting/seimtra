@@ -123,17 +123,17 @@ class SeimtraThor < Thor
 		unless fields.empty?
 			require "seimtra/generator"
 			g = Generator.new(name, module_current, fields, argv, options[:with], options[:level])
-			g.app_contents.each do |path, content|
-				if File.exist? path
-					prepend_to_file path, content
-				else
-					create_file path, content
-				end
-			end
-
-			g.template_contents.each do |path, content|
-				create_file path, content
-			end
+# 			g.app_contents.each do |path, content|
+# 				if File.exist? path
+# 					prepend_to_file path, content
+# 				else
+# 					create_file path, content
+# 				end
+# 			end
+# 
+# 			g.template_contents.each do |path, content|
+# 				create_file path, content
+# 			end
 		end
 
 		#implement/run the migrations to database
@@ -171,7 +171,7 @@ class SeimtraThor < Thor
 	method_option :focus, :type => :boolean, :aliases => '-f'
 	def test(func_name = nil, *argv)
 		return error("Enter your test name likes this, 3s test db") if func_name == nil
-		require "seimtra/test"
+		require "seimtra/stest"
 		Dir[ROOTPATH + "/test/*"].each do | file |
 			require file
 		end
