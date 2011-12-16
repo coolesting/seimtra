@@ -5,23 +5,18 @@ class Generator
 
 	def initialize(name, module_name = 'custom', fields = [], argv = {}, with = {}, level = 0)
 
-		#@t, template variable in frontground
-		@app_contents 	= @with = @t = @template_contents = @argv = {}
+		@app_contents 	= {}
+		@with 			= {}
+		@t 				= {}
+		@template_contents 	= {}
+		@argv 			= {}
 		@name 			= name
 		@module_name	= module_name
 		@fields 		= fields
 		@functions 		= @mode = []
-		@level 			= level
 		@mode 			= ['table', 'list']
+		@level 			= level
 		@view			= "table"
-
-				@app_contents['ss'] = 'aaaaa'
-				@t['cccc'] = 'cccc'
- 				puts @app_contents
- 				puts @template_contents
-				puts @t
-				puts @argv
-				puts @with
 
 		#A condition for deleting, updeting, editting the record
 		@keyword		= ''
@@ -51,6 +46,8 @@ class Generator
 			end
 		end
 
+		puts @app_contents
+		puts @template_contents
 	end
 
 	private
@@ -156,7 +153,8 @@ class Generator
 		def get_erb_content(name, type = 'templates')
 			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name}.tt"
 			if File.exist? path
-				t = ERB.new(path)
+				content = File.read(path)
+				t = ERB.new(content)
 				t.result(binding)
 			else
 				"No such the file #{path}" 
