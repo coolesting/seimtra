@@ -6,68 +6,77 @@ class SeimtraThor < Thor
 
 	# == arguments
 	#
-	# name, 		string, required
-	# mrgration, 	string, option, such as, primary_key:uid, String:name
-	# 				more details see the migration method 
+	# name, 		string 
 	
 	# == options
 	#
-	# --to, -t		by default, this options is null, so the generator will
-	# 				create the new module, if the option be set, the generating
-	# 				files will be puts into that module you specifying by option
+	# --to, -t		put the specifying content to specifying module
+	# --create, -c	create a module if the module is not existing
 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
 	# 				automatically
-	# --display, -d	display the specifying display.
-	# --run, -r		run the migrating record of specifying module
-	# --with, -w	by default, the generator will display a table, you could add
-	# 				extre function with the option, 
-	# --level, -lv	assign the privilege levles to the extra function for user
-	# --module, -m	create a module skeleton
+	# --migration,-m create a skeleton if the migration is set
+	# --display, -d	display the specifying content with a skeleton.
+	# --run, -r		run the migrating record
+	# --with, -w	add extre function, such as, pager:10
+	# --routes		generate the routes
+	# --views		generate the view templates
 
 	# == Examples 
 	#
-	# generate a module skeleton with given books
+	# === Example 1
 	#
-	# 	3s g books -m
+	# create a module step by step, 
+	# first, generate a standard structure folder of module 
 	#
-	# generate a module with creating some fields
+	# 	3s g user --create
 	#
-	#	3s g user primary_id:uid String:name String:pawd
+	# create the migration of database
 	#
-	# the function likes above, and runs the migration record
+	# 	3s db user String:username String:password String:email -a -r
 	#
-	#	3s g article primary_id:aid String:title text:body --run
+	# create the routes and views, then open the file and edit it
 	#
-	# generate a module with existing field
+	# 	3s g --routes=get:login get:register post:login post:register --views=login register
 	#
-	#	3s g article -d=aid title
+	# finally, display the result of record added
+	#
+	# 	3s g user --display=username email
+
+	# === Example 2 
+	#
+	# if you feel some complex above the steps, you can do that with a command,
+	# generate a skeleton
+	#
+	# 	3s g user -m=String:username String:password String:email -a -r
+ 
+	# === Example 3
+	#
+	# display by conditions
+	#
 	#	3s g user --display=username email
 	#
 	# generate a module with pager, search, edit, delete and so on
 	#
-	#	3s g article -d=aid title --with=search_by:title
-	#	3s g article -d=aid title --with=edit_by:aid delete_by:aid
-	#	3s g article -d=aid title --with=page_size:10 search_by:title
-	#	3s g article String:title text:body --with=all:enable --run
-	#
-	# display the specifying field in view, by default, if you have not used
-	# the -d option, it will displays origin filed you type in prompt line
-	#
-	#	3s g post primary_id:pid String:title text:body -d=pid title --run
-	#	3s g -d=title body --with=view_by:pid --with=mode:list
+	#	3s g user_list -d=username email --with=pager:10
+	#	3s g user_details -d=username email --with=view_by:uid
+	#	3s g user_opt -d=aid title --with=edit_by:uid delete_by:uid
 
 	method_option :to, :type => :string, :aliases => '-t'
+	method_option :create, :type => :boolean, :aliases => '-c' 
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
+	method_option :migration, :type => :hash, :aliases => '-m'
 	method_option :display, :type => :array, :aliases => '-d'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
-	method_option :level, :type => :hash, :aliases => '-lv' 
-	method_option :module, :type => :boolean, :aliases => '-m' 
+	method_option :routes, :type => :hash
+	method_option :views, :type => :array
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
-	def generate(name, *argv)
+	def generate(name = nil)
 
-		migrations 		= fields = []
-		module_current 	= name
+		fields 			= []
+		name			= SCFG.get('module_focus') if name == nil 
+		migration 		= options[:migration] != nil ? options[:migration] : []
+		module_current 	= SCFG.get('module_focus')
 
 		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 
@@ -75,12 +84,11 @@ class SeimtraThor < Thor
 		if options[:to] != nil
 			module_current = options[:to] 
 			return error(Utils.message) unless Utils.check_module(module_current)
-		else
-			module_current = SCFG.get('module_focus')
 		end
 
 		#generate new module
-		if options.module?
+		if options.create?
+			module_current 	= name
 			return error(Utils.message) if Utils.check_module(name)
 			directory "docs/modules", "modules/#{name}"
 
@@ -105,41 +113,43 @@ class SeimtraThor < Thor
 			SCFG.set('module_focus', name)
 		end
 
-		#create the migrations
-		if argv.count > 0
+		#generate the skeleton
+		if options[:migration] != nil
 			if options.autocomplete?
 				db = Db.new
 				return error(db.msg) if db.error
-				argv = db.autocomplete(name, argv)
-			end
-			migrations = argv
-			argv.each do |item|
-				fields << item.split(":").last
+				migration = db.autocomplete(name, options[:skeleton])
 			end
 		end
-		fields = options[:display] if options[:display] != nil
 
-		#generate the skeleton 
-		unless fields.empty?
-			require "seimtra/generator"
-			g = Generator.new(name, module_current, fields, argv, options[:with], options[:level])
-# 			g.app_contents.each do |path, content|
-# 				if File.exist? path
-# 					prepend_to_file path, content
-# 				else
-# 					create_file path, content
-# 				end
-# 			end
-# 
-# 			g.template_contents.each do |path, content|
+		#implement the generating action
+		require "seimtra/generator"
+		g = Generator.new(
+			name, 
+			module_current, 
+			migration, 
+			options[:display], 
+			options[:routes], 
+			options[:views],
+			options[:with]
+		)
+
+# 		g.app_contents.each do |path, content|
+# 			if File.exist? path
+# 				prepend_to_file path, content
+# 			else
 # 				create_file path, content
 # 			end
-		end
+# 		end
+# 
+# 		g.template_contents.each do |path, content|
+# 			create_file path, content
+# 		end
 
 		#implement/run the migrations to database
-		unless migrations.empty?
+		unless migration.empty?
 			args = {}; args[:run] = options.run? ? true : false
-			invoke "db", "create:#{name}", migrations, args, :module => module_current
+			invoke "db", "create:#{name}", migration, args, :module => module_current
 		end
 	end
 

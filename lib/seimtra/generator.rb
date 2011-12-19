@@ -34,7 +34,11 @@ class Generator
 				name = grn
 				@app_contents[name] = "" unless @app_contents.has_key? name
 				@app_contents[name] += "# == #{function} #{Time.now} #{foo}\n"
-				@app_contents[name] += get_erb_content(function, 'applications')
+				if self.respond_to?("process_app_#{function}", true)
+					@app_contents[name] += send("process_app_#{function}") 
+				else
+					@app_contents[name] += get_erb_content(function, 'applications')
+				end
 				@app_contents[name] += "\n\n"
 
 				#process template
