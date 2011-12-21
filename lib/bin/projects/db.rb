@@ -4,13 +4,11 @@ class SeimtraThor < Thor
 	#
 	# Create and implement for migrations to the database,
 	# output/dump the schema/migration from database
-	#
 
 	# == arguments
 	#
 	# operate_table, string, such as, create:books, alter:books/
 	# fields, 		 array, ["String:name","String:password"]
-	#
 
 	# == options
 	#
@@ -62,12 +60,12 @@ class SeimtraThor < Thor
 		db 				= Db.new
 		return error(db.msg) if db.error
 
-		module_current	= options[:to] == nil ? SCFG.get("module_focus") : options[:to]
+		module_current	= options[:to] == nil ? SCFG.get(:module_focus) : options[:to]
 		path 			= "/modules/#{module_current}/migrations"
 		mpath 			= Dir.pwd + path
 		gpath 			= Dir.pwd + "/db/migrations"
 		operate 		= table = ''
-		default_operate	= ['create', 'alter', 'drop', 'rename']
+		default_operate	= [:create, :alter, :drop, :rename]
 		dbcont 			= "'#{settings.db_connect}'"
 		version			= options[:version] == nil ? '' : "-M #{options[:version]}"
 
@@ -82,7 +80,7 @@ class SeimtraThor < Thor
 				table	= operate_table
 			end
 
-			unless default_operate.include?(operate) 
+			unless default_operate.include?(operate.to_sym) 
 				return error("#{operate} is a error operation, you allow to use create, alter, rename and drop") 
 			end
 		end

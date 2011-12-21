@@ -3,37 +3,49 @@ class Generator
 
 	attr_accessor :template_contents, :app_contents
 
-	def initialize(name, module_name = 'custom', fields = [], argv = {}, with = {}, level = 0)
+	def initialize(name, module_name = :custom, options = nil)
 
 		@app_contents 	= {}
-		@with 			= {}
-		@t 				= {}
 		@template_contents 	= {}
-		@argv 			= {}
+
 		@name 			= name
 		@module_name	= module_name
-		@fields 		= fields
-		@functions 		= @mode = []
-		@mode 			= ['table', 'list']
-		@level 			= level
-		@view			= "table"
+
+		@functions 		= []
+		@mode 			= [:table, :list]
+		@view			= @mode[0]
+		@filter 		= [:index, :foreign_key, :unique]
 
 		#A condition for deleting, updeting, editting the record
-		@keyword		= ''
+		@keyword 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
 
-		_process_data(with, argv)
+		#template variable
+		@tpl_var 		= {}
+		#temporary variable
+		@tmp_var		= {}
+
+		#options, an array of hash
+		#migration, skeleton, display, routes, views, with
+		if options != nil
+			options.each do | key, val |
+				if self.respond_to?("preprocess_#{key}", true) and val != nil
+					send("preprocess_#{key}", val) 
+				end
+			end
+		end
+
+		#_process_data(with, migration)
 		unless @functions.empty?
 			#preprocess data
 			@functions.each do |function|
-				send("preprocess_#{function}") if self.respond_to?("preprocess_#{function}", true)
+				send("process_data_#{function}") if self.respond_to?("process_data_#{function}", true)
 			end
 
-			foo = '='*10
 			@functions.each do |function|
 				#process application
 				name = grn
 				@app_contents[name] = "" unless @app_contents.has_key? name
-				@app_contents[name] += "# == #{function} #{Time.now} #{foo}\n"
+				@app_contents[name] += "# == create at #{Time.now} == \n"
 				if self.respond_to?("process_app_#{function}", true)
 					@app_contents[name] += send("process_app_#{function}") 
 				else
@@ -56,41 +68,33 @@ class Generator
 
 	private
 
-		def _process_data(with, argv)
+		def preprocess_display(argv)
+			unless argv.empty?
+				@functions << "view"
+				#the action of view, edit, delete, new ...
+			end
+		end
 
-			#function name => [parameter, parameter_alias, parameter_alias, ...]
-			dwith = {}
-			dwith['mode']	= ['mode']
-			dwith['all']	= ['all']
-			dwith['view']	= ['view_by', 'show_by', 'display_by', 'view',  'show', 'display']
-			dwith['pager'] 	= ['page_size', 'pager', 'page', 'ps']
-			dwith['search'] = ['search_by', 'search', 'src']
-			dwith['rm'] 	= ['delete_by', 'delete', 'rm', 'remove', 'remove_by']
-			dwith['edit'] 	= ['update_by', 'up', 'update', 'edit', 'edit_by']
-			dwith['new'] 	= ['new', 'create']
+		def preprocess_routes(argv)
+			unless argv.empty?
+				@functions << "routes"
+				@tmp_var[:routes] = argv
+			end
+		end
 
-			#enable default option
-			@functions << 'view'
-			if with != nil
-				dwith.each do |key, val|
-					val.each do |item|
-						if with.include?(item)
-							if item == 'disable' and @functions.include?(key)
-								@functions.delete(key) 
-							else
-								@with[dwith[key][0]] = with[item] if item != 'enable'
-								@functions << key
-							end
-							break
-						end
-					end
+		def process_app_routes
+			if @tmp_var.has_key? :routes
+				content = ''
+				@tmp_var[:routes].each do | item |
+					meth, route = item.split(':')
+					content += "#{meth} '/#{@module_name}/#{route}' do \n"
+					content += "end \n"
 				end
 			end
+			content
+		end
 
-			@t = @with
-
-			keyword = ['primary_key', 'Integer', 'index', 'foreign_key', 'unique']
-			filter 	= ['index', 'foreign_key', 'unique']
+		def _process_data(with, argv)
 			if argv.count > 0
 				# For example,
 				# primary_key:pid
@@ -99,11 +103,11 @@ class Generator
 				# String:body
 				argv.each do |item|
 					key, val = item.split(":")
-					unless filter.include?(key)
+					unless @filter.include?(key)
 						@argv[val] = key 
 					end
-					if @keyword == '' and keyword.include?(key)
-						@keyword = val.index(',') ? val.sub(/[,]/, '') : val
+					if @tpl_var[:keyword] == '' and @keyword.include?(key)
+						@tpl_var[:keyword] = val.index(',') ? val.sub(/[,]/, '') : val
 					end
 				end
 			end
@@ -111,25 +115,25 @@ class Generator
 			@keyword = @fields[0] if @keyword == ''
 		end
 
-		def preprocess_new
-			@t['insert_sql'] = insert_sql = ''
+		def process_data_new
+			@tpl_var[:insert_sql] = insert_sql = ''
 			@fields.each do |item|
 				insert_sql += ":#{item} => params[:#{item}],"
 			end
-			@t['insert_sql'] = insert_sql.chomp(',')
+			@tpl_var[:insert_sql] = insert_sql.chomp(',')
 		end
 
-		def preprocess_rm
-			@t['delete_by'] = @keyword unless @t.include?('delete_by')
+		def process_data_rm
+			@tpl_var[:delete_by] = @keyword unless @tpl_var.include? :delete_by
 		end
 
-		def preprocess_edit
-			@t['update_sql'] = ''
-			@t['update_by'] = @keyword unless @t.include?('update_by')
+		def process_data_edit
+			@tpl_var[:update_sql] = ''
+			@tpl_var[:update_by] = @keyword unless @t.include? :update_by
 		end
 
-		def preprocess_view
-			@view = @with['mode'] if @with.include?('mode') and @mode.include?(@with['mode'])
+		def process_data_view
+			@view = @with[:mode] if @with.include?(:mode) and @mode.include?(@with[:mode])
 		end
 
 		def process_template_view
@@ -137,11 +141,11 @@ class Generator
 		end
 
 		def process_template_pager
-			@template_contents[gtn(@view)] += get_erb_content('pager')
+			@template_contents[gtn(@view)] += get_erb_content :pager
 		end
 
 		def process_template_search
-			@template_contents[gtn(@view)] = get_erb_content('search') + @template_contents[gtn(@view)]
+			@template_contents[gtn(@view)] = get_erb_content(:search) + @template_contents[gtn(@view)]
 		end
 
 		#get the path of appliction as the name

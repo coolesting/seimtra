@@ -5,20 +5,20 @@ class SeimtraThor < Thor
 	def new(project_name = 'seimtra_project', mode = 'production')
 		directory 'docs/common', project_name
 		SCFG.init
-		SCFG.set 'log', SCFG::OPTIONS['log']
-		SCFG.set 'log_path', SCFG::OPTIONS['log_path']
-		SCFG.set 'module_focus', SCFG::OPTIONS['module_focus']
-		SCFG.set 'module_repository', SCFG::OPTIONS['module_repos']
+		SCFG.set :log, SCFG::OPTIONS[:log]
+		SCFG.set :log_path, SCFG::OPTIONS[:log_path]
+		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
+		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
 
 		if mode == 'production'
 			directory 'docs/production', project_name
-			SCFG.set 'status', 'production'
+			SCFG.set :status, 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)
 			run("bundle install")
 			say "Initializing complete.", "\e[32m"
 		else
 			directory 'docs/development', project_name
-			SCFG.set 'status', 'development'
+			SCFG.set :status, 'development'
 			Dir.chdir(Dir.pwd + '/' + project_name)
 			say "Executing 'bundle install' for complete installation if this is your first time using the development editor", "\e[32m"
 		end
@@ -47,7 +47,7 @@ class SeimtraThor < Thor
 		end
 
 		#get config
-		SCFG.get.each do |k,v| say "#{k} : #{v}", "\e[33m" end
+		SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
 	end
 
 	no_tasks do

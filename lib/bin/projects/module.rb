@@ -14,7 +14,8 @@ class SeimtraThor < Thor
 	# --create, -c	create a module if the module is not existing
 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
 	# 				automatically
-	# --migration,-m create a skeleton if the migration is set
+	# --migration, -m create the migration
+	# --skeleton, -s create the skeleton
 	# --display, -d	display the specifying content with a skeleton.
 	# --run, -r		run the migrating record
 	# --with, -w	add extre function, such as, pager:10
@@ -47,7 +48,7 @@ class SeimtraThor < Thor
 	# if you feel some complex above the steps, you can do that with a command,
 	# generate a skeleton
 	#
-	# 	3s g user -m=String:username String:password String:email -a -r
+	# 	3s g user -m=String:username String:password String:email -a -r -s
  
 	# === Example 3
 	#
@@ -65,6 +66,7 @@ class SeimtraThor < Thor
 	method_option :create, :type => :boolean, :aliases => '-c' 
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :migration, :type => :hash, :aliases => '-m'
+	method_option :skeleton, :type => :boolean, :aliases => '-s'
 	method_option :display, :type => :array, :aliases => '-d'
 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
@@ -73,10 +75,9 @@ class SeimtraThor < Thor
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	def generate(name = nil)
 
-		fields 			= []
-		name			= SCFG.get('module_focus') if name == nil 
+		name			= SCFG.get(:module_focus) if name == nil 
 		migration 		= options[:migration] != nil ? options[:migration] : []
-		module_current 	= SCFG.get('module_focus')
+		module_current 	= SCFG.get :module_focus
 
 		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 
@@ -95,13 +96,13 @@ class SeimtraThor < Thor
 			path = Utils.check_path.first
 			SCFG.load path, true
 			info = {}
-			info['name'] 		= name
-			info['created'] 	= Time.now
-			info['version'] 	= '0.0.1'
-			info['email'] 		= SCFG.get('email') ? SCFG.get('email') : ask("What is the email of your ?")
-			info['author']		= SCFG.get('author') ? SCFG.get('author') : ask("What is your name ?")
-			info['website'] 	= SCFG::OPTIONS['website'] + "/seimtra-#{name}"
-			info['description'] = ask("The description of the module ?")
+			info[:name] 		= name
+			info[:created] 		= Time.now
+			info[:version] 		= '0.0.1'
+			info[:email] 		= SCFG.get(:email) ? SCFG.get(:email) : ask("What is the email of your ?")
+			info[:author]		= SCFG.get(:author) ? SCFG.get(:author) : ask("What is your name ?")
+			info[:website] 		= SCFG::OPTIONS['website'] + "/seimtra-#{name}"
+			info[:description] 	= ask("The description of the module ?")
 
 			#set module config
 			SCFG.load name
@@ -110,16 +111,20 @@ class SeimtraThor < Thor
 			end
 
 			SCFG.load
-			SCFG.set('module_focus', name)
+			SCFG.set :module_focus, name
 		end
 
-		#generate the skeleton
-		if options[:migration] != nil
+		#generate the skeleton if the migration
+		unless migration.empty?
 			if options.autocomplete?
 				db = Db.new
 				return error(db.msg) if db.error
-				migration = db.autocomplete(name, options[:skeleton])
+				migration = db.autocomplete(name, migration)
 			end
+
+			#implement/run the migrations to database
+			args = {}; args[:run] = options.run? ? true : false
+			invoke :db, "create:#{name}", migration, args, :module => module_current
 		end
 
 		#implement the generating action
@@ -127,11 +132,14 @@ class SeimtraThor < Thor
 		g = Generator.new(
 			name, 
 			module_current, 
-			migration, 
-			options[:display], 
-			options[:routes], 
-			options[:views],
-			options[:with]
+			{
+				:migration 	=> migration, 
+				:skeleton	=> options[:skeleton], 
+				:display	=> options[:display], 
+				:routes		=> options[:routes], 
+				:views		=> options[:views],
+				:with		=> options[:with]
+			}
 		)
 
 # 		g.app_contents.each do |path, content|
@@ -146,11 +154,6 @@ class SeimtraThor < Thor
 # 			create_file path, content
 # 		end
 
-		#implement/run the migrations to database
-		unless migration.empty?
-			args = {}; args[:run] = options.run? ? true : false
-			invoke "db", "create:#{name}", migration, args, :module => module_current
-		end
 	end
 
 	desc "addone [NAME] [OPTION]", "Add one of modules to your application"

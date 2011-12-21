@@ -13,7 +13,7 @@ class SeimtraThor < Thor
 		end
 
 		#get config
-		SCFG.get.each do |k,v| say "#{k} : #{v}", "\e[33m" end
+		SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
 	end
 
 end

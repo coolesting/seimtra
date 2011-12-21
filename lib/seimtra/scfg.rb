@@ -1,19 +1,17 @@
 require 'yaml'
 
 class SCFG
-	OPTIONS = {
-		'status' 		=> 'development',
-		'email'			=> 'empty',
-		'author' 		=> 'administrator',
-		'log' 			=> false,
-		'log_path' 		=> Dir.pwd + '/log/default',
-		'module_focus' 	=> 'custom',
-		'module_repos' 	=> File.expand_path('~/SeimRepos'),
-		'website' 		=> "https://github.com/coolesting"
-	}
-end
 
-class SCFG
+	OPTIONS = {
+		:status 		=> 'development',
+		:email			=> 'empty',
+		:author 		=> 'administrator',
+		:log 			=> false,
+		:log_path 		=> Dir.pwd + '/log/default',
+		:module_focus 	=> 'custom',
+		:module_repos 	=> File.expand_path('~/SeimRepos'),
+		:website 		=> "https://github.com/coolesting"
+	}
 
 	@@options = {}
 	@@changed = []
@@ -35,12 +33,12 @@ class SCFG
 
 		def init(name = nil, custom = false)
 			setpath(name, custom)
-			@@options[@path]['created'] = Time.now
-			@@options[@path]['changed'] = Time.now
-			@@options[@path]['version'] = Seimtra::Info::VERSION
-			@@options[@path]['status'] 	= SCFG::OPTIONS['status']
-			@@options[@path]['email']	= SCFG::OPTIONS['email']
-			@@options[@path]['author'] 	= SCFG::OPTIONS['author']
+			@@options[@path][:created] 	= Time.now
+			@@options[@path][:changed] 	= Time.now
+			@@options[@path][:version] 	= Seimtra::Info::VERSION
+			@@options[@path][:status] 	= SCFG::OPTIONS[:status]
+			@@options[@path][:email]	= SCFG::OPTIONS[:email]
+			@@options[@path][:author] 	= SCFG::OPTIONS[:author]
 			@@changed << @path
 		end
 
@@ -65,7 +63,7 @@ class SCFG
 		def save
 			unless @@changed.empty?
 				@@changed.each do |path|
-					@@options[path]['changed'] = Time.now
+					@@options[path][:changed] = Time.now
 					File.open(path, 'w+') do |f|
 						f.write(YAML::dump(@@options[path]))
 					end
