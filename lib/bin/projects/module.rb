@@ -15,12 +15,12 @@ class SeimtraThor < Thor
 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
 	# 				automatically
 	# --migration, -m create the migration
-	# --skeleton, -s create the skeleton
-	# --display, -d	display the specifying content with a skeleton.
 	# --run, -r		run the migrating record
 	# --with, -w	add extre function, such as, pager:10
-	# --routes		generate the routes
-	# --views		generate the view templates
+	# --view, -v	generate the view with the specifying field
+	# --route		generate the routes
+	# --enable		enable the actions, such as, edit, new, rm
+	# --style		enable specifying style, default is table
 
 	# == Examples 
 	#
@@ -30,6 +30,7 @@ class SeimtraThor < Thor
 	# first, generate a standard structure folder of module 
 	#
 	# 	3s g user --create
+	# 	3s g users -c
 	#
 	# create the migration of database
 	#
@@ -37,46 +38,40 @@ class SeimtraThor < Thor
 	#
 	# create the routes and views, then open the file and edit it
 	#
-	# 	3s g --routes=get:login get:register post:login post:register --views=login register
+	# 	3s g --route=get:login get:register post:login post:register
 	#
-	# finally, display the result of record added
+	# finally, display the fields, 'username', 'email', enable the actions 'edit', 'new', 'rm'
+	# and, set the style, 'list'
 	#
-	# 	3s g user --display=username email
+	# 	3s g user --view=username email --enable=edit new rm --style=list
 
 	# === Example 2 
 	#
-	# if you feel some complex above the steps, you can do that with a command,
-	# generate a skeleton
-	#
-	# 	3s g user -m=String:username String:password String:email -a -r -s
- 
-	# === Example 3
-	#
 	# display by conditions
 	#
-	#	3s g user --display=username email
+	#	3s g user --view=username email --with=view_by:username
 	#
 	# generate a module with pager, search, edit, delete and so on
 	#
-	#	3s g user_list -d=username email --with=pager:10
-	#	3s g user_details -d=username email --with=view_by:uid
-	#	3s g user_opt -d=aid title --with=edit_by:uid delete_by:uid
+	#	3s g user_list -v=username email --with=pager:10
+	#	3s g user_details -v=username email --with=view_by:uid
+	#	3s g user_opt -v=aid title --with=edit_by:uid rm_by:uid
 
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :create, :type => :boolean, :aliases => '-c' 
-	method_option :autocomplete, :type => :boolean, :aliases => '-a'
-	method_option :migration, :type => :hash, :aliases => '-m'
-	method_option :skeleton, :type => :boolean, :aliases => '-s'
-	method_option :display, :type => :array, :aliases => '-d'
-	method_option :run, :type => :boolean, :aliases => '-r' 
+# 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
+# 	method_option :migration, :type => :hash, :aliases => '-m'
+# 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
-	method_option :routes, :type => :hash
-	method_option :views, :type => :array
+	method_option :view, :type => :array, :aliases => '-v'
+	method_option :route, :type => :hash
+	method_option :enable, :type => :array
+	method_option :style, :type => :string
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	def generate(name = nil)
 
 		name			= SCFG.get(:module_focus) if name == nil 
-		migration 		= options[:migration] != nil ? options[:migration] : []
+# 		migration 		= options[:migration] != nil ? options[:migration] : []
 		module_current 	= SCFG.get :module_focus
 
 		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
@@ -114,33 +109,28 @@ class SeimtraThor < Thor
 			SCFG.set :module_focus, name
 		end
 
-		#generate the skeleton if the migration
-		unless migration.empty?
-			if options.autocomplete?
-				db = Db.new
-				return error(db.msg) if db.error
-				migration = db.autocomplete(name, migration)
-			end
+# 		#generate the skeleton if the migration
+# 		unless migration.empty?
+# 			if options.autocomplete?
+# 				db = Db.new
+# 				return error(db.msg) if db.error
+# 				migration = db.autocomplete(name, migration)
+# 			end
+# 
+# 			#implement/run the migrations to database
+# 			args = {}; args[:run] = options.run? ? true : false
+# 			invoke :db, "create:#{name}", migration, args, :module => module_current
+# 		end
 
-			#implement/run the migrations to database
-			args = {}; args[:run] = options.run? ? true : false
-			invoke :db, "create:#{name}", migration, args, :module => module_current
-		end
+		goptions = {}
+		goptions[:view] 	= options[:view] if options[:view] != nil
+		goptions[:route]	= options[:route] if options[:route] != nil
+		goptions[:enable] 	= options[:enable] if options[:enable] != nil
+		goptions[:style] 	= options[:style] if options[:style] != nil
+		goptions[:with] 	= options[:with] if options[:with] != nil
 
-		#implement the generating action
 		require "seimtra/generator"
-		g = Generator.new(
-			name, 
-			module_current, 
-			{
-				:migration 	=> migration, 
-				:skeleton	=> options[:skeleton], 
-				:display	=> options[:display], 
-				:routes		=> options[:routes], 
-				:views		=> options[:views],
-				:with		=> options[:with]
-			}
-		)
+		g = Generator.new(name, module_current, goptions)
 
 # 		g.app_contents.each do |path, content|
 # 			if File.exist? path
