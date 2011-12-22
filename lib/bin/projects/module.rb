@@ -171,8 +171,13 @@ class SeimtraThor < Thor
 	def remove(name = nil)
 	end
 
-	desc "list", "A list of local module"
-	def list(path = nil)
+	desc "list", "The list about the modules, routes"
+	def list(type = 'module')
+		if type == 'module'
+			Dir[Dir.pwd + '/modules/*'].each do | m |
+				say m.split('/').last, "\e[33m"
+			end
+		end
 	end
 
 	desc "packup [NAME]", "Packup a module with some files"
