@@ -3,7 +3,7 @@ class Generator
 
 	attr_accessor :template_contents, :app_contents
 
-	def initialize(name, module_name = :custom, options = nil)
+	def initialize(name, module_name = :custom, options = {})
 
 		@app_contents 	= {}
 		@template_contents 	= {}
@@ -11,9 +11,9 @@ class Generator
 		@name 			= name
 		@module_name	= module_name
 
-		@functions 		= []
-		@mode 			= [:table, :list]
-		@view			= @mode[0]
+		@actions 		= []
+		@style 			= [:table, :list]
+		@enable			= [:edit, :new, :rm]
 		@filter 		= [:index, :foreign_key, :unique]
 
 		#A condition for deleting, updeting, editting the record
@@ -25,39 +25,39 @@ class Generator
 		@tmp_var		= {}
 
 		#options, an array of hash
-		#migration, skeleton, display, routes, views, with
-		if options != nil
+		unless options.empty?
 			options.each do | key, val |
-				if self.respond_to?("preprocess_#{key}", true) and val != nil
+				if self.respond_to?("preprocess_#{key}", true)
 					send("preprocess_#{key}", val) 
 				end
 			end
 		end
+		puts options
 
 		#_process_data(with, migration)
-		unless @functions.empty?
+		unless @actions.empty?
 			#preprocess data
-			@functions.each do |function|
-				send("process_data_#{function}") if self.respond_to?("process_data_#{function}", true)
+			@actions.each do |action|
+				send("process_data_#{action}") if self.respond_to?("process_data_#{action}", true)
 			end
 
-			@functions.each do |function|
+			@actions.each do |action|
 				#process application
 				name = grn
 				@app_contents[name] = "" unless @app_contents.has_key? name
 				@app_contents[name] += "# == create at #{Time.now} == \n"
-				if self.respond_to?("process_app_#{function}", true)
-					@app_contents[name] += send("process_app_#{function}") 
+				if self.respond_to?("process_app_#{action}", true)
+					@app_contents[name] += send("process_app_#{action}") 
 				else
-					@app_contents[name] += get_erb_content(function, 'applications')
+					@app_contents[name] += get_erb_content(action, 'applications')
 				end
 				@app_contents[name] += "\n\n"
 
 				#process template
-				if self.respond_to?("process_template_#{function}", true)
-					send("process_template_#{function}") 
+				if self.respond_to?("process_template_#{action}", true)
+					send("process_template_#{action}") 
 				else
-					@template_contents[gtn(function)] = get_erb_content(function)
+					@template_contents[gtn(action)] = get_erb_content(action)
 				end
 			end
 		end
@@ -68,16 +68,37 @@ class Generator
 
 	private
 
-		def preprocess_display(argv)
+		def preprocess_with(hash)
+			unless hash.empty?
+				hash.each do | key, val |
+					@tmp_var[key.to_sym] = val
+				end
+			end
+		end
+
+		def preprocess_enable(argv)
 			unless argv.empty?
-				@functions << "view"
-				#the action of view, edit, delete, new ...
+				@tmp_var[:enable] = []
+				argv.each do | itme |
+					@tmp_var[:enable] << itme if @enable.include? item.to_sym
+				end
+			end
+		end
+
+		def preprocess_style(str)
+			@tmp_var[:style] = str if @style.include? str.to_sym
+		end
+
+		def preprocess_view(argv)
+			unless argv.empty?
+				@actions << "view"
+				@tmp_var[:style] = @style[0].to_s unless @tmp_var.has_key? :style
 			end
 		end
 
 		def preprocess_routes(argv)
 			unless argv.empty?
-				@functions << "routes"
+				@actions << "routes"
 				@tmp_var[:routes] = argv
 			end
 		end

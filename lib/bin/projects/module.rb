@@ -18,7 +18,7 @@ class SeimtraThor < Thor
 	# --run, -r		run the migrating record
 	# --with, -w	add extre function, such as, pager:10
 	# --view, -v	generate the view with the specifying field
-	# --route		generate the routes
+	# --routes		generate the routes
 	# --enable		enable the actions, such as, edit, new, rm
 	# --style		enable specifying style, default is table
 
@@ -38,7 +38,7 @@ class SeimtraThor < Thor
 	#
 	# create the routes and views, then open the file and edit it
 	#
-	# 	3s g --route=get:login get:register post:login post:register
+	# 	3s g --route=get_login get_register post_login post_register
 	#
 	# finally, display the fields, 'username', 'email', enable the actions 'edit', 'new', 'rm'
 	# and, set the style, 'list'
@@ -64,16 +64,15 @@ class SeimtraThor < Thor
 # 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :view, :type => :array, :aliases => '-v'
-	method_option :route, :type => :hash
-	method_option :enable, :type => :array
-	method_option :style, :type => :string
+	method_option :routes, :type => :hash, :aliases => '-r'
+	method_option :enable, :type => :array, :aliases => ''
+	method_option :style, :type => :string, :aliases => '-s'
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	def generate(name = nil)
 
 		name			= SCFG.get(:module_focus) if name == nil 
 # 		migration 		= options[:migration] != nil ? options[:migration] : []
 		module_current 	= SCFG.get :module_focus
-
 		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 
 		#add the generation to existing module
@@ -124,7 +123,7 @@ class SeimtraThor < Thor
 
 		goptions = {}
 		goptions[:view] 	= options[:view] if options[:view] != nil
-		goptions[:route]	= options[:route] if options[:route] != nil
+		goptions[:routes]	= options[:routes] if options[:routes] != nil
 		goptions[:enable] 	= options[:enable] if options[:enable] != nil
 		goptions[:style] 	= options[:style] if options[:style] != nil
 		goptions[:with] 	= options[:with] if options[:with] != nil
