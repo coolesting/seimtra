@@ -3,7 +3,7 @@ class Generator
 
 	attr_accessor :template_contents, :app_contents
 
-	def initialize(name, module_name = :custom, options = {})
+	def initialize(name, module_name = 'custom', options = {})
 
 		@app_contents 	= {}
 		@template_contents 	= {}
@@ -32,6 +32,8 @@ class Generator
 				end
 			end
 		end
+		puts name
+		puts module_name
 		puts options
 
 		#_process_data(with, migration)
@@ -62,8 +64,8 @@ class Generator
 			end
 		end
 
-		puts @app_contents
-		puts @template_contents
+# 		puts @app_contents
+# 		puts @template_contents
 	end
 
 	private

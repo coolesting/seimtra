@@ -12,10 +12,10 @@ class SeimtraThor < Thor
 	#
 	# --to, -t		put the specifying content to specifying module
 	# --create, -c	create a module if the module is not existing
-	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
-	# 				automatically
-	# --migration, -m create the migration
-	# --run, -r		run the migrating record
+# 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
+# 	# 				automatically
+# 	# --migration, -m create the migration
+# 	# --run, -r		run the migrating record
 	# --with, -w	add extre function, such as, pager:10
 	# --view, -v	generate the view with the specifying field
 	# --routes		generate the routes
@@ -64,8 +64,8 @@ class SeimtraThor < Thor
 # 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :view, :type => :array, :aliases => '-v'
-	method_option :routes, :type => :hash, :aliases => '-r'
-	method_option :enable, :type => :array, :aliases => ''
+	method_option :routes, :type => :array, :aliases => '-r'
+	method_option :enable, :type => :array, :aliases => '-e'
 	method_option :style, :type => :string, :aliases => '-s'
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	def generate(name = nil)

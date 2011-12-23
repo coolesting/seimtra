@@ -33,12 +33,12 @@ class SCFG
 
 		def init(name = nil, custom = false)
 			setpath(name, custom)
-			@@options[@path][:created] 	= Time.now
-			@@options[@path][:changed] 	= Time.now
-			@@options[@path][:version] 	= Seimtra::Info::VERSION
-			@@options[@path][:status] 	= SCFG::OPTIONS[:status]
-			@@options[@path][:email]	= SCFG::OPTIONS[:email]
-			@@options[@path][:author] 	= SCFG::OPTIONS[:author]
+			set :created, Time.now
+			set :changed, Time.now
+			set :version, Seimtra::Info::VERSION
+			set :status, SCFG::OPTIONS[:status]
+			set :email, SCFG::OPTIONS[:email]
+			set :author, SCFG::OPTIONS[:author]
 			@@changed << @path
 		end
 
@@ -52,12 +52,12 @@ class SCFG
 		end
 
 		def set(key, val)
-			@@options[@path][key] = val
+			@@options[@path][key.to_s] = val
 			@@changed << @path
 		end
 
 		def get(key = nil)
-			key == nil ? @@options[@path] : @@options[@path][key]
+			key == nil ? @@options[@path] : @@options[@path][key.to_s]
 		end
 
 		def save
