@@ -1,5 +1,5 @@
 get '/<%= @name %>' do
 	@title = '<%= @name %>'
 	@<%= @name %> = DB[:<%= @name %>].all
-	slim :<%= @name %>_view
+	slim :<%= @name %>_<%= @tmp_var[:style] %>
 end

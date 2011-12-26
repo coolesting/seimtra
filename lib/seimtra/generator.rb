@@ -8,10 +8,13 @@ class Generator
 		@app_contents 	= {}
 		@template_contents 	= {}
 
+		@load_apps 		= []
+		@load_tpls 		= []
+		@processes 		= []
+
 		@name 			= name
 		@module_name	= module_name
 
-		@actions 		= []
 		@style 			= [:table, :list]
 		@enable			= [:edit, :new, :rm]
 		@filter 		= [:index, :foreign_key, :unique]
@@ -33,28 +36,32 @@ class Generator
 			end
 		end
 
-		unless @actions.empty?
-			@actions.each do |action|
-				#process the action
-				if self.respond_to?("process_#{action}", true)
-					send("process_#{action}") 
-				end
+		#process the action
+		unless @processes.empty?
+			@processes.each do | process |
+				send("process_#{process}") if self.respond_to?("process_#{process}", true)
+			end
+		end
 				
-				#load the content of application
+		#load the content of application
+		unless @load_apps.empty?
+			@load_apps.each do | app |
 				name = grn
 				@app_contents[name] = "" unless @app_contents.has_key? name
 				@app_contents[name] += "# == created at #{Time.now} == \n"
-				if self.respond_to?("load_app_#{action}", true)
-					@app_contents[name] += send("load_app_#{action}") 
+				if self.respond_to?("load_app_#{app}", true)
+					@app_contents[name] += send("load_app_#{app}") 
 				else
-					@app_contents[name] += get_erb_content(action, 'applications')
+					@app_contents[name] += get_erb_content(app, 'applications')
 				end
 				@app_contents[name] += "\n\n"
+			end
+		end
 
-				#load the content of template
-				if self.respond_to?("load_template_#{action}", true)
-					send("load_template_#{action}") 
-				end
+		#load the content of template
+		unless @load_tpls.empty?
+			@load_tpls.each do | tpl |
+				send("load_template_#{tpl}")  if self.respond_to?("load_template_#{tpl}", true)
 			end
 		end
 
@@ -68,7 +75,7 @@ class Generator
 
 		def preprocess_routes(argv)
 			unless argv.empty?
-				@actions << "routes"
+				@load_apps << "routes"
 				@tmp_var[:routes] = argv
 			end
 		end
@@ -84,8 +91,8 @@ class Generator
 		def preprocess_enable(argv)
 			unless argv.empty?
 				@tmp_var[:enable] = []
-				argv.each do | itme |
-					@tmp_var[:enable] << itme if @enable.include? item.to_sym
+				argv.each do | item |
+					@tmp_var[:enable] << item if @enable.include? item.to_sym
 				end
 			end
 		end
@@ -94,18 +101,19 @@ class Generator
 			@tmp_var[:style] = str if @style.include? str.to_sym
 		end
 
-		def preprocess_view
+		def preprocess_view(argv)
 			unless argv.empty?
-				@actions << "view"
+				@processes << "view" 
+				@tmp_var[:view] = argv
 			end
 		end
 
 		#================== process the main program ==================
 		
 		def process_view
-			unless argv.empty?
-				@tmp_var[:style] = @style[0].to_s unless @tmp_var.has_key? :style
-			end
+			@tmp_var[:style] = @style[0].to_s unless @tmp_var.has_key? :style
+			@load_apps << 'view'
+			@load_tpls << 'view'
 		end
 
 # 		def _process_data(with, argv)
@@ -146,7 +154,7 @@ class Generator
 			@tpl_var[:update_by] = @keyword unless @t.include? :update_by
 		end
 
-		# ========================= load content fo tamplate =========================
+		# ========================= load content of tamplate =========================
 
 		def load_app_routes
 			if @tmp_var.has_key? :routes
@@ -183,7 +191,7 @@ class Generator
 		end
 
 		def get_erb_content(name, type = 'templates')
-			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name}.tt"
+			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name.to_s}.tt"
 			if File.exist? path
 				content = File.read(path)
 				t = ERB.new(content)
