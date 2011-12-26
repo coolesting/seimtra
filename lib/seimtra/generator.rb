@@ -24,7 +24,7 @@ class Generator
 		#temporary variable
 		@tmp_var		= {}
 
-		#options, an array of hash
+		#preprocess data
 		unless options.empty?
 			options.each do | key, val |
 				if self.respond_to?("preprocess_#{key}", true)
@@ -32,43 +32,46 @@ class Generator
 				end
 			end
 		end
-		puts name
-		puts module_name
-		puts options
 
-		#_process_data(with, migration)
 		unless @actions.empty?
-			#preprocess data
 			@actions.each do |action|
-				send("process_data_#{action}") if self.respond_to?("process_data_#{action}", true)
-			end
-
-			@actions.each do |action|
-				#process application
+				#process the action
+				if self.respond_to?("process_#{action}", true)
+					send("process_#{action}") 
+				end
+				
+				#load the content of application
 				name = grn
 				@app_contents[name] = "" unless @app_contents.has_key? name
-				@app_contents[name] += "# == create at #{Time.now} == \n"
-				if self.respond_to?("process_app_#{action}", true)
-					@app_contents[name] += send("process_app_#{action}") 
+				@app_contents[name] += "# == created at #{Time.now} == \n"
+				if self.respond_to?("load_app_#{action}", true)
+					@app_contents[name] += send("load_app_#{action}") 
 				else
 					@app_contents[name] += get_erb_content(action, 'applications')
 				end
 				@app_contents[name] += "\n\n"
 
-				#process template
-				if self.respond_to?("process_template_#{action}", true)
-					send("process_template_#{action}") 
-				else
-					@template_contents[gtn(action)] = get_erb_content(action)
+				#load the content of template
+				if self.respond_to?("load_template_#{action}", true)
+					send("load_template_#{action}") 
 				end
 			end
 		end
 
-# 		puts @app_contents
-# 		puts @template_contents
+		puts @app_contents
+ 		puts @template_contents
 	end
 
 	private
+		
+		#================== preprocess data of option argument ==================
+
+		def preprocess_routes(argv)
+			unless argv.empty?
+				@actions << "routes"
+				@tmp_var[:routes] = argv
+			end
+		end
 
 		def preprocess_with(hash)
 			unless hash.empty?
@@ -91,52 +94,40 @@ class Generator
 			@tmp_var[:style] = str if @style.include? str.to_sym
 		end
 
-		def preprocess_view(argv)
+		def preprocess_view
 			unless argv.empty?
 				@actions << "view"
+			end
+		end
+
+		#================== process the main program ==================
+		
+		def process_view
+			unless argv.empty?
 				@tmp_var[:style] = @style[0].to_s unless @tmp_var.has_key? :style
 			end
 		end
 
-		def preprocess_routes(argv)
-			unless argv.empty?
-				@actions << "routes"
-				@tmp_var[:routes] = argv
-			end
-		end
-
-		def process_app_routes
-			if @tmp_var.has_key? :routes
-				content = ''
-				@tmp_var[:routes].each do | item |
-					meth, route = item.split(':')
-					content += "#{meth} '/#{@module_name}/#{route}' do \n"
-					content += "end \n"
-				end
-			end
-			content
-		end
-
-		def _process_data(with, argv)
-			if argv.count > 0
-				# For example,
-				# primary_key:pid
-				# Integer:aid
-				# String:title
-				# String:body
-				argv.each do |item|
-					key, val = item.split(":")
-					unless @filter.include?(key)
-						@argv[val] = key 
-					end
-					if @tpl_var[:keyword] == '' and @keyword.include?(key)
-						@tpl_var[:keyword] = val.index(',') ? val.sub(/[,]/, '') : val
-					end
-				end
-			end
-
-			@keyword = @fields[0] if @keyword == ''
-		end
+# 		def _process_data(with, argv)
+# 			if argv.count > 0
+# 				# For example,
+# 				# primary_key:pid
+# 				# Integer:aid
+# 				# String:title
+# 				# String:body
+# 				argv.each do |item|
+# 					key, val = item.split(":")
+# 					unless @filter.include?(key)
+# 						@argv[val] = key 
+# 					end
+# 					if @tpl_var[:keyword] == '' and @keyword.include?(key)
+# 						@tpl_var[:keyword] = val.index(',') ? val.sub(/[,]/, '') : val
+# 					end
+# 				end
+# 			end
+# 
+# 			@keyword = @fields[0] if @keyword == ''
+# 		end
 
 		def process_data_new
 			@tpl_var[:insert_sql] = insert_sql = ''
@@ -155,20 +146,30 @@ class Generator
 			@tpl_var[:update_by] = @keyword unless @t.include? :update_by
 		end
 
-		def process_data_view
-			@view = @with[:mode] if @with.include?(:mode) and @mode.include?(@with[:mode])
+		# ========================= load content fo tamplate =========================
+
+		def load_app_routes
+			if @tmp_var.has_key? :routes
+				content = ''
+				@tmp_var[:routes].each do | item |
+					meth, route = item.split(':')
+					content += "#{meth} '/#{@module_name}/#{route}' do \n"
+					content += "end \n"
+				end
+			end
+			content
 		end
 
-		def process_template_view
-			@template_contents[gtn(@view)] = get_erb_content(@view)
+		def load_template_view
+			@template_contents[gtn(@tmp_var[:style])] = get_erb_content(@tmp_var[:style])
 		end
 
-		def process_template_pager
-			@template_contents[gtn(@view)] += get_erb_content :pager
+		def load_template_pager
+			@template_contents[gtn(@tmp_var[:style])] += get_erb_content :pager
 		end
 
-		def process_template_search
-			@template_contents[gtn(@view)] = get_erb_content(:search) + @template_contents[gtn(@view)]
+		def load_template_search
+			@template_contents[gtn(@tmp_var[:style])] = get_erb_content(:search) + @template_contents[gtn(@tmp_var[:style])]
 		end
 
 		#get the path of appliction as the name
