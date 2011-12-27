@@ -29,11 +29,7 @@ class Generator
 		unless options.empty?
 			options.each do | key, val |
 				if self.respond_to?("preprocess_#{key}", true)
-					if val.class == 'Fixnum'
-						send("preprocess_#{key}", val)
-					else
-						send("preprocess_#{key}", val) unless val.empty? 
-					end
+					send("preprocess_#{key}", val) unless Utils.blank? val
 				end
 			end
 		end
@@ -50,7 +46,7 @@ class Generator
 			@load_apps.each do | app |
 				name = grn
 				@app_contents[name] = "" unless @app_contents.has_key? name
-				@app_contents[name] += "# == created at #{Time.now} == \n"
+				@app_contents[name] += "# == created at #{Time.now} == \n\n"
 				if self.respond_to?("load_app_#{app}", true)
 					@app_contents[name] += send("load_app_#{app}") 
 				else
@@ -67,13 +63,13 @@ class Generator
 			end
 		end
 
-		puts @app_contents
- 		puts @template_contents
+#  		puts @app_contents
+#   		puts @template_contents
 	end
 
 	private
 		
-		#================== preprocess data of option argument ==================
+		#================== preprocess data of options ==================
 
 		def preprocess_routes(argv)
 			@load_apps << "routes"
@@ -156,9 +152,14 @@ class Generator
 			if @t.has_key? :routes
 				content = ''
 				@t[:routes].each do | item |
-					meth, route = item.split(':')
-					content += "#{meth} '/#{@module_name}/#{route}' do \n"
-					content += "end \n"
+					args = item.split(':')
+					length = args.length - 1
+					if length > 1
+						length.times do | i |
+							content += "#{args[0]} '/#{@module_name}/#{args[i+1]}' do \n"
+							content += "end \n\n"
+						end
+					end
 				end
 			end
 			content

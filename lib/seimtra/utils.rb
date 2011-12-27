@@ -37,13 +37,17 @@ class Utils
 		end
 
 		def blank?(var)
+			return true if var == nil
+
 			type = var.class
-			return false if var == nil
-			if type != "Fixnum" and type != "Float"
-				return false if var.empty?
+			if type == 'Fixnum' or type == 'Float' or type == 'Numeric'
+				return true if var.zero?
 			end
-			return false if var == 0 
-			true
+			if type == 'String' or type == 'Array' or type == 'Hash'
+				return true if var.empty?
+			end
+
+			false
 		end
 	end
 

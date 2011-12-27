@@ -95,7 +95,7 @@ class SeimtraThor < Thor
 			info[:version] 		= '0.0.1'
 			info[:email] 		= SCFG.get(:email) ? SCFG.get(:email) : ask("What is the email of your ?")
 			info[:author]		= SCFG.get(:author) ? SCFG.get(:author) : ask("What is your name ?")
-			info[:website] 		= SCFG::OPTIONS['website'] + "/seimtra-#{name}"
+			info[:website] 		= SCFG::OPTIONS[:website] + "/seimtra-#{name}"
 			info[:description] 	= ask("The description of the module ?")
 
 			#set module config
@@ -131,17 +131,17 @@ class SeimtraThor < Thor
 		require "seimtra/generator"
 		g = Generator.new(name, module_current, goptions)
 
-# 		g.app_contents.each do |path, content|
-# 			if File.exist? path
-# 				prepend_to_file path, content
-# 			else
-# 				create_file path, content
-# 			end
-# 		end
-# 
-# 		g.template_contents.each do |path, content|
-# 			create_file path, content
-# 		end
+		g.app_contents.each do |path, content|
+			if File.exist? path
+				prepend_to_file path, content
+			else
+				create_file path, content
+			end
+		end
+
+		g.template_contents.each do |path, content|
+			create_file path, content
+		end
 
 	end
 
