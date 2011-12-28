@@ -18,7 +18,9 @@ class SeimtraThor < Thor
 # 	# --run, -r		run the migrating record
 	# --with, -w	add extre function, such as, pager:10
 	# --view, -v	generate the view with the specifying field
-	# --form, -f	generate a form, such as, --form=text:username pawd:password text:email
+	# --form, -f	generate a form,  such as, 
+	# 				--form=text:username pawd:password text:email
+	# 				--form=select:category:book:movie:musicsport file:picture submit:done
 	# --routes		generate the routes
 	# --enable		enable the actions, such as, edit, new, rm
 	# --style		enable specifying style, default is table

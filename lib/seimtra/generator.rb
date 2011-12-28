@@ -69,7 +69,12 @@ class Generator
 
 	private
 		
-		#================== preprocess data of options ==================
+		#The order of processing program
+		#Step 1
+		#================== preprocessing for data of options ==================
+
+		def preprocess_form(argv)
+		end
 
 		def preprocess_routes(argv)
 			@load_apps << "routes"
@@ -100,7 +105,8 @@ class Generator
 			@t[:select_sql] = "SELECT #{@t[:fields].join(' ')} FROM #{@t[:table]}"
 		end
 
-		#================== process the main program ==================
+		#Step 2
+		#================== processing for the main program ==================
 		
 		def process_view
 			@t[:style] = @style[0].to_s unless @t.has_key? :style
@@ -108,28 +114,28 @@ class Generator
 			@load_tpls << 'view'
 		end
 
-# 		def _process_data(with, argv)
-# 			if argv.count > 0
-# 				# For example,
-# 				# primary_key:pid
-# 				# Integer:aid
-# 				# String:title
-# 				# String:body
-# 				argv.each do |item|
-# 					key, val = item.split(":")
-# 					unless @filter.include?(key)
-# 						@argv[val] = key 
-# 					end
-# 					if @t[:keyword] == '' and @keyword.include?(key)
-# 						@t[:keyword] = val.index(',') ? val.sub(/[,]/, '') : val
-# 					end
-# 				end
-# 			end
-# 
-# 			@keyword = @fields[0] if @keyword == ''
-# 		end
+		def subprocess_data(with, argv)
+			if argv.count > 0
+				# For example,
+				# primary_key:pid
+				# Integer:aid
+				# String:title
+				# String:body
+				argv.each do |item|
+					key, val = item.split(":")
+					unless @filter.include?(key)
+						@argv[val] = key 
+					end
+					if @t[:keyword] == '' and @keyword.include?(key)
+						@t[:keyword] = val.index(',') ? val.sub(/[,]/, '') : val
+					end
+				end
+			end
 
-		def process_data_new
+			@keyword = @fields[0] if @keyword == ''
+		end
+
+		def subprocess_new
 			@t[:insert_sql] = insert_sql = ''
 			@fields.each do |item|
 				insert_sql += ":#{item} => params[:#{item}],"
@@ -137,16 +143,17 @@ class Generator
 			@t[:insert_sql] = insert_sql.chomp(',')
 		end
 
-		def process_data_rm
+		def subprocess_rm
 			@t[:delete_by] = @keyword unless @t.include? :delete_by
 		end
 
-		def process_data_edit
+		def subprocess_edit
 			@t[:update_sql] = ''
 			@t[:update_by] = @keyword unless @t.include? :update_by
 		end
 
-		# ========================= load content of tamplate =========================
+		#Step 3
+		#================== loading contents for tamplates ==================
 
 		def load_app_routes
 			if @t.has_key? :routes
