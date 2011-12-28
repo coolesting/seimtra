@@ -18,6 +18,7 @@ class SeimtraThor < Thor
 # 	# --run, -r		run the migrating record
 	# --with, -w	add extre function, such as, pager:10
 	# --view, -v	generate the view with the specifying field
+	# --form, -f	generate a form, such as, --form=text:username pawd:password text:email
 	# --routes		generate the routes
 	# --enable		enable the actions, such as, edit, new, rm
 	# --style		enable specifying style, default is table
@@ -36,20 +37,23 @@ class SeimtraThor < Thor
 	#
 	# 	3s db user String:username String:password String:email -a -r
 	#
+	# create a form for adding the user data
+	#
+	# 	3s g user --form=text:username pawd:password
+	#
+	# finally, display the fields by list
+	#
+	# 	3s g user --view=username email --style=list
+
+	# === Example 2 
+	#
 	# create the routes and views, then open the file and edit it
 	#
 	# 	3s g --route=get_login get_register post_login post_register
 	#
-	# finally, display the fields, 'username', 'email', enable the actions 'edit', 'new', 'rm'
-	# and, set the style, 'list'
-	#
-	# 	3s g user --view=username email --enable=edit new rm --style=list
-
-	# === Example 2 
-	#
 	# display by conditions
 	#
-	#	3s g user --view=username email --with=view_by:username
+	#	3s g user --view=username email --with=view_by:username --enable=edit new rm 
 	#
 	# generate a module with pager, search, edit, delete and so on
 	#
@@ -64,6 +68,7 @@ class SeimtraThor < Thor
 # 	method_option :run, :type => :boolean, :aliases => '-r' 
 	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :view, :type => :array, :aliases => '-v'
+	method_option :form, :type => :array, :aliases => '-f'
 	method_option :routes, :type => :array, :aliases => '-r'
 	method_option :enable, :type => :array, :aliases => '-e'
 	method_option :style, :type => :string, :aliases => '-s'
@@ -123,6 +128,7 @@ class SeimtraThor < Thor
 
 		goptions = {}
 		goptions[:view] 	= options[:view] if options[:view] != nil
+		goptions[:form] 	= options[:form] if options[:form] != nil
 		goptions[:routes]	= options[:routes] if options[:routes] != nil
 		goptions[:enable] 	= options[:enable] if options[:enable] != nil
 		goptions[:style] 	= options[:style] if options[:style] != nil
