@@ -23,7 +23,6 @@ class SeimtraThor < Thor
 	# 				--form=select:category:book:movie:musicsport file:picture submit:done
 	# --routes		generate the routes
 	# --enable		enable the actions, such as, edit, new, rm
-	# --style		enable specifying style, default is table
 
 	# == Examples 
 	#
@@ -45,7 +44,7 @@ class SeimtraThor < Thor
 	#
 	# finally, display the fields by list
 	#
-	# 	3s g user --view=username email --style=list
+	# 	3s g user --view=username email --with=style:list
 
 	# === Example 2 
 	#
@@ -73,7 +72,6 @@ class SeimtraThor < Thor
 	method_option :form, :type => :array, :aliases => '-f'
 	method_option :routes, :type => :array, :aliases => '-r'
 	method_option :enable, :type => :array, :aliases => '-e'
-	method_option :style, :type => :string, :aliases => '-s'
 	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
 	def generate(name = nil)
 
@@ -133,7 +131,6 @@ class SeimtraThor < Thor
 		goptions[:form] 	= options[:form] if options[:form] != nil
 		goptions[:routes]	= options[:routes] if options[:routes] != nil
 		goptions[:enable] 	= options[:enable] if options[:enable] != nil
-		goptions[:style] 	= options[:style] if options[:style] != nil
 		goptions[:with] 	= options[:with] if options[:with] != nil
 
 		require "seimtra/generator"

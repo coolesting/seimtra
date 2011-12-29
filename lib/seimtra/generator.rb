@@ -83,7 +83,7 @@ class Generator
 
 		def preprocess_with(hash)
 			hash.each do | key, val |
-				@t[key.to_sym] = val
+				@t[key.to_sym] = val unless @t.has_key? key.to_sym
 			end
 		end
 
@@ -92,10 +92,6 @@ class Generator
 			argv.each do | item |
 				@t[:enable] << item if @enable.include? item.to_sym
 			end
-		end
-
-		def preprocess_style(str)
-			@t[:style] = str if @style.include? str.to_sym
 		end
 
 		def preprocess_view(argv)
@@ -109,7 +105,8 @@ class Generator
 		#================== processing for the main program ==================
 		
 		def process_view
-			@t[:style] = @style[0].to_s unless @t.has_key? :style
+			@t[:style] = @style[0].to_s unless if @t.has_key? :style
+			@t[:style] = @style[0].to_s unless @style.include? @t[:style]
 			@load_apps << 'view'
 			@load_tpls << 'view'
 		end
