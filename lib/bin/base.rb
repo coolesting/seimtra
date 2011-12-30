@@ -50,9 +50,14 @@ class SeimtraThor < Thor
 		SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
 	end
 
+	#build-in method of the class
 	no_tasks do
 		def error(msg)
 			say(msg, "\e[31m")
+		end
+
+		def show_info
+			SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
 		end
 	end
 

@@ -105,10 +105,13 @@ class Generator
 		#================== processing for the main program ==================
 		
 		def process_view
-			@t[:style] = @style[0].to_s unless if @t.has_key? :style
-			@t[:style] = @style[0].to_s unless @style.include? @t[:style]
 			@load_apps << 'view'
 			@load_tpls << 'view'
+			@t[:style] = @style[0].to_s unless if @t.has_key? :style
+			@t[:style] = @style[0].to_s unless @style.include? @t[:style]
+
+			#process enable
+			
 		end
 
 		def subprocess_data(with, argv)

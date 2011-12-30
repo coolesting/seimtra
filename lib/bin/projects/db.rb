@@ -1,16 +1,16 @@
 class SeimtraThor < Thor
 
-	# = database operation 
+	# = Database operation 
 	#
 	# Create and implement for migrations to the database,
 	# output/dump the schema/migration from database
-
-	# == arguments
+	#
+	# == Arguments
 	#
 	# operate_table, string, such as, create:books, alter:books/
 	# fields, 		 array, ["String:name","String:password"]
-
-	# == options
+	#
+	# == Options
 	#
 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
 	# 				automatically
@@ -20,8 +20,8 @@ class SeimtraThor < Thor
 	# --dump, -d		dump the database schema to a migration file
 	# --output, -o	output the schema of database
 	# --with, -w	a hash as the parammeters
-
-	# == examples
+	#
+	# == Examples
 	#
 	# create the migration
 	#
@@ -44,7 +44,6 @@ class SeimtraThor < Thor
 	# run the schema at db/schema.rb
 	#
 	#	3s db -r -w=schema
-
 
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :run, :type => :boolean, :aliases => '-r' 

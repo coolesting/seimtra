@@ -1,38 +1,24 @@
 class SeimtraThor < Thor
 
-	# = generating module
+	# = Generating module
 	#
 	# Create the application quickly
-
-	# == arguments
 	#
-	# name, 		string 
-	
-	# == options
+	#
+	# == Arguments
+	#
+	# name, 		string, file name generated
+	#
+	#
+	# == Options
 	#
 	# --to, -t		put the specifying content to specifying module
-	# --create, -c	create a module if the module is not existing
-# 	# --autocomplete, -a completing the fileds with primary_key, and timestamp, 
-# 	# 				automatically
-# 	# --migration, -m create the migration
-# 	# --run, -r		run the migrating record
-	# --with, -w	add extre function, such as, pager:10
 	# --view, -v	generate the view with the specifying field
-	# --form, -f	generate a form,  such as, 
-	# 				--form=text:username pawd:password text:email
-	# 				--form=select:category:book:movie:musicsport file:picture submit:done
 	# --routes		generate the routes
-	# --enable		enable the actions, such as, edit, new, rm
-
+	#
+	#
 	# == Examples 
-	#
 	# === Example 1
-	#
-	# create a module step by step, 
-	# first, generate a standard structure folder of module 
-	#
-	# 	3s g user --create
-	# 	3s g users -c
 	#
 	# create the migration of database
 	#
@@ -40,43 +26,31 @@ class SeimtraThor < Thor
 	#
 	# create a form for adding the user data
 	#
-	# 	3s g user --form=text:username pawd:password
+	# 	3s g user --view=form text:username pawd:password
 	#
 	# finally, display the fields by list
 	#
-	# 	3s g user --view=username email --with=style:list
-
+	# 	3s g user --view=username:email
+	#
+	#
 	# === Example 2 
-	#
-	# create the routes and views, then open the file and edit it
-	#
-	# 	3s g --route=get_login get_register post_login post_register
-	#
 	# display by conditions
 	#
-	#	3s g user --view=username email --with=view_by:username --enable=edit new rm 
+	#	3s g usertable --view=table username:email
+	#	3s g userform --view=form text:username text:password
+	#	3s g userlist --view=list user
 	#
-	# generate a module with pager, search, edit, delete and so on
+	# create the routes
 	#
-	#	3s g user_list -v=username email --with=pager:10
-	#	3s g user_details -v=username email --with=view_by:uid
-	#	3s g user_opt -v=aid title --with=edit_by:uid rm_by:uid
+	# 	3s g --route=get:login:logout:register post:login:register
 
 	method_option :to, :type => :string, :aliases => '-t'
-	method_option :create, :type => :boolean, :aliases => '-c' 
-# 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
-# 	method_option :migration, :type => :hash, :aliases => '-m'
-# 	method_option :run, :type => :boolean, :aliases => '-r' 
-	method_option :with, :type => :hash, :aliases => '-w' 
 	method_option :view, :type => :array, :aliases => '-v'
-	method_option :form, :type => :array, :aliases => '-f'
 	method_option :routes, :type => :array, :aliases => '-r'
-	method_option :enable, :type => :array, :aliases => '-e'
-	desc "generate [NAME] [OPTIONS]", "Generate the scaffold for module"
+	desc "generate [NAME] [ARGV]", "Generate the scaffold for module"
 	def generate(name = nil)
 
 		name			= SCFG.get(:module_focus) if name == nil 
-# 		migration 		= options[:migration] != nil ? options[:migration] : []
 		module_current 	= SCFG.get :module_focus
 		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 
@@ -86,9 +60,65 @@ class SeimtraThor < Thor
 			return error(Utils.message) unless Utils.check_module(module_current)
 		end
 
-		#generate new module
-		if options.create?
-			module_current 	= name
+		goptions = {}
+		goptions[:view] 	= options[:view] if options[:view] != nil
+		goptions[:routes]	= options[:routes] if options[:routes] != nil
+
+		require "seimtra/generator"
+		g = Generator.new(name, module_current, goptions)
+
+		g.app_contents.each do |path, content|
+			if File.exist? path
+				prepend_to_file path, content
+			else
+				create_file path, content
+			end
+		end
+
+		g.template_contents.each do |path, content|
+			create_file path, content
+		end
+
+	end
+
+	##
+	# = Operating the module
+	#
+	# create, remove, add, update, packup the module
+	#
+	#
+	# == Arguments
+	#
+	# opt, string, a operating command
+	# argv, array, the parameters
+	#
+	#
+	# == Examples
+	#
+	# create the new module
+	#
+	# 	3s m new user
+	#
+	# show the list of modules
+	#
+	# 	3s m list
+	#
+	# show the info with specifying module
+	#
+	# 	3s m info user
+	#
+	# modify the module info
+	#
+	# 	3s m info user name:author_name
+
+	desc "module [NAME] [ARGV]", "The module operation, create, remove, add"
+	def module(opt, *argv) 
+		
+		#create the new module
+		if opt == 'new'
+
+			return say('You need a module name', "\e[31m") unless argv.length > 0
+			name = argv.shift
 			return error(Utils.message) if Utils.check_module(name)
 			directory "docs/modules", "modules/#{name}"
 
@@ -111,72 +141,31 @@ class SeimtraThor < Thor
 
 			SCFG.load
 			SCFG.set :module_focus, name
-		end
 
-# 		#generate the skeleton if the migration
-# 		unless migration.empty?
-# 			if options.autocomplete?
-# 				db = Db.new
-# 				return error(db.msg) if db.error
-# 				migration = db.autocomplete(name, migration)
-# 			end
-# 
-# 			#implement/run the migrations to database
-# 			args = {}; args[:run] = options.run? ? true : false
-# 			invoke :db, "create:#{name}", migration, args, :module => module_current
-# 		end
-
-		goptions = {}
-		goptions[:view] 	= options[:view] if options[:view] != nil
-		goptions[:form] 	= options[:form] if options[:form] != nil
-		goptions[:routes]	= options[:routes] if options[:routes] != nil
-		goptions[:enable] 	= options[:enable] if options[:enable] != nil
-		goptions[:with] 	= options[:with] if options[:with] != nil
-
-		require "seimtra/generator"
-		g = Generator.new(name, module_current, goptions)
-
-		g.app_contents.each do |path, content|
-			if File.exist? path
-				prepend_to_file path, content
-			else
-				create_file path, content
-			end
-		end
-
-		g.template_contents.each do |path, content|
-			create_file path, content
-		end
-
-	end
-
-	desc "addone [NAME] [OPTION]", "Add one of modules to your application"
-	def addone(*argv) 
-		module_name = argv.shift
-		argv
-		#template('docs/modules/table/routes.tt', "routes/#{name}.rb")
-	end
-
-	desc "update", "Update your source list of module from remote to local repository "
-	def update
-	end
-
-	desc "remove [NAME]", "Remove the module in your appliction with a module name"
-	def remove(name = nil)
-	end
-
-	desc "list", "The list about the modules, routes"
-	def list(type = 'module')
-		if type == 'module'
+		# list the modules
+		elsif opt == 'list'
 			Dir[Dir.pwd + '/modules/*'].each do | m |
 				say m.split('/').last, "\e[33m"
 			end
+
+		# show/set the module info
+		elsif opt == 'info'
+			name =  argv.length > 0 ? argv.shift : SCFG.get(:module_focus)
+			SCFG.load name 
+
+			if argv.length > 0
+				argv.each do | item |
+					key, val = item.split(':')
+					SCFG.set key, val 
+				end
+			end
+
+			say "========= #{name} module info ========= \n"
+			show_info
 		end
+
 	end
 
-	desc "packup [NAME]", "Packup a module with some files"
-	def packup(name = nil)
-	end
 
 	desc 'test [NAME]', 'Make a test, and output the result'
 	method_option :with, :type => :string, :aliases => '-w'
