@@ -1,85 +1,69 @@
 class SeimtraThor < Thor
 
-	# = Generating module
+	# = Generating view 
 	#
-	# Create the application quickly
-	#
+	# Create the view for module 
 	#
 	# == Arguments
 	#
-	# name, 		string, file name generated
-	#
+	# argv, 		string
 	#
 	# == Options
 	#
 	# --to, -t		put the specifying content to specifying module
-	# --view, -v	generate the view with the specifying field
-	# --routes		generate the routes
-	#
 	#
 	# == Examples 
-	# === Example 1
-	#
-	# create the migration of database
-	#
-	# 	3s db user String:username String:password String:email -a -r
 	#
 	# create a form for adding the user data
 	#
-	# 	3s g user --view=form text:username pawd:password
+	# 	3s view form text:username pawd:password
 	#
-	# finally, display the fields by list
+	# finally, display the fields by list and table
 	#
-	# 	3s g user --view=username:email
-	#
-	#
-	# === Example 2 
-	# display by conditions
-	#
-	#	3s g usertable --view=table username:email
-	#	3s g userform --view=form text:username text:password
-	#	3s g userlist --view=list user
-	#
-	# create the routes
-	#
-	# 	3s g --route=get:login:logout:register post:login:register
+	# 	3s view list username:email
+	#	3s view table username:email
 
 	method_option :to, :type => :string, :aliases => '-t'
-	method_option :view, :type => :array, :aliases => '-v'
-	method_option :routes, :type => :array, :aliases => '-r'
-	desc "generate [NAME] [ARGV]", "Generate the scaffold for module"
-	def generate(name = nil)
-
-		name			= SCFG.get(:module_focus) if name == nil 
-		module_current 	= SCFG.get :module_focus
-		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
-
-		#add the generation to existing module
+	desc "view [ARGV]", "Generate the view for module"
+	def view(*argv)
+		module_current = SCFG.get :module_focus
 		if options[:to] != nil
 			module_current = options[:to] 
 			return error(Utils.message) unless Utils.check_module(module_current)
 		end
-
-		goptions = {}
-		goptions[:view] 	= options[:view] if options[:view] != nil
-		goptions[:routes]	= options[:routes] if options[:routes] != nil
-
-		require "seimtra/generator"
-		g = Generator.new(name, module_current, goptions)
-
-		g.app_contents.each do |path, content|
-			if File.exist? path
-				prepend_to_file path, content
-			else
-				create_file path, content
-			end
-		end
-
-		g.template_contents.each do |path, content|
-			create_file path, content
-		end
-
+		generate :view, module_current, argv
 	end
+
+
+	# = Generating route
+	#
+	# Create the route for module 
+	#
+	# == Arguments
+	#
+	# argv, 		string
+	#
+	# == Options
+	#
+	# --to, -t		put the specifying content to specifying module
+	#
+	# == Examples 
+	#
+	# create the routes
+	#
+	# 	3s route get:login:logout:register post:login:register
+
+	method_option :to, :type => :string, :aliases => '-t'
+	desc "route [ARGV]", "Generate the routes for module"
+	def route(*argv)
+		module_current = SCFG.get :module_focus
+		if options[:to] != nil
+			module_current = options[:to] 
+			return error(Utils.message) unless Utils.check_module(module_current)
+		end
+		generate :route, module_current, argv
+	end
+
 
 	##
 	# = Operating the module

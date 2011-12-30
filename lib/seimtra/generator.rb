@@ -3,7 +3,7 @@ class Generator
 
 	attr_accessor :template_contents, :app_contents
 
-	def initialize(name, module_name = 'custom', options = {})
+	def initialize(opt, module_name = 'custom', argv)
 
 		@app_contents 	= {}
 		@template_contents 	= {}
@@ -12,12 +12,13 @@ class Generator
 		@load_tpls 		= []
 		@processes 		= []
 
-		@name 			= name
+		@name 			= ''
 		@module_name	= module_name
 
 		@style 			= [:table, :list]
 		@enable			= [:edit, :new, :rm]
 		@filter 		= [:index, :foreign_key, :unique]
+		@oot			= [:route, :view]
 
 		#A condition for deleting, updeting, editting the record
 		@keyword 		= [:primary_key, :Integer, :index, :foreign_key, :unique]

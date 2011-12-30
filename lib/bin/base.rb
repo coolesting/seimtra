@@ -56,6 +56,7 @@ class SeimtraThor < Thor
 			say(msg, "\e[31m")
 		end
 
+		#get the yaml file
 		def show_info(name, argv, str)
 			SCFG.load name if name != nil
 			if argv.length > 0
@@ -66,6 +67,24 @@ class SeimtraThor < Thor
 			end
 			say "========= #{str} ========= \n"
 			SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
+		end
+
+		def generate(opt, module_current, argv)
+			empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
+			require "seimtra/generator"
+			g = Generator.new(opt, module_current, argv)
+
+			g.app_contents.each do |path, content|
+				if File.exist? path
+					prepend_to_file path, content
+				else
+					create_file path, content
+				end
+			end
+
+			g.template_contents.each do |path, content|
+				create_file path, content
+			end
 		end
 	end
 
