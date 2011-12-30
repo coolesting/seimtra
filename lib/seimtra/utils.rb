@@ -22,7 +22,8 @@ class Utils
 			@msg
 		end
 
-		def check_path
+		# get the customize info
+		def get_custom_info 
 			path = Dir.pwd
 			#windows
 			if /\w:\\?/.match(path)

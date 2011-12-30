@@ -116,13 +116,22 @@ class SeimtraThor < Thor
 		
 		#create the new module
 		if opt == 'new'
-
 			return say('You need a module name', "\e[31m") unless argv.length > 0
 			name = argv.shift
 			return error(Utils.message) if Utils.check_module(name)
-			directory "docs/modules", "modules/#{name}"
+# 			directory "docs/modules", "modules/#{name}"
+			empty_directory "modules/#{name}/applications"
+			create_file "modules/#{name}/applications/.log"
 
-			path = Utils.check_path.first
+			empty_directory "modules/#{name}/templates"
+			create_file "modules/#{name}/templates/.log"
+
+			empty_directory "modules/#{name}/others"
+			create_file "modules/#{name}/others/info.yml"
+			create_file "modules/#{name}/others/.log"
+			create_file "modules/#{name}/README.rdoc"
+
+			path = Utils.get_custom_info.first
 			SCFG.load path, true
 			info = {}
 			info[:name] 		= name
@@ -150,7 +159,11 @@ class SeimtraThor < Thor
 
 		# show/set the module info
 		elsif opt == 'info'
-			name =  argv.length > 0 ? argv.shift : SCFG.get(:module_focus)
+			name = SCFG.get(:module_focus)
+			if argv.length > 0
+				name = argv.shift if argv[0].index(':') != nil
+			end
+			
 			say "========= #{name} module info ========= \n"
 			show_info(name, argv)
 		end
