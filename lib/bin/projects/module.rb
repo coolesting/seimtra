@@ -151,17 +151,8 @@ class SeimtraThor < Thor
 		# show/set the module info
 		elsif opt == 'info'
 			name =  argv.length > 0 ? argv.shift : SCFG.get(:module_focus)
-			SCFG.load name 
-
-			if argv.length > 0
-				argv.each do | item |
-					key, val = item.split(':')
-					SCFG.set key, val 
-				end
-			end
-
 			say "========= #{name} module info ========= \n"
-			show_info
+			show_info(name, argv)
 		end
 
 	end

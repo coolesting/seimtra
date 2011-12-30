@@ -1,8 +1,8 @@
 class SeimtraThor < Thor
 
-	desc "info", "The info of current project"
-	def info
+	desc "info [ARGV]", "The info of current project"
+	def info(*argv)
 		say "========= Current project info ========= \n"
-		show_info
+		show_info(nil, argv)
 	end
 end
