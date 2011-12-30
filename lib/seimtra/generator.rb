@@ -3,7 +3,7 @@ class Generator
 
 	attr_accessor :template_contents, :app_contents
 
-	def initialize(opt, module_name = 'custom', argv)
+	def initialize(opt, module_name = 'custom', argv = [])
 
 		@app_contents 	= {}
 		@template_contents 	= {}
@@ -18,7 +18,6 @@ class Generator
 		@style 			= [:table, :list]
 		@enable			= [:edit, :new, :rm]
 		@filter 		= [:index, :foreign_key, :unique]
-		@oot			= [:route, :view]
 
 		#A condition for deleting, updeting, editting the record
 		@keyword 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
@@ -26,15 +25,10 @@ class Generator
 		#temporary variable as the template variable
 		@t				= {}
 
-		#preprocess data
-		unless options.empty?
-			options.each do | key, val |
-				if self.respond_to?("preprocess_#{key}", true)
-					send("preprocess_#{key}", val) unless Utils.blank? val
-				end
-			end
+		if self.respond_to?("create_#{opt.to_s}")
+			send("create_#{opt.to_s}", argv)
 		end
-
+		
 		#process the action
 		unless @processes.empty?
 			@processes.each do | process |
@@ -66,6 +60,12 @@ class Generator
 
 #  		puts @app_contents
 #   		puts @template_contents
+	end
+
+	def create_route()
+	end
+
+	def create_view()
 	end
 
 	private
