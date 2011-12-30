@@ -39,7 +39,6 @@ class SCFG
 			set :status, SCFG::OPTIONS[:status]
 			set :email, SCFG::OPTIONS[:email]
 			set :author, SCFG::OPTIONS[:author]
-			@@changed << @path
 		end
 
 		def load(name = nil, custom = false)
@@ -53,7 +52,7 @@ class SCFG
 
 		def set(key, val)
 			@@options[@path][key.to_s] = val
-			@@changed << @path
+			@@changed << @path if @@changed.include? @path
 		end
 
 		def get(key = nil)
