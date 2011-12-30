@@ -56,7 +56,7 @@ class SeimtraThor < Thor
 			say(msg, "\e[31m")
 		end
 
-		def show_info(name, argv)
+		def show_info(name, argv, str)
 			SCFG.load name if name != nil
 			if argv.length > 0
 				argv.each do | item |
@@ -64,6 +64,7 @@ class SeimtraThor < Thor
 					SCFG.set key, val 
 				end
 			end
+			say "========= #{str} ========= \n"
 			SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
 		end
 	end
