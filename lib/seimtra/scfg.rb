@@ -52,7 +52,7 @@ class SCFG
 
 		def set(key, val)
 			@@options[@path][key.to_s] = val
-			@@changed << @path if @@changed.include? @path
+			@@changed << @path unless @@changed.include? @path
 		end
 
 		def get(key = nil)
