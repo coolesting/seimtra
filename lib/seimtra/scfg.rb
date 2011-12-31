@@ -52,7 +52,10 @@ class SCFG
 
 		def set(key, val)
 			@@options[@path][key.to_s] = val
-			@@changed << @path unless @@changed.include? @path
+			unless @@changed.include? @path
+				@@options[@path]['changed'] = Time.now
+				@@changed << @path 
+			end
 		end
 
 		def get(key = nil)
@@ -62,7 +65,6 @@ class SCFG
 		def save
 			unless @@changed.empty?
 				@@changed.each do |path|
-					@@options[path][:changed] = Time.now
 					File.open(path, 'w+') do |f|
 						f.write(YAML::dump(@@options[path]))
 					end

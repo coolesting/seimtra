@@ -32,22 +32,11 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "config", "Setting your global configuration"
-	method_option :set, :type => :hash
-	def config
-		path, file = Utils.check_path
+	desc "config", "Your customize config"
+	def config(*argv)
+		path, file = Utils.get_custom_info
 		run (file) unless File.exists?(File.expand_path(path))
-		SCFG.load path, true
-
-		#set config
-		if options[:set] != nil 
-			options[:set].each do |key,val|
-				SCFG.set key, val 
-			end
-		end
-
-		#get config
-		SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
+		show_info path, argv, "Your customize config", true
 	end
 
 	#build-in method of the class
@@ -56,16 +45,21 @@ class SeimtraThor < Thor
 			say(msg, "\e[31m")
 		end
 
-		#get the yaml file
-		def show_info(name, argv, str)
-			SCFG.load name if name != nil
+		#get/set the yaml file
+		#
+		# @name, string, the file path you need to load
+		# @argv, array, the argv you want to set
+		# @str, string, you want to show the word to the terminal
+		# @custom, boolean, see the method SCFG.load
+		def show_info(name = nil, argv = 0, str = nil, custom = false)
+			SCFG.load(name, custom) if name != nil
 			if argv.length > 0
 				argv.each do | item |
 					key, val = item.split(':')
 					SCFG.set key, val 
 				end
 			end
-			say "========= #{str} ========= \n"
+			say("========= #{str} ========= \n", "\e[33m") unless str == nil
 			SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
 		end
 
