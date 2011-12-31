@@ -52,7 +52,7 @@ class SeimtraThor < Thor
 	method_option :dump, :type => :boolean, :aliases => '-d'
 	method_option :output, :type => :boolean, :aliases => '-o'
 	method_option :with, :type => :hash, :default => {}, :aliases => '-w'
-	desc "db [OPERATER]:[TABLE] [FIELDS]", "Create/Run the migrations, and output schema/migration of database"
+	desc "db [OPERATOR:TABLE] [FIELDS]", "Create/Run the migrations, and output schema/migration of database"
 	def db(operate_table = nil, *argv)
 
 		#initialize data

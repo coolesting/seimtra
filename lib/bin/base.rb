@@ -32,7 +32,7 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "config", "Your customize config"
+	desc "config [ARGV]", "Your customize config"
 	def config(*argv)
 		path, file = Utils.get_custom_info
 		run (file) unless File.exists?(File.expand_path(path))

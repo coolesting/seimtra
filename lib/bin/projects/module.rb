@@ -95,7 +95,7 @@ class SeimtraThor < Thor
 	#
 	# 	3s m info user name:author_name
 
-	desc "module [NAME] [ARGV]", "The module operation, create, remove, add"
+	desc "module [OPERATOR] [ARGV]", "The module operation, create, remove, add"
 	def module(opt, *argv) 
 		
 		#create the new module
