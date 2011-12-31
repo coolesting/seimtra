@@ -3,7 +3,7 @@ class Generator
 
 	attr_accessor :template_contents, :app_contents
 
-	def initialize(opt, module_name = 'custom', argv = [])
+	def initialize opt, module_name = 'custom', argv = []
 
 		@app_contents 	= {}
 		@template_contents 	= {}
@@ -25,17 +25,10 @@ class Generator
 		#temporary variable as the template variable
 		@t				= {}
 
-		if self.respond_to?("create_#{opt.to_s}")
-			send("create_#{opt.to_s}", argv)
+		if self.respond_to? "create_#{opt.to_s}"
+			send "create_#{opt.to_s}", argv
 		end
-		
-		#process the action
-		unless @processes.empty?
-			@processes.each do | process |
-				send("process_#{process}") if self.respond_to?("process_#{process}", true)
-			end
-		end
-				
+
 		#load the content of application
 		unless @load_apps.empty?
 			@load_apps.each do | app |
@@ -59,13 +52,13 @@ class Generator
 		end
 
 #  		puts @app_contents
-#   		puts @template_contents
+#   	puts @template_contents
 	end
 
-	def create_route()
+	def create_route argv, create_from = 'template'
 	end
 
-	def create_view()
+	def create_view argv
 	end
 
 	private
