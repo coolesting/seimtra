@@ -73,10 +73,10 @@ class SeimtraThor < Thor
 				error(Utils.message) 
 			end
 
-			puts module_current
+			g = Generator.new module_current
+			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
 
-# 			g = Generator.new module_current
-# 			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
+			g.output
 # 
 # 			g.app_contents.each do |path, content|
 # 				if File.exist? path

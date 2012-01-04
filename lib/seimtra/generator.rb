@@ -49,9 +49,9 @@ class Generator
 
 	end
 
-	def create_route argv, create_from = :template
+	def create_route argv, from_tpl = false
 		path = get_path
-		if create_from == :template
+		if from_tpl == true
 			argv.each do | name |
 				@app_contents[path] = get_erb_content name, :routes
 			end
@@ -82,11 +82,12 @@ class Generator
 		def get_path name = '', type = :routes
 			if type == :routes
 				path = "modules/#{@module_name}/applications/#{type.to_s}.rb"
-				@app_contents[path] = '' if @app_contents.has_key? path
+				@app_contents[path] = '' unless @app_contents.include? path
 			else
 				path = "modules/#{@module_name}/templates/#{@name}_#{name}.slim"
-				@tpl_contents[path] = "" if @tpl_contents.has_key? path
+				@tpl_contents[path] = "" unless @tpl_contents.include? path
 			end
+			path
 		end
 		
 		#The order of processing program
