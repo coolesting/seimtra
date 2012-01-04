@@ -66,7 +66,8 @@ class SeimtraThor < Thor
 		def generate(opt, module_current, argv)
 			empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 			require "seimtra/generator"
-			g = Generator.new(opt, module_current, argv)
+			g = Generator.new module_current
+			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
 
 			g.app_contents.each do |path, content|
 				if File.exist? path
@@ -76,7 +77,7 @@ class SeimtraThor < Thor
 				end
 			end
 
-			g.template_contents.each do |path, content|
+			g.tpl_contents.each do |path, content|
 				create_file path, content
 			end
 		end

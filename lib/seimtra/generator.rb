@@ -1,12 +1,12 @@
 require 'erb'	
 class Generator
 
-	attr_accessor :template_contents, :app_contents
+	attr_accessor :tpl_contents, :app_contents, :module_name
 
-	def initialize opt, module_name = 'custom', argv = []
+	def initialize module_name = 'custom'
 
 		@app_contents 	= {}
-		@template_contents 	= {}
+		@tpl_contents 	= {}
 
 		@load_apps 		= []
 		@load_tpls 		= []
@@ -24,10 +24,6 @@ class Generator
 
 		#temporary variable as the template variable
 		@t				= {}
-
-		if self.respond_to? "create_#{opt.to_s}"
-			send "create_#{opt.to_s}", argv
-		end
 
 		#load the content of application
 		unless @load_apps.empty?
@@ -51,17 +47,47 @@ class Generator
 			end
 		end
 
-#  		puts @app_contents
-#   	puts @template_contents
 	end
 
-	def create_route argv, create_from = 'template'
+	def create_route argv, create_from = :template
+		path = get_path
+		if create_from == :template
+			argv.each do | name |
+				@app_contents[path] = get_erb_content name, :routes
+			end
+		else
+			argv.each do | route |
+				args = route.split ':'
+				if args.length > 1
+					meth = args.shift
+					args.each do | name |
+						@app_contents[path]	+= "#{meth} '/#{@module_name}/#{name}' do \n"
+						@app_contents[path]	+= "end \n"
+					end
+				end
+			end
+		end
 	end
 
 	def create_view argv
 	end
 
+	def output
+  		puts @app_contents
+	   	puts @tpl_contents
+	end
+
 	private
+
+	def get_path name = '', type = :routes
+		if type == :routes
+			path = "modules/#{@module_name}/applications/#{type.to_s}.rb"
+			@app_contents[path] = '' if @app_contents.has_key? path
+		else
+			path = "modules/#{@module_name}/templates/#{@name}_#{name}.slim"
+			@tpl_contents[path] = "" if @tpl_contents.has_key? path
+		end
+	end
 		
 		#The order of processing program
 		#Step 1
@@ -167,29 +193,19 @@ class Generator
 		end
 
 		def load_template_view
-			@template_contents[gtn(@t[:style])] = get_erb_content(@t[:style])
+			@tpl_contents[gtn(@t[:style])] = get_erb_content(@t[:style])
 		end
 
 		def load_template_pager
-			@template_contents[gtn(@t[:style])] += get_erb_content :pager
+			@tpl_contents[gtn(@t[:style])] += get_erb_content :pager
 		end
 
 		def load_template_search
-			@template_contents[gtn(@t[:style])] = get_erb_content(:search) + @template_contents[gtn(@t[:style])]
+			@tpl_contents[gtn(@t[:style])] = get_erb_content(:search) + @tpl_contents[gtn(@t[:style])]
 		end
 
-		#get the path of appliction as the name
-		def grn(file = "routes")
-			"modules/#{@module_name}/applications/#{file}.rb"
-		end
-
-		#get the path of template as the name
-		def gtn(name)
-			"modules/#{@module_name}/templates/#{@name}_#{name}.slim"
-		end
-
-		def get_erb_content(name, type = 'templates')
-			path = ROOTPATH + "/docs/scaffolds/#{type}/#{name.to_s}.tt"
+		def get_erb_content(name, type = :templates)
+			path = ROOTPATH + "/docs/scaffolds/#{type.to_s}/#{name.to_s}.tt"
 			if File.exist? path
 				content = File.read(path)
 				t = ERB.new(content)
