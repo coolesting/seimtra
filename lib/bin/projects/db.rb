@@ -57,7 +57,7 @@ class SeimtraThor < Thor
 
 		#initialize data
 		db 				= Db.new
-		return error(db.msg) if db.error
+		error(db.msg) if db.error
 
 		module_current	= options[:to] == nil ? SCFG.get(:module_focus) : options[:to]
 		path 			= "/modules/#{module_current}/migrations"
@@ -80,7 +80,7 @@ class SeimtraThor < Thor
 			end
 
 			unless default_operate.include?(operate.to_sym) 
-				return error("#{operate} is a error operation, you allow to use create, alter, rename and drop") 
+				error("#{operate} is a error operation, you allow to use create, alter, rename and drop") 
 			end
 		end
 
@@ -90,7 +90,7 @@ class SeimtraThor < Thor
 
 			#auto add the primary_key and time to migrating record
 			if options.autocomplete?
-				return error db.msg if db.error
+				error db.msg if db.error
 				argv = db.autocomplete(table, argv) if operate == 'create'
 			end
 	
@@ -120,7 +120,7 @@ class SeimtraThor < Thor
 				path = Dir[gpath + "/*"].sort.last
 			end
 
-			return error("No schema at #{path}") unless File.exist?(path)
+			error("No schema at #{path}") unless File.exist?(path)
 			run("sequel -m #{path} #{version} #{dbcont}")
 			say "Implementing complete", "\e[32m"
 		end

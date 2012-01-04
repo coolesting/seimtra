@@ -62,7 +62,7 @@ class Generator
 					meth = args.shift
 					args.each do | name |
 						@app_contents[path]	+= "#{meth} '/#{@module_name}/#{name}' do \n"
-						@app_contents[path]	+= "end \n"
+						@app_contents[path]	+= "end \n\n"
 					end
 				end
 			end
@@ -79,15 +79,15 @@ class Generator
 
 	private
 
-	def get_path name = '', type = :routes
-		if type == :routes
-			path = "modules/#{@module_name}/applications/#{type.to_s}.rb"
-			@app_contents[path] = '' if @app_contents.has_key? path
-		else
-			path = "modules/#{@module_name}/templates/#{@name}_#{name}.slim"
-			@tpl_contents[path] = "" if @tpl_contents.has_key? path
+		def get_path name = '', type = :routes
+			if type == :routes
+				path = "modules/#{@module_name}/applications/#{type.to_s}.rb"
+				@app_contents[path] = '' if @app_contents.has_key? path
+			else
+				path = "modules/#{@module_name}/templates/#{@name}_#{name}.slim"
+				@tpl_contents[path] = "" if @tpl_contents.has_key? path
+			end
 		end
-	end
 		
 		#The order of processing program
 		#Step 1
@@ -127,7 +127,7 @@ class Generator
 		def process_view
 			@load_apps << 'view'
 			@load_tpls << 'view'
-			@t[:style] = @style[0].to_s unless if @t.has_key? :style
+			@t[:style] = @style[0].to_s unless @t.has_key? :style
 			@t[:style] = @style[0].to_s unless @style.include? @t[:style]
 
 			#process enable

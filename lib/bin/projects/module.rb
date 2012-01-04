@@ -26,12 +26,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	desc "view [ARGV]", "Generate the view for module"
 	def view(*argv)
-		module_current = SCFG.get :module_focus
-		if options[:to] != nil
-			module_current = options[:to] 
-			return error(Utils.message) unless Utils.check_module(module_current)
-		end
-		generate :view, module_current, argv
+		generate :view, argv
 	end
 
 
@@ -56,12 +51,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	desc "route [ARGV]", "Generate the routes for module"
 	def route(*argv)
-		module_current = SCFG.get :module_focus
-		if options[:to] != nil
-			module_current = options[:to] 
-			return error(Utils.message) unless Utils.check_module(module_current)
-		end
-		generate :route, module_current, argv
+		generate :route, argv
 	end
 
 
@@ -100,9 +90,10 @@ class SeimtraThor < Thor
 		
 		#create the new module
 		if opt == 'new'
-			return say('You need a module name', "\e[31m") unless argv.length > 0
-			name = argv.shift
-			return error(Utils.message) if Utils.check_module(name)
+			error('You need a module name, e.g, 3s m new user', "\e[31m") unless argv.length > 0
+			name = argv[0]
+			error(Utils.message) if Utils.check_module(name)
+
  			directory "docs/modules", "modules/#{name}"
 # 			empty_directory "modules/#{name}/applications"
 # 			create_file "modules/#{name}/applications/.log"
@@ -157,13 +148,14 @@ class SeimtraThor < Thor
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
 	def test(func_name = nil, *argv)
-		return error("Enter your test name likes this, 3s test db") if func_name == nil
+		error("Enter your test name likes this, 3s test db") if func_name == nil
 		require "seimtra/stest"
 		Dir[ROOTPATH + "/test/*"].each do | file |
 			require file
 		end
 		t = Stest.new
-		return error "The #{func_name} method is not existing." unless t.respond_to?(func_name)
+		error "The #{func_name} method is not existing." unless t.respond_to?(func_name)
+
 		if argv.empty?
 			t.send(func_name)
 		else

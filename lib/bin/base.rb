@@ -41,8 +41,9 @@ class SeimtraThor < Thor
 
 	#build-in method of the class
 	no_tasks do
-		def error(msg)
-			say(msg, "\e[31m")
+		def error msg
+			say msg, "\e[31m"
+			exit
 		end
 
 		#get/set the yaml file
@@ -51,7 +52,7 @@ class SeimtraThor < Thor
 		# @argv, array, the argv you want to set
 		# @str, string, you want to show the word to the terminal
 		# @custom, boolean, see the method SCFG.load
-		def show_info(name = nil, argv = 0, str = nil, custom = false)
+		def show_info name = nil, argv = 0, str = nil, custom = false
 			SCFG.load(name, custom) if name != nil
 			if argv.length > 0
 				argv.each do | item |
@@ -63,24 +64,33 @@ class SeimtraThor < Thor
 			SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
 		end
 
-		def generate(opt, module_current, argv)
+		def generate opt, argv
 			empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 			require "seimtra/generator"
-			g = Generator.new module_current
-			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
 
-			g.app_contents.each do |path, content|
-				if File.exist? path
-					prepend_to_file path, content
-				else
-					create_file path, content
-				end
+			module_current = options[:to] == nil ? SCFG.get(:module_focus) : options[:to]
+			unless Utils.check_module(module_current)
+				error(Utils.message) 
 			end
 
-			g.tpl_contents.each do |path, content|
-				create_file path, content
-			end
+			puts module_current
+
+# 			g = Generator.new module_current
+# 			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
+# 
+# 			g.app_contents.each do |path, content|
+# 				if File.exist? path
+# 					prepend_to_file path, content
+# 				else
+# 					create_file path, content
+# 				end
+# 			end
+# 
+# 			g.tpl_contents.each do |path, content|
+# 				create_file path, content
+# 			end
 		end
+
 	end
 
 end
