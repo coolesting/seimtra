@@ -50,10 +50,10 @@ class Generator
 	end
 
 	def create_route argv, from_tpl = false
-		path = get_path
+		path = get_path :route
 		if from_tpl == true
 			argv.each do | name |
-				@app_contents[path] = get_erb_content name, :routes
+				@app_contents[path] = get_erb_content name, :applications
 			end
 		else
 			argv.each do | route |
@@ -79,12 +79,13 @@ class Generator
 
 	private
 
-		def get_path name = '', type = :routes
-			if type == :routes
-				path = "modules/#{@module_name}/applications/#{type.to_s}.rb"
+		# generate the template file to project path that is the returned value
+		def get_path name, type = :applications
+			if type == :applications
+				path = "modules/#{@module_name}/applications/#{name.to_s}.rb"
 				@app_contents[path] = '' unless @app_contents.include? path
 			else
-				path = "modules/#{@module_name}/templates/#{@name}_#{name}.slim"
+				path = "modules/#{@module_name}/templates/#{@module_name}_#{name.to_s}.slim"
 				@tpl_contents[path] = "" unless @tpl_contents.include? path
 			end
 			path
@@ -205,7 +206,7 @@ class Generator
 			@tpl_contents[gtn(@t[:style])] = get_erb_content(:search) + @tpl_contents[gtn(@t[:style])]
 		end
 
-		def get_erb_content(name, type = :templates)
+		def get_erb_content name, type = :templates
 			path = ROOTPATH + "/docs/scaffolds/#{type.to_s}/#{name.to_s}.tt"
 			if File.exist? path
 				content = File.read(path)

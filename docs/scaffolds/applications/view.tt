@@ -1,3 +1,4 @@
+
 get '/<%= @name %>' do
 	@title = '<%= @name %>'
 	@<%= @name %> = DB["<%= @t[:select_sql] %>"]

@@ -1,10 +1,10 @@
 
-get '/edit/<%= @name %>/:val' do
-	@<%= @name %> = DB[:<%= @name %>][<%= @update_by.to_sym %> => params[:val]]
-	slim :<%= @name %>_edit
+get '/edit/<%= @t[:name] %>/:val' do
+	@<%= @t[:name] %> = DB[:<%= @t[:name] %>][<%= @t[:update_by] %> => params[:val]]
+	slim :<%= @t[:name] %>_edit
 end
 
-post '/edit/<%= @name %>/:val' do
-	@<%= @name %> = DB[:<%= @name %>].filter(<%= @update_by.to_sym %> => params[:val]).update(<%= @update_sql %>)
-	redirect '/<%= @name %>'
+post '/edit/<%= @t[:name] %>/:val' do
+	@<%= @t[:name] %> = DB[:<%= @t[:name] %>].filter(<%= @t[:update_by] %> => params[:val]).update(<%= @t[:update_sql] %>)
+	redirect '/<%= @t[:name] %>'
 end
