@@ -50,7 +50,7 @@ class Generator
 	end
 
 	def create_route argv, from_tpl = false
-		path = get_path :route
+		path = get_path :routes
 		if from_tpl == true
 			argv.each do | name |
 				@app_contents[path] = get_erb_content name, :applications
@@ -70,11 +70,6 @@ class Generator
 	end
 
 	def create_view argv
-	end
-
-	def output
-  		puts @app_contents
-	   	puts @tpl_contents
 	end
 
 	private
