@@ -1,9 +1,4 @@
 class Stest
-	def g
-		require "seimtra/generator"
-		g = Generator.new 'user'
-	end
-	
 	def route
 		require "seimtra/generator"
 		g = Generator.new 'user'
