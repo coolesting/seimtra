@@ -21,39 +21,32 @@ class Stest
 		# Example 01
 		# create a table with the existing fields of current database
 		#
-		#	3s view table username:password:email
+		#	3s view table:userinfo username:password:email
 		#
-		# or
-		#
-		# 	3s view username:password:email
-		#
-		# by default, the operator is a table
-		#
-		# 	3s view [operator] field_name1:field_name2:field_name3
-		# 	3s view [table|list|form] field_name1:field_name2:field_name3
-		#
-		argv1 = ['table', 'username:password:email']
-		argv2 = ['username:password:email']
+		argv1 = ['table:userinfo', 'username:password:email']
 	
 		# Example 02
 		# list the fields, 
 		#
-		# 	3s view list username:password:email
+		# 	3s view list:listinfo username:password:email
 		#
-		argv3 = ['list', 'username:password:email']
+		argv2 = ['list:listinfo', 'username:password:email']
 
 		# Example 03
 		# create a form for adding the user data
 		# 	
-		# 	3s view form text:username pawd:password text:email
+		# 	3s view form:adduser text:username pawd:password text:email
 		#
-		argv4 = ['form', 'text:username', 'pawd:password', 'text:email']
+		argv3 = ['form:adduser', 'text:username', 'pawd:password', 'text:email']
 
 		# Example 04
 		# you can create all of examples above once time
 		#
-		# 	3s view username:password:email list username:password:email form text:username pawd:password text:email
+		# 	3s view table:userinfo username:password:email \ 
+		# 	list:listinfo username:password:email \
+		# 	form:adduser text:username pawd:password text:email
 		#
+		argv4 = []
 		
 		g.create_view argv1
 
