@@ -79,9 +79,8 @@ class SeimtraThor < Thor
 				table	= operate_table
 			end
 
-			unless default_operate.include?(operate.to_sym) 
-				error("#{operate} is a error operation, you allow to use create, alter, rename and drop") 
-			end
+			error("#{operate} is a error operation, you allow to use create, \
+			alter, rename and drop") unless default_operate.include?(operate.to_sym)
 		end
 
 		#create file for migrating record
@@ -116,9 +115,7 @@ class SeimtraThor < Thor
 		#implement the migrations
 		if options.run? 
 			path = mpath
-			if options[:with]['global']
-				path = Dir[gpath + "/*"].sort.last
-			end
+			path = Dir[gpath + "/*"].sort.last if options[:with]['global']
 
 			error("No schema at #{path}") unless File.exist?(path)
 			run("sequel -m #{path} #{version} #{dbcont}")

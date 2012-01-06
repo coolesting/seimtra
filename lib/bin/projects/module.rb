@@ -23,8 +23,9 @@ class SeimtraThor < Thor
 	# 	3s view list username:email
 	#	3s view table username:email
 
-	method_option :to, :type => :string, :aliases => '-t'
 	desc "view [ARGV]", "Generate the view for module"
+	method_option :to, :type => :string, :aliases => '-t'
+	map 'v' => :view
 	def view(*argv)
 		generate :view, argv
 	end
@@ -86,6 +87,7 @@ class SeimtraThor < Thor
 	# 	3s m info user name:author_name
 
 	desc "module [OPERATOR] [ARGV]", "The module operation, create, remove, add"
+	map 'm' => :module
 	def module(opt, *argv) 
 		
 		#create the new module
@@ -140,13 +142,13 @@ class SeimtraThor < Thor
 			end
 			show_info(name, argv, "#{name} module info")
 		end
-
 	end
 
 
 	desc 'test [NAME]', 'Make a test, and output the result'
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
+	map 't' => :test
 	def test(func_name = nil, *argv)
 		error("Enter your test name likes this, 3s test db") if func_name == nil
 		require "seimtra/stest"

@@ -23,6 +23,5 @@ if file_exsit
 	end
 end
 
-SeimtraThor.sinit
 SeimtraThor.start
 SCFG.save

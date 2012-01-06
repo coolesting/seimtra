@@ -69,9 +69,7 @@ class SeimtraThor < Thor
 			require "seimtra/generator"
 
 			module_current = options[:to] == nil ? SCFG.get(:module_focus) : options[:to]
-			unless Utils.check_module(module_current)
-				error(Utils.message) 
-			end
+			error(Utils.message) unless Utils.check_module(module_current)
 
 			g = Generator.new module_current
 			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
