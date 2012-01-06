@@ -18,9 +18,15 @@ class Stest
 
 		# Example about the '3s view' command
 		#
+		# 	3s view operator:name argv1 argv2 argv3
+		#
+		# the operator could be table, list, form, and the name you could give it what 
+		# you need, by default, the name will be table1, list1 if no name given.
+		#
 		# Example 01
 		# create a table with the existing fields of current database
 		#
+		#	3s view table username:password:email
 		#	3s view table:userinfo username:password:email
 		#
 		argv1 = ['table:userinfo', 'username:password:email']
@@ -42,9 +48,9 @@ class Stest
 		# Example 04
 		# you can create all of examples above once time
 		#
-		# 	3s view table:userinfo username:password:email \ 
-		# 	list:listinfo username:password:email \
-		# 	form:adduser text:username pawd:password text:email
+		# 	3s view table username:password:email \ 
+		# 	list username:password:email \
+		# 	form text:username pawd:password text:email
 		#
 		argv4 = []
 		
