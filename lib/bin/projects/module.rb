@@ -131,7 +131,7 @@ class SeimtraThor < Thor
 		# list the modules
 		elsif opt == 'list'
 			Dir[Dir.pwd + '/modules/*'].each do | m |
-				say m.split('/').last, "\e[33m"
+				isay m.split('/').last
 			end
 
 		# show/set the module info

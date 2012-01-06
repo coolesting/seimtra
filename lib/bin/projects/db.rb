@@ -119,7 +119,7 @@ class SeimtraThor < Thor
 
 			error("No schema at #{path}") unless File.exist?(path)
 			run("sequel -m #{path} #{version} #{dbcont}")
-			say "Implementing complete", "\e[32m"
+			isay "Implementing complete"
 		end
 
 		#dump the database schema to a  mrgration
@@ -130,8 +130,8 @@ class SeimtraThor < Thor
 
 		#output the schema/migration
 		if options.output?
-			say "The adapter :  #{db.get_scheme}.", "\e[32m"
-			say "The schema as the following.", "\e[32m"
+			isay "The adapter :  #{db.get_scheme}."
+			isay "The schema as the following."
 			puts "\n"
 
 			#puts the tables of database to array of hash
@@ -144,7 +144,7 @@ class SeimtraThor < Thor
 					print "\n"
 				end
 			end
-			say "\n"
+			puts "\n"
 		end
 
 	end

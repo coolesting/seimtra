@@ -15,12 +15,13 @@ class SeimtraThor < Thor
 			SCFG.set :status, 'production'
 			Dir.chdir(Dir.pwd + '/' + project_name)
 			run("bundle install")
-			say "Initializing complete.", "\e[32m"
+			isay "Initializing complete."
 		else
 			directory 'docs/development', project_name
 			SCFG.set :status, 'development'
 			Dir.chdir(Dir.pwd + '/' + project_name)
-			say "Executing 'bundle install' for complete installation if this is your first time using the development editor", "\e[32m"
+			isay "Executing 'bundle install' for complete installation \
+			if this is your first time using the development editor"
 		end
 	end
 
@@ -28,7 +29,7 @@ class SeimtraThor < Thor
 	def version
 		require 'seimtra/info'
 		Seimtra::Info::constants(false).each do |name|
-			say "#{name.to_s.downcase} : #{eval("Seimtra::Info::" + name.to_s)}", "\e[33m"
+			isay "#{name.to_s.downcase} : #{eval("Seimtra::Info::" + name.to_s)}"
 		end
 	end
 
@@ -39,8 +40,18 @@ class SeimtraThor < Thor
 		show_info path, argv, "Your customize config", true
 	end
 
+
+end
+
+class SeimtraThor < Thor
+
 	#build-in method of the class
 	no_tasks do
+
+		def isay str
+			say str, "\e[33m"
+		end
+
 		def error msg
 			say msg, "\e[31m"
 			exit
@@ -60,8 +71,8 @@ class SeimtraThor < Thor
 					SCFG.set key, val 
 				end
 			end
-			say("========= #{str} ========= \n", "\e[33m") unless str == nil
-			SCFG.get.each do |k,v| say "#{k.to_s} : #{v}", "\e[33m" end
+			isay("========= #{str} ========= \n") unless str == nil
+			SCFG.get.each do |k,v| isay "#{k.to_s} : #{v}" end
 		end
 
 		def generate opt, argv
