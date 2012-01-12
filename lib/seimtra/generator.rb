@@ -1,18 +1,16 @@
 require 'erb'	
 class Generator
 
-	attr_accessor :tpl_contents, :app_contents, :module_name
+	attr_accessor :contents
 
 	def initialize module_name = 'custom'
 
-		@app_contents 	= {}
-		@tpl_contents 	= {}
-
+		@contents 		= {}
 		@load_apps 		= []
 		@load_tpls 		= []
 		@processes 		= []
 
-		@name 			= ''
+		@path			= @name = ''
 		@module_name	= module_name
 
 		@style 			= [:table, :list]
@@ -25,35 +23,13 @@ class Generator
 		#temporary variable as the template variable
 		@t				= {}
 
-		#load the content of application
-		unless @load_apps.empty?
-			@load_apps.each do | app |
-				name = grn
-				@app_contents[name] = "" unless @app_contents.has_key? name
-				@app_contents[name] += "# == created at #{Time.now} == \n\n"
-				if self.respond_to?("load_app_#{app}", true)
-					@app_contents[name] += send("load_app_#{app}") 
-				else
-					@app_contents[name] += get_erb_content(app, 'applications')
-				end
-				@app_contents[name] += "\n\n"
-			end
-		end
-
-		#load the content of template
-		unless @load_tpls.empty?
-			@load_tpls.each do | tpl |
-				send("load_template_#{tpl}")  if self.respond_to?("load_template_#{tpl}", true)
-			end
-		end
-
 	end
 
 	def create_route argv, from_tpl = false
-		path = get_path :routes
+		set_path :routes
 		if from_tpl == true
 			argv.each do | name |
-				@app_contents[path] = get_erb_content name, :applications
+				@contents[@path] = get_erb_content name, :applications
 			end
 		else
 			argv.each do | route |
@@ -61,8 +37,8 @@ class Generator
 				if args.length > 1
 					meth = args.shift
 					args.each do | name |
-						@app_contents[path]	+= "#{meth} '/#{@module_name}/#{name}' do \n"
-						@app_contents[path]	+= "end \n\n"
+						@contents[@path] += "#{meth} '/#{@module_name}/#{name}' do \n"
+						@contents[@path] += "end \n\n"
 					end
 				end
 			end
@@ -75,15 +51,15 @@ class Generator
 	private
 
 		# generate the template file to project path that is the returned value
-		def get_path name, type = :applications
+		def set_path name, type = :applications
 			if type == :applications
-				path = "modules/#{@module_name}/applications/#{name.to_s}.rb"
-				@app_contents[path] = '' unless @app_contents.include? path
+				path = "modules/#{@module_name}/applications/#{name.to_s}_#{Time.now}.rb"
+				@contents[path] = '' unless @contents.include? path
 			else
 				path = "modules/#{@module_name}/templates/#{@module_name}_#{name.to_s}.slim"
 				@tpl_contents[path] = "" unless @tpl_contents.include? path
 			end
-			path
+			@path = path
 		end
 		
 		#The order of processing program
