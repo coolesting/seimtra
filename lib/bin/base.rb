@@ -86,18 +86,23 @@ class SeimtraThor < Thor
 			false
 		end
 
-		def init_module
- 			directory "docs/modules", "modules/#{name}"
-# 			empty_directory "modules/#{name}/applications"
-# 			create_file "modules/#{name}/applications/.log"
-# 
-# 			empty_directory "modules/#{name}/templates"
-# 			create_file "modules/#{name}/templates/.log"
-# 
-# 			empty_directory "modules/#{name}/others"
-# 			create_file "modules/#{name}/others/info.yml"
-# 			create_file "modules/#{name}/others/.log"
-# 			create_file "modules/#{name}/README.rdoc"
+		def module_init name
+#  			directory "docs/modules", "modules/#{name}"
+
+			folders = ['applications', 'templates', 'others'] 
+ 			folders.each do | folder |
+				unless File.exist? "modules/#{name}/#{folder}"
+					empty_directory "modules/#{name}/#{folder}"
+				end
+			end
+
+			files = ['others/info.yml', 'README.rdoc']
+			files.each do | file |
+				unless File.exist? "modules/#{name}/#{file}"
+					create_file "modules/#{name}/#{file}"				
+				end
+			end
+
 		end
 
 		def isay str
@@ -128,7 +133,6 @@ class SeimtraThor < Thor
 		end
 
 		def generate opt, argv
-			empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 			require "seimtra/generator"
 
 			module_current = options[:to] == nil ? SCFG.get(:module_focus) : options[:to]

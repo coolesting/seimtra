@@ -89,14 +89,15 @@ class SeimtraThor < Thor
 	desc "module [OPERATOR] [ARGV]", "The module operation, create, remove, add"
 	map 'm' => :module
 	def module(opt, *argv) 
+		empty_directory(Dir.pwd + '/modules') unless File.exist?(Dir.pwd + '/modules')
 		
 		#create the new module
 		if opt == 'new'
-			error('You need a module name, e.g, 3s m new user', "\e[31m") unless argv.length > 0
+			error('You need a module name, e.g, 3s m new user') unless argv.length > 0
 			name = argv[0]
 			error('The module is existing.') if module_exist?(name)
 
-			init_module name
+			module_init name
 
 			path = get_custom_info.first
 			SCFG.load path, true
@@ -130,6 +131,7 @@ class SeimtraThor < Thor
 			if argv.length > 0
 				name = argv.shift if argv[0].index(':') == nil
 			end
+			error("The module #{name} is not existing") unless module_exist? name 
 			show_info(name, argv, "#{name} module info")
 		end
 	end
