@@ -134,24 +134,14 @@ class SeimtraThor < Thor
 
 		def generate opt, argv
 			require "seimtra/generator"
-
 			module_current = options[:to] == nil ? SCFG.get(:module_focus) : options[:to]
-			error(Utils.message) unless Utils.check_module(module_current)
+			error("The module #{module_current} is not existing") unless module_exist? module_current 
 
 			g = Generator.new module_current
 			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
 
 			g.output
-# 
-# 			g.app_contents.each do |path, content|
-# 				if File.exist? path
-# 					prepend_to_file path, content
-# 				else
-# 					create_file path, content
-# 				end
-# 			end
-# 
-# 			g.tpl_contents.each do |path, content|
+# 			g.contents.each do |path, content|
 # 				create_file path, content
 # 			end
 		end
