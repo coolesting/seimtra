@@ -18,43 +18,49 @@ class Stest
 
 		# Example about the '3s view' command
 		#
-		# 	3s view operator:name argv1 argv2 argv3
+		# 	3s view [route_name] [style:type] argv1 argv2 argv3
 		#
-		# the operator could be table, list, form, and the name you could give it what 
-		# you need, by default, the name will be table1, list1 if no name given.
+		# if the route_name is ignored, that will be null
+		# the type of style could be the table, list, form, by default, it will be table
 		#
 		# Example 01
 		# create a table with the existing fields of current database
 		#
-		#	3s view table username:password:email
-		#	3s view table:userinfo username:password:email
+		#	3s view username:password:email
+		#	3s view info username:password:email style:table 
+		#	3s view info username:password:email
 		#
-		argv1 = ['table:userinfo', 'username:password:email']
+		argv0 = ['username:password:email']
+		argv1 = ['info', 'style:table', 'username:password:email']
 	
 		# Example 02
 		# list the fields, 
 		#
-		# 	3s view list:listinfo username:password:email
+		# 	3s view list username:password:email style:list 
 		#
-		argv2 = ['list:listinfo', 'username:password:email']
+		argv2 = ['list', 'style:list', 'username:password:email']
 
 		# Example 03
 		# create a form for adding the user data
 		# 	
-		# 	3s view form:adduser text:username pawd:password text:email
+		# 	3s view edit text:username pawd:password text:email -n=edit
 		#
-		argv3 = ['form:adduser', 'text:username', 'pawd:password', 'text:email']
+		argv3 = ['form', 'text:username', 'pawd:password', 'text:email']
 
 		# Example 04
 		# you can create all of examples above once time
 		#
-		# 	3s view table username:password:email \ 
+		# 	3s view username:password:email \ 
 		# 	list username:password:email \
 		# 	form text:username pawd:password text:email
 		#
-		argv4 = []
+		argv4 = ['username:password','list', 'username:email', \
+		'form', 'text:username', 'pawd:password', 'text:email']
 		
-		g.create_view argv1
+		argv = argv2
+
+		argv.unshift 'userinfo'
+		g.create_view argv
 
 		puts g.app_contents
 		puts g.tpl_contents

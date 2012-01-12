@@ -48,6 +48,58 @@ class SeimtraThor < Thor
 	#build-in method of the class
 	no_tasks do
 
+		# return ture if the module is existing
+		def module_exist?(name)
+			Dir['modules/*'].each do | module_name |
+				m = module_name.split('/').last
+				return true if m == name
+			end
+			false
+		end
+
+		# get the customize info
+		def get_custom_info 
+			path = Dir.pwd
+			#windows
+			if /\w:\\?/.match(path)
+				path = 'c:\.Seimtra'
+				file = 'echo '' > C:\.Semitra'
+			#others
+			else
+				path = '~/.Seimtra'
+				file = 'touch ~/.Seimtra'
+			end
+			[path,file]
+		end
+
+		def blank?(var)
+			return true if var == nil
+
+			type = var.class
+			if type == 'Fixnum' or type == 'Float' or type == 'Numeric'
+				return true if var.zero?
+			end
+			if type == 'String' or type == 'Array' or type == 'Hash'
+				return true if var.empty?
+			end
+
+			false
+		end
+
+		def init_module
+ 			directory "docs/modules", "modules/#{name}"
+# 			empty_directory "modules/#{name}/applications"
+# 			create_file "modules/#{name}/applications/.log"
+# 
+# 			empty_directory "modules/#{name}/templates"
+# 			create_file "modules/#{name}/templates/.log"
+# 
+# 			empty_directory "modules/#{name}/others"
+# 			create_file "modules/#{name}/others/info.yml"
+# 			create_file "modules/#{name}/others/.log"
+# 			create_file "modules/#{name}/README.rdoc"
+		end
+
 		def isay str
 			say str, "\e[33m"
 		end

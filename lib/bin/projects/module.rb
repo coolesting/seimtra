@@ -94,21 +94,11 @@ class SeimtraThor < Thor
 		if opt == 'new'
 			error('You need a module name, e.g, 3s m new user', "\e[31m") unless argv.length > 0
 			name = argv[0]
-			error(Utils.message) if Utils.check_module(name)
+			error('The module is existing.') if module_exist?(name)
 
- 			directory "docs/modules", "modules/#{name}"
-# 			empty_directory "modules/#{name}/applications"
-# 			create_file "modules/#{name}/applications/.log"
-# 
-# 			empty_directory "modules/#{name}/templates"
-# 			create_file "modules/#{name}/templates/.log"
-# 
-# 			empty_directory "modules/#{name}/others"
-# 			create_file "modules/#{name}/others/info.yml"
-# 			create_file "modules/#{name}/others/.log"
-# 			create_file "modules/#{name}/README.rdoc"
+			init_module name
 
-			path = Utils.get_custom_info.first
+			path = get_custom_info.first
 			SCFG.load path, true
 			info = {}
 			info[:name] 		= name
