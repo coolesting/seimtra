@@ -4,6 +4,11 @@ class SeimtraThor < Thor
 	#
 	# Create the view for module 
 	#
+	# 	3s v [route_name] [view_type] [argv] [argv1]
+	#
+	# By default, the route_name is module name if it never be set,
+	# the view_type is table
+	#
 	# == Arguments
 	#
 	# argv, 		string
@@ -16,17 +21,18 @@ class SeimtraThor < Thor
 	#
 	# create a form for adding the user data
 	#
-	# 	3s view form text:username pawd:password
+	# 	3s v edit form text:username pawd:password
 	#
 	# finally, display the fields by list and table
 	#
-	# 	3s view list username:email
-	#	3s view table username:email
+	# 	3s v listuser list username:email
+	#	3s v userinfo username:email
 
-	desc "view [ARGV]", "Generate the view for module"
+	desc "view [ROUTE_NAME] [VIEW_TYPE] [ARGV]", "Generate the view for module"
 	method_option :to, :type => :string, :aliases => '-t'
 	map 'v' => :view
 	def view(*argv)
+		doc :view unless argv.length > 0
 		generate :view, argv
 	end
 
@@ -52,6 +58,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	desc "route [ARGV]", "Generate the routes for module"
 	def route(*argv)
+		doc :route unless argv.length > 0
 		generate :route, argv
 	end
 

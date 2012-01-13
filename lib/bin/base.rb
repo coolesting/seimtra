@@ -146,6 +146,15 @@ class SeimtraThor < Thor
 # 			end
 		end
 
+
+		def doc name
+			@docs = {}
+			@docs[:view] = 'this is a view'
+			@docs[:route] = 'this is a route'
+			isay @docs[name]
+			exit
+		end
+
 	end
 
 end
