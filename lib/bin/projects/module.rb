@@ -32,8 +32,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	map 'v' => :view
 	def view(*argv)
-		doc :view unless argv.length > 0
-		generate :view, argv
+		generate(:view, argv) if argv.length > 0
 	end
 
 
@@ -58,8 +57,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	desc "route [ARGV]", "Generate the routes for module"
 	def route(*argv)
-		doc :route unless argv.length > 0
-		generate :route, argv
+		generate(:route, argv) if argv.length > 0
 	end
 
 
