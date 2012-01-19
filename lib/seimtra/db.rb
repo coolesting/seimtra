@@ -2,7 +2,7 @@ class Db
 
 	attr_accessor :msg, :error
 
-	def initialize(path = './environment.rb')
+	def initialize path = './environment.rb'
 		@msg 	= ''
 		@error 	= false
 		epath = File.expand_path(path)
@@ -15,7 +15,7 @@ class Db
 	end
 	
 	#@name symbol
-	def check_column(name)
+	def check_column name
 		columns = get_columns
 		columns.include?(name.to_sym) ? true : false
 	end
@@ -26,7 +26,7 @@ class Db
 	# name string, the table name
 	# argv array, such as ['String:title', 'text:body']
 	#
-	def autocomplete(name, argv)
+	def autocomplete name, argv
 		#match a id
 		i = 1
 		while i > 0 
@@ -49,13 +49,13 @@ class Db
 		DB.class.adapter_scheme.to_s
 	end
 
-	def get_schema(table)
-		DB.schema(table)
+	def get_schema table
+		DB.schema table
 	end
 
 	##
 	# table, string
-	def get_columns(table = nil)
+	def get_columns table = nil
 		if table == nil
 			argv = []
 			get_tables.each do | table |
@@ -67,7 +67,7 @@ class Db
 		end
 	end
 
-	def dump_schema(table)
+	def dump_schema table
 		Sequel.extension :schema_dumper
 		DB.dump_table_schema(table)
 	end
@@ -75,5 +75,10 @@ class Db
 	def dump_schema_migration
 		Sequel.extension :schema_dumper
 		DB.dump_schema_migration
+	end
+
+	def run path, argv = {}
+		Sequel.extension :migration
+		Sequel::Migrator.run DB, path, argv
 	end
 end

@@ -146,6 +146,15 @@ class SeimtraThor < Thor
 # 			end
 		end
 
+		def get_file_num file_path, change_str = true
+			suffix = file_path[-1] == '/' ? '*' : '/*'
+			nums = Dir[file_path + suffix].length
+			if change_str == true
+				nums = nums.next
+				nums.to_s.rjust(3, '0')
+			end
+		end
+
 	end
 
 end

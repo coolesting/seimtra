@@ -1,7 +1,7 @@
 class SeimtraThor < Thor
 
 	long_desc <<-DOC
-	# = Database operation
+	# = Database operation 
 	#
 	# Create and implement the migration to database,
 	# output/dump the schema/migration from database
@@ -9,7 +9,7 @@ class SeimtraThor < Thor
 	# == Arguments
 	#
 	# operator, 	string, e.g. , create, alter, rename, drop
-	# argv, 		array, e.g. , ['table_name', 'String:name', 'String:password']
+	# argv, 		array, e.g. , ["table_name", "String:name","String:password"]
 	#
 	# == Options
 	#
@@ -70,7 +70,6 @@ class SeimtraThor < Thor
 		db 				= Db.new
 		error(db.msg) if db.error
 
-		time			= Time.now.strftime('%Y%m%d%H%M%S')
 		module_current	= options[:to] || SCFG.get(:module_focus)
 		path 			= "/modules/#{module_current}/migrations"
 		mpath 			= Dir.pwd + path
@@ -83,7 +82,7 @@ class SeimtraThor < Thor
 		empty_directory(mpath) unless File.directory?(mpath)
 
 		#create a migration record
- 		if operator != nil 
+ 		if operator != nil and argv.count > 0
 
 			unless doperator.include? operator.to_sym
 				error("The #{operator} is a error operator, you allow to use create, \
@@ -96,8 +95,9 @@ class SeimtraThor < Thor
 				table = ''
 			end
 
- 			file_nums = get_file_num(mpath)
+			puts file_nums = get_file_num(mpath).to_s.class
 			file = mpath + "/#{file_nums}_#{operator}_#{table}.rb"
+			exit
 
 			#auto add the primary_key and time to migrating record
 			if options.autocomplete?
@@ -109,16 +109,14 @@ class SeimtraThor < Thor
 				content = "Sequel.migration do\n"
 				content << "\tchange do\n"
 
-				if argv.count > 0
-					if operator == "drop" or operator == "rename"
-						content << "\t\t#{operator}_table(#{argv.to_s.gsub(",", ", ")})\n"
-					else
-						content << "\t\t#{operator}_table(:#{table}) do\n"
-						argv.each do |item|
-							content << "\t\t\t#{item.sub(":", " :").gsub(",", ", ")}\n"
-						end
-						content << "\t\tend\n"
+				if operator == "drop" or operator == "rename"
+					content << "\t\t#{operator}_table(#{argv.to_s.gsub(",", ", ")})\n"
+				else
+					content << "\t\t#{operator}_table(:#{table}) do\n"
+					argv.each do |item|
+						content << "\t\t\t#{item.sub(":", " :").gsub(",", ", ")}\n"
 					end
+					content << "\t\tend\n"
 				end
 
 				content << "\tend\n"
@@ -130,18 +128,16 @@ class SeimtraThor < Thor
 		if options.run? 
 			path = mpath
 			path = Dir[gpath + "/*"].sort.last if options.schema?
+
 			error("No schema at #{path}") unless File.exist?(path)
-
-			db.run path, :table => :schema_info, :column => module_current.to_sym
-# 			run("sequel -m #{path} #{version} #{dbcont}")
-
+			run("sequel -m #{path} #{version} #{dbcont}")
 			isay "Implementing complete"
 		end
 
 		#dump the database schema to a mrgration file
 		if options[:dump] != nil
 			dump = options[:dump] == 'D' ? '-D' : '-d'
-			run("sequel #{dump} #{dbcont} > #{gpath}/#{time}.rb")
+			run("sequel #{dump} #{dbcont} > #{gpath}/#{Time.now.strftime('%Y%m%d%H%M%S')}.rb")
 		end
 
 		#output the schema/migration
