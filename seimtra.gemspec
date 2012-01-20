@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
 	s.version 	= Seimtra::Info::VERSION
 	s.email 	= "coolesting@gmail.com"
 	s.authors 	= Seimtra::Info::AUTHORS
- 	s.homepage 	= "http://github.com/coolesting/seimtra"
+ 	s.homepage 	= "https://github.com/coolesting/seimtra"
 	s.description = Seimtra::Info::DESCRIPTION
   	s.summary 	= Seimtra::Info::SUMMARY
 
