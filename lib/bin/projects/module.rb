@@ -1,63 +1,57 @@
 class SeimtraThor < Thor
 
-	# = Generating view 
+	# = Generator
 	#
-	# Create the view for module 
-	#
-	# 	3s v [route_name] [view_type] [argv] [argv1]
-	#
-	# By default, the route_name is module name if it never be set,
-	# the view_type is table
+	# Create the view for module
 	#
 	# == Arguments
 	#
-	# argv, 		string
+	# argv, 		string, more details please check the seimtra/generate.rb
 	#
 	# == Options
 	#
-	# --to, -t		put the specifying content to specifying module
+	# --to, -t		specify a module for this operation
 	#
 	# == Examples 
 	#
-	# create a form for adding the user data
-	#
-	# 	3s v edit form text:username pawd:password
-	#
-	# finally, display the fields by list and table
-	#
-	# 	3s v listuser list username:email
-	#	3s v userinfo username:email
-
-	desc "view [ROUTE_NAME] [VIEW_TYPE] [ARGV]", "Generate the view for module"
-	method_option :to, :type => :string, :aliases => '-t'
-	map 'v' => :view
-	def view(*argv)
-		generate(:view, argv) if argv.length > 0
-	end
-
-
-	# = Generating route
-	#
-	# Create the route for module 
-	#
-	# == Arguments
-	#
-	# argv, 		string
-	#
-	# == Options
-	#
-	# --to, -t		put the specifying content to specifying module
-	#
-	# == Examples 
-	#
-	# create the routes
+	# example 01, create a routes
 	#
 	# 	3s route get:login:logout:register post:login:register
+	#
+	# example 02, create a table 
+	#
+	#	3s g table username:password:email
+	#
+	# example 03, create a list
+	#
+	# 	3s g list username:password:email
+	#
+	# example 04, create a form
+	#
+	#	3s g form text:username pawd:password text:email
+	# 
+	# example 05, create the example02-04 at once time
+	#
+	# 	3s g table username:password:email \ 
+	# 	list username:password:email \
+	# 	form text:username pawd:password text:email
+	#
 
+	desc "generate [ROUTE_NAME] [VIEW_TYPE] [ARGV]", "Generate the view for module"
 	method_option :to, :type => :string, :aliases => '-t'
-	desc "route [ARGV]", "Generate the routes for module"
-	def route(*argv)
-		generate(:route, argv) if argv.length > 0
+	map 'g' => :generate
+	def generate(*argv)
+		if argv.length > 0
+			module_current = get_module options[:to]
+			require "seimtra/generator"
+			g = Generator.new module_current
+			g.run argv
+			g.contents.each do |path, content|
+				create_file path, content
+			end
+ 		else
+			error 'please check  "3s help generate" for usage of the command'
+		end
 	end
 
 

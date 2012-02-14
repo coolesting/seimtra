@@ -1,68 +1,45 @@
 class Stest
-	def route
+	def g
 		require "seimtra/generator"
 		g = Generator.new 'user'
 
-		#get content from customize
-# 		g.create_route ['get:login:register:logout', 'post:login']
-
-		#get content from template
-		g.create_route ['new', 'edit'], true
-
-		puts g.app_contents
-	end
-
-	def view
-		require "seimtra/generator"
-		g = Generator.new 'user'
-
-		# Example about the '3s view' command
+		# Example 01, create a table
 		#
-		# 	3s view [route_name] [style:type] argv1 argv2 argv3
+		#	3s g table username:password:email
 		#
-		# if the route_name is ignored, that will be null
-		# the type of style could be the table, list, form, by default, it will be table
-		#
-		# Example 01
-		# create a table with the existing fields of current database
-		#
-		#	3s view username:password:email
-		#	3s view info username:password:email style:table 
-		#	3s view info username:password:email
-		#
-		argv0 = ['username:password:email']
-		argv1 = ['info', 'style:table', 'username:password:email']
+		argv0 = ['table', 'username:password:email']
 	
-		# Example 02
-		# list the fields, 
+		# Example 02, create a list 
 		#
-		# 	3s view list username:password:email style:list 
+		# 	3s g list username:password:email
 		#
-		argv2 = ['list', 'style:list', 'username:password:email']
+		argv1 = ['list', 'username:password:email']
 
-		# Example 03
-		# create a form for adding the user data
+		# Example 03, create a form 
 		# 	
-		# 	3s view edit text:username pawd:password text:email -n=edit
+		# 	3s g form text:username pawd:password text:email 
 		#
-		argv3 = ['form', 'text:username', 'pawd:password', 'text:email']
+		argv2 = ['form', 'text:username', 'pawd:password', 'text:email']
 
-		# Example 04
-		# you can create all of examples above once time
+		# Example 04, create some routes
 		#
-		# 	3s view username:password:email \ 
+		# 	3s g route get:login:logout post:login:register
+		#
+		argv3 = ['route', 'get:login:logout', 'post:login:register']
+
+		# Example 05, more details of this g usage
+		# create a table, list, form once time
+		#
+		# 	3s g table username:password:email \ 
 		# 	list username:password:email \
 		# 	form text:username pawd:password text:email
 		#
-		argv4 = ['username:password','list', 'username:email', \
-		'form', 'text:username', 'pawd:password', 'text:email']
+		argv4 = ['table', 'username:password:email']
+		argv4 += ['list', 'username:password:email']
+		argv4 += ['form', 'text:username', 'pawd:password', 'text:email']
 		
 		argv = argv2
-
-		argv.unshift 'userinfo'
-		g.create_view argv
-
-		puts g.app_contents
-		puts g.tpl_contents
+		g.run argv
+		puts g.output
 	end
 end

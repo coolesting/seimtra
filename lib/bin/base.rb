@@ -57,6 +57,12 @@ class SeimtraThor < Thor
 			false
 		end
 
+		# return the real module name, others is default module in config file
+		def get_module name
+			curmod  = name == nil ? SCFG.get(:module_focus) : name
+			error("The module #{curmod} is not existing") unless module_exist? curmod 
+		end
+
 		# get the customize info
 		def get_custom_info 
 			path = Dir.pwd
@@ -130,20 +136,6 @@ class SeimtraThor < Thor
 			end
 			isay("========= #{str} ========= \n") unless str == nil
 			SCFG.get.each do |k,v| isay "#{k.to_s} : #{v}" end
-		end
-
-		def generate opt, argv
-			require "seimtra/generator"
-			module_current = options[:to] == nil ? SCFG.get(:module_focus) : options[:to]
-			error("The module #{module_current} is not existing") unless module_exist? module_current 
-
-			g = Generator.new module_current
-			g.send("create_#{opt.to_s}", argv) if g.respond_to? "create_#{opt.to_s}"
-
-			g.output
-# 			g.contents.each do |path, content|
-# 				create_file path, content
-# 			end
 		end
 
 		def get_file_num file_path, change_str = true

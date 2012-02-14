@@ -25,6 +25,9 @@ class Generator
 
 	end
 
+	def run argv
+	end
+
 	def create_route argv, from_tpl = false
 		set_path :routes
 		if from_tpl == true
@@ -45,7 +48,7 @@ class Generator
 		end
 	end
 
-	def create_view argv
+	def create_table argv
 	end
 
 	private
