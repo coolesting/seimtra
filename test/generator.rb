@@ -38,7 +38,13 @@ class Stest
 		argv4 += ['list', 'username:password:email']
 		argv4 += ['form', 'text:username', 'pawd:password', 'text:email']
 		
-		argv = argv2
+		argv5 = ['userinfo']
+		argv5 += ['table', 'username:password:email']
+		argv5 += ['list', 'username:password:email']
+		argv5 += ['form', 'text:username', 'pawd:password', 'text:email']
+		argv5 += ['list', 'website:email']
+
+		argv = argv5
 		g.run argv
 		puts g.output
 	end

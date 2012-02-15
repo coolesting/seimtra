@@ -13,12 +13,12 @@ class Generator
 		@path			= @name = ''
 		@module_name	= module_name
 
-		@style 			= [:table, :list]
-		@enable			= [:edit, :new, :rm]
-		@filter 		= [:index, :foreign_key, :unique]
+		@operators 		= [:table, :list, :form, :route]
+		@enables		= [:edit, :new, :rm]
+		@filters		= [:index, :foreign_key, :unique]
 
 		#A condition for deleting, updeting, editting the record
-		@keyword 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
+		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
 
 		#temporary variable as the template variable
 		@t				= {}
@@ -26,6 +26,33 @@ class Generator
 	end
 
 	def run argv
+		operators	= {}
+		contents	= {}
+		flag		= 1
+
+		#the first parameter as the route name if it is not a operator
+		unless @operators.include? argv[0].to_sym
+			contents[flag] = ["get:#{argv.shift}"]
+		else
+			contents[flag] = ["get:#{@module_name}"]
+		end
+
+		operators[flag]	= 'route' 
+
+		return false unless argv.length > 0
+
+		#loop array for separating the operator and content of operator
+		while argv.length > 0
+			if @operators.include? argv[0].to_sym
+				flag = flag + 1
+				operators[flag]	= argv.shift 
+				contents[flag]	= [] unless @contents.include? operators[flag]
+			end
+			contents[flag] << argv.shift
+		end
+
+		@creates = contents
+		@ids	= operators
 	end
 
 	def create_route argv, from_tpl = false
@@ -49,6 +76,11 @@ class Generator
 	end
 
 	def create_table argv
+	end
+
+	def output
+ 		@creates
+#  		@ids
 	end
 
 	private
