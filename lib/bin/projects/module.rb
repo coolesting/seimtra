@@ -47,7 +47,11 @@ class SeimtraThor < Thor
 			g = Generator.new module_current
 			g.run argv
 			g.contents.each do |path, content|
-				create_file path, content
+				if File.exist? path
+					prepend_to_file path, content
+				else
+					create_file path, content
+				end
 			end
  		else
 			error 'please check  "3s help generate" for usage of the command'

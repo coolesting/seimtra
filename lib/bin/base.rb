@@ -92,23 +92,19 @@ class SeimtraThor < Thor
 			false
 		end
 
+		#create some folders and files that depends on the structure of module
 		def module_init name
-#  			directory "docs/modules", "modules/#{name}"
-
 			folders = ['applications', 'templates', 'others'] 
  			folders.each do | folder |
-				unless File.exist? "modules/#{name}/#{folder}"
-					empty_directory "modules/#{name}/#{folder}"
-				end
+				path = "modules/#{name}/#{folder}"
+				empty_directory(path) unless File.exist? path
 			end
 
 			files = ['others/info.yml', 'README.rdoc']
 			files.each do | file |
-				unless File.exist? "modules/#{name}/#{file}"
-					create_file "modules/#{name}/#{file}"				
-				end
+				path = "modules/#{name}/#{file}"
+				create_file(path) unless File.exist? path
 			end
-
 		end
 
 		def isay str

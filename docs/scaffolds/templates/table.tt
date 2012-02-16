@@ -1,9 +1,0 @@
-- unless @<%= @name %>.empty?
- table
- 	- for item in @<%= @name %> do
-	 tr
-	 	<% @t[:fields].each do | f | %>
-	 	td = item.<%= f %>
-		<% end %>
-- else
- p No items found.

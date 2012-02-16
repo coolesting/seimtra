@@ -1,5 +1,0 @@
-
-get '/rm/<%= @name %>/:val' do
-	@<%= @name %> = DB[:<%= @name %>].filter(<%= @delete_by.to_sym %> => params[:val]).delete
-	redirect '/<%= @name %>'
-end
