@@ -1,7 +1,7 @@
 require 'erb'	
 class Generator
 
-	attr_accessor :contents
+	attr_accessor :contents, :app_ext, :tpl_ext
 
 	def initialize module_name = 'custom'
 
@@ -10,18 +10,22 @@ class Generator
 		@load_tpls 		= []
 		@processes 		= []
 
-		@path			= @name = ''
 		@module_name	= module_name
+		@app_ext		= '.rb'
+		@tpl_ext		= '.slim'
 
 		@operators 		= [:table, :list, :form, :route]
 		@enables		= [:edit, :new, :rm]
 		@filters		= [:index, :foreign_key, :unique]
 
-		#A condition for deleting, updeting, editting the record
+		#a condition for deleting, updeting, editting the record
 		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
 
 		#temporary variable as the template variable
 		@t				= {}
+
+		#a test variable to show this data
+		@test			= {}
 
 	end
 
@@ -30,14 +34,12 @@ class Generator
 		contents	= {}
 		flag		= 1
 
-		#the first parameter as the route name if it is not a operator
-		unless @operators.include? argv[0].to_sym
-			contents[flag] = ["get:#{argv.shift}"]
-		else
-			contents[flag] = ["get:#{@module_name}"]
-		end
-
+		#set the default route for the default page
 		operators[flag]	= 'route' 
+		contents[flag] 	= ["get;#{@module_name}"]
+		unless @operators.include? argv[0].to_sym
+			contents[flag][0] = contents[flag][0] + "/#{argv.shift}"
+		end
 
 		return false unless argv.length > 0
 
@@ -51,50 +53,55 @@ class Generator
 			contents[flag] << argv.shift
 		end
 
-		@creates = contents
-		@ids	= operators
+		@test[:operator_content] = contents
+		@test[:operator_id]		 = operators
+
+		operators.each do | id, name |
+			send("create_#{name}", contents[id]) if respond_to? "create_#{name}"
+		end
 	end
 
-	def create_route argv, from_tpl = false
-		set_path :routes
-		if from_tpl == true
-			argv.each do | name |
-				@contents[@path] = get_erb_content name, :applications
-			end
-		else
-			argv.each do | route |
-				args = route.split ':'
-				if args.length > 1
-					meth = args.shift
-					args.each do | name |
-						@contents[@path] += "#{meth} '/#{@module_name}/#{name}' do \n"
-						@contents[@path] += "end \n\n"
-					end
-				end
-			end
+	##
+	# @arguments => ['get;login'] or ['get;login', 'post;login/:id']
+	def create_route argv
+		path = get_path
+		argv.each do | arg |
+			@t[:route_meth] , @t[:route_path] = arg.split ';'
+			@contents[path] = get_erb_content :route
 		end
 	end
 
 	def create_table argv
+		p 'table'
 	end
 
-	def output
- 		@creates
-#  		@ids
+	def create_list argv
+		p 'list'
+	end
+
+	def create_form argv
+		p 'form'
+	end
+	
+	def output num
+		case num
+		when 1 
+			@test[:operator_content]
+		when 2 
+			@test[:operator_id]
+		when 3 
+			@contents
+		end
 	end
 
 	private
 
 		# generate the template file to project path that is the returned value
-		def set_path name, type = :applications
-			if type == :applications
-				path = "modules/#{@module_name}/applications/#{name.to_s}_#{Time.now}.rb"
-				@contents[path] = '' unless @contents.include? path
-			else
-				path = "modules/#{@module_name}/templates/#{@module_name}_#{name.to_s}.slim"
-				@tpl_contents[path] = "" unless @tpl_contents.include? path
-			end
-			@path = path
+		def get_path argv = {}
+			type = argv.include?(:type) ? argv[:type] : 'applications'
+			name = argv.include?(:name) ? (@module_name + '_' + argv[:name]) : @module_name
+			name = type == "applications" ? (name + @app_ext) : (name + @tpl_ext)
+			path = "modules/#{@module_name}/#{type}/#{name}"
 		end
 		
 		#The order of processing program
@@ -212,8 +219,8 @@ class Generator
 			@tpl_contents[gtn(@t[:style])] = get_erb_content(:search) + @tpl_contents[gtn(@t[:style])]
 		end
 
-		def get_erb_content name, type = :templates
-			path = ROOTPATH + "/docs/scaffolds/#{type.to_s}/#{name.to_s}.tt"
+		def get_erb_content name
+			path = ROOTPATH + "/docs/templates/#{name.to_s}.tt"
 			if File.exist? path
 				content = File.read(path)
 				t = ERB.new(content)

@@ -16,7 +16,7 @@ class SeimtraThor < Thor
 	#
 	# example 01, create a routes
 	#
-	# 	3s route get:login:logout:register post:login:register
+	# 	3s route get;login post;login
 	#
 	# example 02, create a table 
 	#

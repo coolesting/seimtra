@@ -24,9 +24,9 @@ class Stest
 
 		# Example 04, create some routes
 		#
-		# 	3s g route get:login:logout post:login:register
+		# 	3s g route get;login post;login
 		#
-		argv[3] = ['route', 'get:login:logout', 'post:login:register']
+		argv[3] = ['route', 'get;login', 'post;login']
 
 		# Example 05, more details of this g usage
 		# create a table, list, form once time
@@ -47,6 +47,6 @@ class Stest
 
 		id = args.length > 0 ? args[0].to_i : 1
 		g.run argv[id]
-		puts g.output
+		puts g.output 3
 	end
 end
