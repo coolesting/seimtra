@@ -36,9 +36,9 @@ class Generator
 
 		#set the default route for the default page
 		operators[flag]	= 'route' 
-		contents[flag] 	= ["get;#{@module_name}"]
+		contents[flag] 	= "get;#{@module_name}"
 		unless @operators.include? argv[0].to_sym
-			contents[flag][0] = contents[flag][0] + "/#{argv.shift}"
+			contents[flag] = contents[flag] + "/#{argv.shift}"
 		end
 
 		return false unless argv.length > 0
@@ -56,31 +56,42 @@ class Generator
 		@test[:operator_content] = contents
 		@test[:operator_id]		 = operators
 
+		# preprocess data
 		operators.each do | id, name |
-			send("create_#{name}", contents[id]) if respond_to? "create_#{name}"
+			send("preprocess_#{name}", contents[id]) if respond_to?("preprocess_#{name}", true)
+		end
+
+		operators.each do | id, name |
+			send "create_#{name}" 
 		end
 	end
 
 	##
 	# @arguments => ['get;login'] or ['get;login', 'post;login/:id']
-	def create_route argv
-		path = get_path
-		argv.each do | arg |
+	def create_route
+		set_path :type => 'applications'
+		@t[:routes].each do | arg |
 			@t[:route_meth] , @t[:route_path] = arg.split ';'
-			@contents[path] = get_erb_content :route
+			@contents[@path] = @contents[@path] + get_tpl(:route)
 		end
 	end
 
-	def create_table argv
-		p 'table'
+	def create_table
+		set_path :type => 'templates', :name => 'show'
+		@contents[@path] = @contents[@path] + get_tpl(:table)
 	end
 
-	def create_list argv
-		p 'list'
+	def create_list
+		set_path :type => 'templates', :name => 'show'
+		@contents[@path] = @contents[@path] + get_tpl(:list)
 	end
 
-	def create_form argv
-		p 'form'
+	def create_form
+		set_path :type => 'templates', :name => 'new'
+		@contents[@path] = @contents[@path] + get_tpl(:new)
+
+		set_path :type => 'templates', :name => 'edit'
+		@contents[@path] = @contents[@path] + get_tpl(:edit)
 	end
 	
 	def output num
@@ -96,57 +107,47 @@ class Generator
 
 	private
 
-		# generate the template file to project path that is the returned value
-		def get_path argv = {}
+		##
+		# generate the file path that will be use later
+		# @argv => {:type => 'applications', :name => ''}
+		#
+		def set_path argv = {}
 			type = argv.include?(:type) ? argv[:type] : 'applications'
 			name = argv.include?(:name) ? (@module_name + '_' + argv[:name]) : @module_name
 			name = type == "applications" ? (name + @app_ext) : (name + @tpl_ext)
-			path = "modules/#{@module_name}/#{type}/#{name}"
-		end
-		
-		#The order of processing program
-		#Step 1
-		#================== preprocessing for data of options ==================
-
-		def preprocess_form(argv)
+			@path = "modules/#{@module_name}/#{type}/#{name}"
+			@contents[@path] = '' unless @contents.has_key? @path 
 		end
 
-		def preprocess_routes(argv)
-			@load_apps << "routes"
-			@t[:routes] = argv
-		end
-
-		def preprocess_with(hash)
-			hash.each do | key, val |
-				@t[key.to_sym] = val unless @t.has_key? key.to_sym
+		## 
+		# get the ERB template content and parse the it
+		# @argv => :route, the name of template at path docs/templates/
+		#
+		def get_tpl name
+			path = ROOTPATH + "/docs/templates/#{name.to_s}.tt"
+			if File.exist? path
+				content = File.read(path)
+				t = ERB.new(content)
+				t.result(binding)
+			else
+				"No such the file #{path}" 
 			end
 		end
 
-		def preprocess_enable(argv)
-			@t[:enable] = []
-			argv.each do | item |
-				@t[:enable] << item if @enable.include? item.to_sym
-			end
+		def preprocess_route argv
+			@t[:routes] = [] unless @t.has_key? :routes
+			@t[:routes] << argv if argv.class.to_s == "String"
+			@t[:routes] += argv if argv.class.to_s == "Array"
 		end
 
-		def preprocess_view(argv)
-			@processes << "view" 
-			@t[:fields] = argv
-			@t[:table] = @name unless @t.has_key? :table
-			@t[:select_sql] = "SELECT #{@t[:fields].join(' ')} FROM #{@t[:table]}"
+		def preprocess_table argv
 		end
-
-		#Step 2
-		#================== processing for the main program ==================
 		
-		def process_view
-			@load_apps << 'view'
-			@load_tpls << 'view'
-			@t[:style] = @style[0].to_s unless @t.has_key? :style
-			@t[:style] = @style[0].to_s unless @style.include? @t[:style]
+		def preprocess_list argv
+		end
 
-			#process enable
-			
+		def preprocess_form argv
+ 			preprocess_route ["get;#{@module_name}/new", "get;#{@module_name}/edit/:id", "post;#{@module_name}/edit/:id"]
 		end
 
 		def subprocess_data(with, argv)
@@ -205,29 +206,6 @@ class Generator
 				end
 			end
 			content
-		end
-
-		def load_template_view
-			@tpl_contents[gtn(@t[:style])] = get_erb_content(@t[:style])
-		end
-
-		def load_template_pager
-			@tpl_contents[gtn(@t[:style])] += get_erb_content :pager
-		end
-
-		def load_template_search
-			@tpl_contents[gtn(@t[:style])] = get_erb_content(:search) + @tpl_contents[gtn(@t[:style])]
-		end
-
-		def get_erb_content name
-			path = ROOTPATH + "/docs/templates/#{name.to_s}.tt"
-			if File.exist? path
-				content = File.read(path)
-				t = ERB.new(content)
-				t.result(binding)
-			else
-				"No such the file #{path}" 
-			end
 		end
 
 end
