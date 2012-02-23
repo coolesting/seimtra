@@ -11,7 +11,7 @@ class Generator
 		@processes 		= []
 
 		@module_name	= module_name
-		@route_path		= "/#{@module_name}"
+		@route_path		= "#{@module_name}"
 		@app_ext		= '.rb'
 		@tpl_ext		= '.slim'
 
@@ -64,6 +64,10 @@ class Generator
 		end
 	end
 
+	##
+	# == output
+	# == arguments
+	# num, Integer, one case of situation in condition
 	def output num
 		case num
 		when 1 
@@ -77,7 +81,7 @@ class Generator
 
 	private
 
-		##
+		## 
 		# == set_path
 		# generate the file path that will be use later
 		#
