@@ -140,7 +140,7 @@ class SeimtraThor < Thor
 	end
 
 
-	desc 'test [NAME]', 'Make a test, and output the result'
+	desc 'test [NAME] [ARGV]', 'Make a test, and output the result'
 	method_option :with, :type => :string, :aliases => '-w'
 	method_option :focus, :type => :boolean, :aliases => '-f'
 	map 't' => :test

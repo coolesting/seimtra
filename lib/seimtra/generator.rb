@@ -11,6 +11,7 @@ class Generator
 		@processes 		= []
 
 		@module_name	= module_name
+		@route_path		= "/#{@module_name}"
 		@app_ext		= '.rb'
 		@tpl_ext		= '.slim'
 
@@ -21,7 +22,7 @@ class Generator
 		#a condition for deleting, updeting, editting the record
 		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
 
-		#temporary variable as the template variable
+		#temporary variable to store the template variable
 		@t				= {}
 
 		#a test variable to show this data
@@ -34,14 +35,14 @@ class Generator
 		contents	= {}
 		flag		= 1
 
-		#set the default route for the default page
-		operators[flag]	= 'route' 
-		contents[flag] 	= "get;#{@module_name}"
-		unless @operators.include? argv[0].to_sym
-			contents[flag] = contents[flag] + "/#{argv.shift}"
-		end
+		return false unless argv.length > 1
 
-		return false unless argv.length > 0
+		operators[flag] = 'route'
+
+		#set the default route name
+		unless @operators.include? argv[0].to_sym
+			@route_path = @route_path + "/#{argv.shift}"
+		end
 
 		#loop array for separating the operator and content of operator
 		while argv.length > 0
@@ -56,44 +57,13 @@ class Generator
 		@test[:operator_content] = contents
 		@test[:operator_id]		 = operators
 
-		# preprocess data
+		operators.shift
 		operators.each do | id, name |
-			send("preprocess_#{name}", contents[id]) if respond_to?("preprocess_#{name}", true)
-		end
-
-		operators.each do | id, name |
-			send "create_#{name}" 
+			send("process_#{name}", contents[id])  if respond_to?("process_#{name}", true)
+			@t = {}
 		end
 	end
 
-	##
-	# @arguments => ['get;login'] or ['get;login', 'post;login/:id']
-	def create_route
-		set_path :type => 'applications'
-		@t[:routes].each do | arg |
-			@t[:route_meth] , @t[:route_path] = arg.split ';'
-			@contents[@path] = @contents[@path] + get_tpl(:route)
-		end
-	end
-
-	def create_table
-		set_path :type => 'templates', :name => 'show'
-		@contents[@path] = @contents[@path] + get_tpl(:table)
-	end
-
-	def create_list
-		set_path :type => 'templates', :name => 'show'
-		@contents[@path] = @contents[@path] + get_tpl(:list)
-	end
-
-	def create_form
-		set_path :type => 'templates', :name => 'new'
-		@contents[@path] = @contents[@path] + get_tpl(:new)
-
-		set_path :type => 'templates', :name => 'edit'
-		@contents[@path] = @contents[@path] + get_tpl(:edit)
-	end
-	
 	def output num
 		case num
 		when 1 
@@ -108,23 +78,28 @@ class Generator
 	private
 
 		##
+		# == set_path
 		# generate the file path that will be use later
-		# @argv => {:type => 'applications', :name => ''}
 		#
-		def set_path argv = {}
-			type = argv.include?(:type) ? argv[:type] : 'applications'
-			name = argv.include?(:name) ? (@module_name + '_' + argv[:name]) : @module_name
+		# == arguments
+		# type, String, the value is templates, or applications
+		# name, String, the file name
+		#
+		def set_path type, name
+			name = name == '' ? @module_name : (@module_name + '_' + name)
 			name = type == "applications" ? (name + @app_ext) : (name + @tpl_ext)
 			@path = "modules/#{@module_name}/#{type}/#{name}"
 			@contents[@path] = '' unless @contents.has_key? @path 
 		end
 
 		## 
+		# == get_erb_content
 		# get the ERB template content and parse the it
-		# @argv => :route, the name of template at path docs/templates/
 		#
-		def get_tpl name
-			path = ROOTPATH + "/docs/templates/#{name.to_s}.tt"
+		# == arguments
+		# name, String, the name of template in the one of docs/templates/*
+		def get_erb_content name
+			path = ROOTPATH + "/docs/templates/#{name}"
 			if File.exist? path
 				content = File.read(path)
 				t = ERB.new(content)
@@ -134,20 +109,49 @@ class Generator
 			end
 		end
 
-		def preprocess_route argv
-			@t[:routes] = [] unless @t.has_key? :routes
-			@t[:routes] << argv if argv.class.to_s == "String"
-			@t[:routes] += argv if argv.class.to_s == "Array"
+		##
+		# == load_content
+		# load the template content to file with real path
+		#
+		# == arguments
+		# tpl_path, String, the template path in docs/templates
+		# target_path, String, the file path that needs to be wirte the content
+		def load_content tpl_path, target_path = ''
+			type = tpl_path.index('.tpl') != nil ? 'templates' : 'applications'
+			set_path type, target_path
+			@contents[@path] = @contents[@path] + get_erb_content(tpl_path)
 		end
 
-		def preprocess_table argv
-		end
-		
-		def preprocess_list argv
+		##
+		# == create route
+		# == arguments
+		# argv, Array, 'get;login'
+		def process_route argv
+			load_content 'show.app'
 		end
 
-		def preprocess_form argv
- 			preprocess_route ["get;#{@module_name}/new", "get;#{@module_name}/edit/:id", "post;#{@module_name}/edit/:id"]
+		##
+		# == create table
+		# == arguments
+		# argv, Array, ['name:pawd:email']
+		def process_table argv
+			load_content 'table.tpl', 'show'
+		end
+
+		##
+		# == create list
+		# == arguments
+		# argv, Array, ['name:pawd:email']
+		def process_list argv
+			load_content 'list.tpl', 'show'
+		end
+
+		##
+		# == create form
+		# == arguments
+		# argv, Array, ['text:name', 'pawd:pawd']
+		def process_form argv
+			load_content 'form.tpl', 'show'
 		end
 
 		def subprocess_data(with, argv)
@@ -187,9 +191,6 @@ class Generator
 			@t[:update_sql] = ''
 			@t[:update_by] = @keyword unless @t.include? :update_by
 		end
-
-		#Step 3
-		#================== loading contents for tamplates ==================
 
 		def load_app_routes
 			if @t.has_key? :routes
