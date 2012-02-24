@@ -59,6 +59,7 @@ class Generator
 
 		operators.shift
 		operators.each do | id, name |
+			init_tpl_vars
 			send("process_#{name}", contents[id])  if respond_to?("process_#{name}", true)
 			@t = {}
 		end
@@ -86,12 +87,13 @@ class Generator
 		# generate the file path that will be use later
 		#
 		# == arguments
-		# type, String, the value is templates, or applications
+		# type, String, the string value is templates, or applications
 		# name, String, the file name
 		#
 		def set_path type, name
 			name = name == '' ? @module_name : (@module_name + '_' + name)
-			name = type == "applications" ? (name + @app_ext) : (name + @tpl_ext)
+			@t[:tpl_name] = name if type == 'templates'
+			name = type == "templates" ? (name + @tpl_ext) : (name + @app_ext)
 			@path = "modules/#{@module_name}/#{type}/#{name}"
 			@contents[@path] = '' unless @contents.has_key? @path 
 		end
@@ -124,6 +126,26 @@ class Generator
 			type = tpl_path.index('.tpl') != nil ? 'templates' : 'applications'
 			set_path type, target_path
 			@contents[@path] = @contents[@path] + get_erb_content(tpl_path)
+		end
+
+		##
+		# == init_tpl_vars 
+		# initialize template variables
+		#
+		# @t[:name], the module name
+		# @t[:route_meth], a method head, likes the 'get', 'post'
+		# @t[:route_path], a route path, likes 'login', 'register'
+		# @t[:select_sql], a select query
+		# @t[:tpl_name], a template name that has a prefix @module_name
+		# @t[:vars], a pure text variable that containss sub-variable below
+		# @t[:vars][:title], the default page title
+		def init_tpl_vars
+			@t[:vars] = {}
+			@t[:vars][:title] 	= @module_name
+
+			@t[:name] 			= @module_name
+			@t[:route_meth] 	= 'get'
+			@t[:route_path] 	= @route_path
 		end
 
 		##
