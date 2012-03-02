@@ -4,16 +4,26 @@ class Generator
 	attr_accessor :contents, :app_ext, :tpl_ext
 
 	def initialize module_name = 'custom'
+		
+		#origin data
+		@panels 		= {}
 
+		#generate data
+		@app_boxs 		= {}
+		@tpl_boxs		= {}
+
+		#output data
 		@contents 		= {}
-		@load_apps 		= []
-		@load_tpls 		= []
-		@processes 		= []
+
+		@filenames		= {}
+		@route_heads	= {}
 
 		@module_name	= module_name
 		@route_path		= "#{@module_name}"
 		@app_ext		= '.rb'
 		@tpl_ext		= '.slim'
+		@app_name		= 'applications'
+		@tpl_name		= 'templates'
 
 		@operators 		= [:table, :list, :form, :route]
 		@enables		= [:edit, :new, :rm]
@@ -22,60 +32,81 @@ class Generator
 		#a condition for deleting, updeting, editting the record
 		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
 
-		#temporary variable to store the template variable
+		#A temporary variable to store the template variable
 		@t				= {}
 
-		#a test variable to show this data
-		@test			= {}
-
+		#A point for how to identify the data in variables @panels, @boxs, @t
+		@p 				= 0
 	end
 
 	def run argv
-		operators	= {}
-		contents	= {}
-		flag		= 1
-
 		return false unless argv.length > 1
 
-		operators[flag] = 'route'
-
-		#set the default route name
+		#by default, the first item will be realize as the route name
+		name = ''
 		unless @operators.include? argv[0].to_sym
-			@route_path = @route_path + "/#{argv.shift}"
+			name = argv.shift
+			@route_path += "/#{name}" 
 		end
+
+		#initialize the template panel
+		flag = 0
+		@panels[flag] = {}
+		@panels[flag][:id] = flag
+		@panels[flag][:data] = []
+		@panels[flag][:operator] = 'default'
 
 		#loop array for separating the operator and content of operator
 		while argv.length > 0
 			if @operators.include? argv[0].to_sym
 				flag = flag + 1
-				operators[flag]	= argv.shift 
-				contents[flag]	= [] unless @contents.include? operators[flag]
+				@panels[flag] = {}
+				@panels[flag][:id] = flag
+				@panels[flag][:data] = []
+				@panels[flag][:operator] = argv.shift 
 			end
-			contents[flag] << argv.shift
+			@panels[flag][:data] << argv.shift
 		end
 
-		@test[:operator_content] = contents
-		@test[:operator_id]		 = operators
+		flag += 1
 
-		operators.shift
-		operators.each do | id, name |
-			init_tpl_vars
-			send("process_#{name}", contents[id])  if respond_to?("process_#{name}", true)
-			@t = {}
+		return false unless flag > 1
+
+		#process the data
+		flag.times do | i |
+			if respond_to?("process_#{@panels[i][:operator]}", true)
+				@p = i
+				send "process_#{@panels[i][:operator]}"
+			end
 		end
+
+		#generate the contents, then push to a boxs
+		flag.times do | i |
+			if @panels[i].include? :loads
+				@panels[i][:loads].each do | panel |
+					@p = i
+					panel.index('.app') == nil ? g_tpl(panel) : g_app(panel)
+				end
+			end
+		end
+
+		#merge the content and generate the target files
+
 	end
 
 	##
 	# == output
 	# == arguments
-	# num, Integer, one case of situation in condition
+	# num, Integer, one case of conditions
 	def output num
 		case num
 		when 1 
-			@test[:operator_content]
-		when 2 
-			@test[:operator_id]
+			@panels
+		when 2
+			@boxs
 		when 3 
+			@t
+		else
 			@contents
 		end
 	end
@@ -83,19 +114,19 @@ class Generator
 	private
 
 		## 
-		# == set_path
-		# generate the file path that will be use later
+		# == get_path
+		# generate the target file path 
 		#
 		# == arguments
 		# type, String, the string value is templates, or applications
 		# name, String, the file name
 		#
-		def set_path type, name
+		def get_path type, name = ''
+			ext = type == @tpl_name ? @tpl_ext : @app_ext
 			name = name == '' ? @module_name : (@module_name + '_' + name)
-			@t[:tpl_name] = name if type == 'templates'
-			name = type == "templates" ? (name + @tpl_ext) : (name + @app_ext)
-			@path = "modules/#{@module_name}/#{type}/#{name}"
-			@contents[@path] = '' unless @contents.has_key? @path 
+			path = "modules/#{@module_name}/#{type}/#{name}#{ext}"
+			@filenames[path] = [] unless @filenames.include? path
+			path
 		end
 
 		## 
@@ -116,19 +147,6 @@ class Generator
 		end
 
 		##
-		# == load_content
-		# load the template content to file with real path
-		#
-		# == arguments
-		# tpl_path, String, the template path in docs/templates
-		# target_path, String, the file path that needs to be wirte the content
-		def load_content tpl_path, target_path = ''
-			type = tpl_path.index('.tpl') != nil ? 'templates' : 'applications'
-			set_path type, target_path
-			@contents[@path] = @contents[@path] + get_erb_content(tpl_path)
-		end
-
-		##
 		# == init_tpl_vars 
 		# initialize template variables
 		#
@@ -136,48 +154,74 @@ class Generator
 		# @t[:route_meth], a method head, likes the 'get', 'post'
 		# @t[:route_path], a route path, likes 'login', 'register'
 		# @t[:select_sql], a select query
-		# @t[:tpl_name], a template name that has a prefix @module_name
+		# @t[:insert_sql], a insert query
+		# @t[:delete_by], a delete query
+		# @t[:update_by], a update query
+		# @t[:update_sql], a update query
+		# @t[:tpl_name], a template name that should be has a prefix with the module name 
 		# @t[:vars], a pure text variable that containss sub-variable below
 		# @t[:vars][:title], the default page title
 		def init_tpl_vars
-			@t[:vars] = {}
-			@t[:vars][:title] 	= @module_name
-
 			@t[:name] 			= @module_name
 			@t[:route_meth] 	= 'get'
 			@t[:route_path] 	= @route_path
+
+			@t[:vars] = {}
+			@t[:vars][:title] 	= @module_name
+		end
+
+		##
+		# == g_app
+		# generate the application
+		#
+		# == arguments
+		# name, String, the case of conditions
+		def g_app name
+			#push the route head to Array
+			route_head = "get '/#{name}' do\n"
+			@route_heads[route_head] = [] unless @route_heads.include? route_head
+			@route_heads[route_head] << @p
+
+			#push the contents to box
+			@app_boxs[@p][:contents] = name
+
+			#set the filenames
+			@filenames[get_path(@app_name)] << @p
+		end
+
+		##
+		# == g_tpl
+		# generate the template
+		#
+		# == arguments
+		# name, String, the case of conditions
+		def g_tpl name
+			@tpl_boxs[@p] = get_erb_content(name)
+			@filenames[get_path(@tpl_name)] << @p
 		end
 
 		##
 		# == create route
-		# == arguments
-		# argv, Array, 'get;login'
-		def process_route argv
-			load_content 'show.app'
+		def process_route
+			@t[@p][:loads] = ['show.app']
 		end
 
 		##
 		# == create table
-		# == arguments
-		# argv, Array, ['name:pawd:email']
-		def process_table argv
-			load_content 'table.tpl', 'show'
+		def process_table
+			@t[@p][:loads] = ['table.tpl', 'show.app']
 		end
 
 		##
 		# == create list
-		# == arguments
-		# argv, Array, ['name:pawd:email']
-		def process_list argv
-			load_content 'list.tpl', 'show'
+		def process_list
+			@t[@p][:loads] = ['list.tpl', 'show.app']
 		end
 
 		##
 		# == create form
-		# == arguments
-		# argv, Array, ['text:name', 'pawd:pawd']
-		def process_form argv
-			load_content 'form.tpl', 'show'
+		def process_form
+			@t[@p][:loads] = ['form.tpl', 'form.app']
 		end
 
 		def subprocess_data(with, argv)

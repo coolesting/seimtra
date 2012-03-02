@@ -1,5 +1,5 @@
-get "/rm/<%= @route_path %>/:id" do
-	@<%= @module_name %> = DB[:<%= @module_name %>].filter(:<%= @t[:delete_by] %> => params[:id]).delete
-	redirect '/<%= @module_name %>'
+get "/rm/<%= @t[:route_path] %>/:id" do
+	@<%= @t[:name] %> = DB[:<%= @t[:name] %>].filter(:<%= @t[:delete_by] %> => params[:id]).delete
+	redirect '/<%= @t[:route_path] %>'
 end
 

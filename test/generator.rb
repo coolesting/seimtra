@@ -47,9 +47,10 @@ class Stest
 
 		id = args.length > 0 ? args[0].to_i : 1
 		g.run argv[id]
-		result = g.output 3
-		result.each do | k,v |
-			puts "#{k} => #{v}"
-		end
+		p g.output 2
+# 		result = g.output 3
+# 		result.each do | k,v |
+# 			puts "#{k} => #{v}"
+# 		end
 	end
 end

@@ -1,9 +1,13 @@
-get "/new/<%= @route_path %>" do
-	slim :<%= @module_name %>_new
+get "/new/<%= @t[:route_path] %>" do
+<% if @t[:tpl_name] %>
+	slim :<%= @t[:tpl_name] %>
+<% end %>
 end
 
-post "/new/<%= @route_path %>" do
-	@<%= @module_name %> = DB[:<%= @module_name %>].insert(<%= @t[:insert_sql] %>)
-	redirect '/new/<%= @route_path %>'
+post "/new/<%= @t[:route_path] %>" do
+<% if @t[:insert_sql] %>
+	@<%= @t[:name] %> = DB[:<%= @t[:name] %>].insert(<%= @t[:insert_sql] %>)
+	redirect '/<%= @t[:route_path] %>'
+<% end %>
 end
 
