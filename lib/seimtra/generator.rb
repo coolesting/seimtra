@@ -26,8 +26,11 @@ class Generator
 		@tpl_name		= 'templates'
 
 		@operators 		= [:table, :list, :form, :route]
-		@enables		= [:edit, :new, :rm]
 		@filters		= [:index, :foreign_key, :unique]
+		@route_head		= [:show, :edit, :new, :rm]
+		@route_head.each do | route_head |
+			@route_heads[route_head] = []
+		end
 
 		#a condition for deleting, updeting, editting the record
 		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
@@ -86,13 +89,25 @@ class Generator
 			if @panels[i].include? :loads
 				@panels[i][:loads].each do | panel |
 					@p = i
-					panel.index('.app') == nil ? create_tpl(panel) : create_app(panel)
+					panel.index('.tpl') != nil ? create_tpl(panel) : create_app(panel)
 				end
 			end
 		end
 
-		#merge the content and generate the target files
+		#merge the content of app
+		@app_contents = ''
+		@route_head.each do | route |
+			send("merge_#{route.to_s}", @route_heads[route])
+		end
+		@contents[get_target_path(@app_name)] = @app_contents
 
+		#merge template
+		@filenames.each do | path, points |
+			@contents[path] = '' unless @contents.include? path
+			points.each do | p |
+				@contents[path] += @tpl_boxs[p]
+			end
+		end
 	end
 
 	##
@@ -104,7 +119,7 @@ class Generator
 		when 1 
 			@panels
 		when 2
-			@app_boxs.merge  @tpl_boxs
+			@app_boxs.merge @tpl_boxs
 		when 3 
 			@t
 		else
@@ -115,17 +130,16 @@ class Generator
 	private
 
 		## 
-		# == get_path
+		# == get_target_path
 		# generate the target file path 
 		#
 		# == arguments
 		# type, String, the string value is templates, or applications
 		# name, String, the file name
 		#
-		def get_path type, name = ''
+		def get_target_path type, name = ''
 			ext = type == @tpl_name ? @tpl_ext : @app_ext
 			name = name == '' ? @module_name : (@module_name + '_' + name)
-			name += "_#{Time.now}"
 			path = "modules/#{@module_name}/#{type}/#{name}#{ext}"
 			@filenames[path] = [] unless @filenames.include? path
 			path
@@ -179,20 +193,13 @@ class Generator
 		# == arguments
 		# name, String, the case of conditions
 		def create_app name
-			#push the route head to Array
-			route_head = g_head(name)
-			@route_heads[route_head] = [] unless @route_heads.include? route_head
-			@route_heads[route_head] << @p
+			#push the route head to array
+			@route_heads[name.to_sym] << @p
 
-			#push the contents to box
-			@app_boxs[@p] = '' unless @app_boxs.include? @p
+			#process the data
 			[:vars, :page, :text, :sql, :tpl, :redirect].each do | event |
-				@app_boxs[@p] += send("g_#{event.to_s}", @p) if @t[@p].include?(event)
+				send("g_#{event.to_s}") if @t[@p].include? event
 			end
-
-			#set the filenames
-			path = get_path(@app_name)
-			@filenames[path] << @p
 		end
 
 		##
@@ -206,38 +213,34 @@ class Generator
 			@tpl_boxs[@p] += get_erb_content(name)
 
 			#set the filenames
-			path = get_path(@tpl_name)
+			path = get_target_path(@tpl_name)
 			@filenames[path] << @p
 		end
 
 		##
 		# == create route
 		def process_route
-			@t[@p][:loads] = ['show.app']
+			@t[@p][:loads] = ['show']
 		end
 
 		##
 		# == create table
 		def process_table
-			@t[@p][:loads] = ['table.tpl', 'show.app']
+			@t[@p][:loads] = ['table.tpl', 'show']
 		end
 
 		##
 		# == create list
 		def process_list
-			@t[@p][:loads] = ['list.tpl', 'show.app']
-		end
-
-		##
-		# == g_head
-		def g_head
-			'head'
+			@t[@p][:loads] = ['list.tpl', 'show']
 		end
 
 		##
 		# == g_vars
 		def g_vars
-			'vars'
+			@t[@p][:vars].each do | key,val |
+				@app_boxs[@p] += "\t@#{key} = #{val}\n"
+			end
 		end
 
 		##
@@ -268,6 +271,26 @@ class Generator
 		# == g_redirect
 		def g_redirect
 			'redirect'
+		end
+
+		##
+		# == merge_show
+		def merge_show
+		end
+
+		##
+		# == merge_new
+		def merge_new
+		end
+
+		##
+		# == merge_edit
+		def merge_edit
+		end
+
+		##
+		# == merge_rm
+		def merge_rm
 		end
 
 		##
