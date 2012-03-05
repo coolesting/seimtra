@@ -76,6 +76,7 @@ class Generator
 		flag.times do | i |
 			if respond_to?("process_#{@panels[i][:operator]}", true)
 				@p = i
+				@t[@p] = {} unless @t.include? @p
 				send "process_#{@panels[i][:operator]}"
 			end
 		end
@@ -85,7 +86,7 @@ class Generator
 			if @panels[i].include? :loads
 				@panels[i][:loads].each do | panel |
 					@p = i
-					panel.index('.app') == nil ? g_tpl(panel) : g_app(panel)
+					panel.index('.app') == nil ? create_tpl(panel) : create_app(panel)
 				end
 			end
 		end
@@ -103,7 +104,7 @@ class Generator
 		when 1 
 			@panels
 		when 2
-			@boxs
+			@app_boxs.merge  @tpl_boxs
 		when 3 
 			@t
 		else
@@ -124,6 +125,7 @@ class Generator
 		def get_path type, name = ''
 			ext = type == @tpl_name ? @tpl_ext : @app_ext
 			name = name == '' ? @module_name : (@module_name + '_' + name)
+			name += "_#{Time.now}"
 			path = "modules/#{@module_name}/#{type}/#{name}#{ext}"
 			@filenames[path] = [] unless @filenames.include? path
 			path
@@ -171,33 +173,41 @@ class Generator
 		end
 
 		##
-		# == g_app
+		# == create_app
 		# generate the application
 		#
 		# == arguments
 		# name, String, the case of conditions
-		def g_app name
+		def create_app name
 			#push the route head to Array
-			route_head = "get '/#{name}' do\n"
+			route_head = g_head(name)
 			@route_heads[route_head] = [] unless @route_heads.include? route_head
 			@route_heads[route_head] << @p
 
 			#push the contents to box
-			@app_boxs[@p][:contents] = name
+			@app_boxs[@p] = '' unless @app_boxs.include? @p
+			[:vars, :page, :text, :sql, :tpl, :redirect].each do | event |
+				@app_boxs[@p] += send("g_#{event.to_s}", @p) if @t[@p].include?(event)
+			end
 
 			#set the filenames
-			@filenames[get_path(@app_name)] << @p
+			path = get_path(@app_name)
+			@filenames[path] << @p
 		end
 
 		##
-		# == g_tpl
+		# == create_tpl
 		# generate the template
 		#
 		# == arguments
 		# name, String, the case of conditions
-		def g_tpl name
-			@tpl_boxs[@p] = get_erb_content(name)
-			@filenames[get_path(@tpl_name)] << @p
+		def create_tpl name
+			@tpl_boxs[@p] = '' unless @tpl_boxs.include? @p
+			@tpl_boxs[@p] += get_erb_content(name)
+
+			#set the filenames
+			path = get_path(@tpl_name)
+			@filenames[path] << @p
 		end
 
 		##
@@ -216,6 +226,48 @@ class Generator
 		# == create list
 		def process_list
 			@t[@p][:loads] = ['list.tpl', 'show.app']
+		end
+
+		##
+		# == g_head
+		def g_head
+			'head'
+		end
+
+		##
+		# == g_vars
+		def g_vars
+			'vars'
+		end
+
+		##
+		# == g_page
+		def g_page
+			'page'
+		end
+
+		##
+		# == g_text
+		def g_text
+			'text'
+		end
+
+		##
+		# == g_sql
+		def g_sql
+			'sql'
+		end
+
+		##
+		# == g_tpl
+		def g_tpl
+			'tpl'
+		end
+
+		##
+		# == g_redirect
+		def g_redirect
+			'redirect'
 		end
 
 		##
@@ -260,23 +312,6 @@ class Generator
 		def subprocess_edit
 			@t[:update_sql] = ''
 			@t[:update_by] = @keyword unless @t.include? :update_by
-		end
-
-		def load_app_routes
-			if @t.has_key? :routes
-				content = ''
-				@t[:routes].each do | item |
-					args = item.split(':')
-					length = args.length - 1
-					if length > 1
-						length.times do | i |
-							content += "#{args[0]} '/#{@module_name}/#{args[i+1]}' do \n"
-							content += "end \n\n"
-						end
-					end
-				end
-			end
-			content
 		end
 
 end
