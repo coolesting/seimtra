@@ -24,7 +24,7 @@ class Generator
 		@operators 		= [:table, :list, :form, :route]
 		@filters		= [:index, :foreign_key, :unique]
 		@route_head		= [:show, :edit, :new, :rm]
-		@flowitmes		= [:vars, :text, :page, :sql, :tpl, :redirect]
+		@flowitmes		= [:vars, :str, :page, :sql, :tpl, :redirect]
 
 		#a condition for deleting, updeting, editting the record
 		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
@@ -50,7 +50,6 @@ class Generator
 		flag = 0
 		@panels[flag] = {}
 		@panels[flag][:id] = flag
-		@panels[flag][:data] = []
 		@panels[flag][:operator] = 'default'
 
 		#loop array for separating the operator and content of operator
@@ -59,10 +58,11 @@ class Generator
 				flag = flag + 1
 				@panels[flag] = {}
 				@panels[flag][:id] = flag
-				@panels[flag][:data] = []
 				@panels[flag][:operator] = argv.shift 
 			end
-			@panels[flag][:data] << argv.shift
+			@p = flag
+			@t[@p] = {} unless @t.include? @p
+			preprocess_data argv.shift 
 		end
 
 		flag += 1
@@ -149,7 +149,7 @@ class Generator
 			end
 		end
 
-		def get_tpl_path name
+		def get_tpl_name name
 			name = "#{@module_name}_#{name.to_s}"
 			@tpls[name] = [] unless @tpls.include? name
 			name
@@ -165,26 +165,6 @@ class Generator
 			route_head = "#{meth} '/#{type.to_s}/#{@route_path}' do"
 			@t[route_head] = {} unless @t.include? route_head
 			route_head
-		end
-
-		##
-		# == process_route
-		def process_route
-			h = get_route_head
-			init_tpl_data h, :vars, :page
-		end
-
-		##
-		# == process_table
-		def process_table
-			tpl_name = get_tpl_path :show
-			@tpls[tpl_name] << ['table.tpl']
-		end
-
-		##
-		# == process_list
-		def process_list
-			@tpls[tpl_name] << ['list.tpl']
 		end
 
 		##
@@ -238,9 +218,9 @@ class Generator
 		end
 
 		##
-		# == g_text
-		def g_text
-			"\t'#{@data[:text]}'\n"
+		# == g_str
+		def g_str
+			"\t'#{@data[:str]}'\n"
 		end
 
 		##
@@ -262,9 +242,47 @@ class Generator
 		end
 
 		##
-		# == create form
-		def process_form
-			@t[@p][:loads] = ['form.tpl', 'form.app']
+		# == process_route
+		def process_route
+			h = get_route_head
+			init_tpl_data h, :vars, :page
+		end
+
+		##
+		# == process_table
+		def process_table
+			tpl_name = get_tpl_name :show
+			@tpls[tpl_name] << ['table.tpl']
+		end
+
+		##
+		# == process_list
+		def process_list
+			tpl_name = get_tpl_name :show
+			@tpls[tpl_name] << ['list.tpl']
+		end
+
+		def preprocess_data data
+			if data.index(':')
+				key, val = data.split(':') 
+			else
+				key = "fields"
+				val = data
+			end
+			
+			skey = key.to_sym
+			case skey
+			when :header, :fields, :enable, :disable
+				@t[@p][skey] = val.split(',') if val.index(',')
+			when :source, :table, :action, :method
+				@t[@p][skey] = val
+			when :select_by, :delete_by
+				@t[@p][:sql][skey] = val
+			when :page_id, :page_size
+				@t[@p][:page][skey] = val
+			when :text, :select, :pawd, :button
+				@t[@p][:form][val] = key
+			end
 		end
 
 		def subprocess_data(with, argv)
@@ -284,7 +302,6 @@ class Generator
 					end
 				end
 			end
-
 			@keyword = @fields[0] if @keyword == ''
 		end
 
