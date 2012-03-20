@@ -20,8 +20,7 @@ class SeimtraThor < Thor
 			directory 'docs/development', project_name
 			SCFG.set :status, 'development'
 			Dir.chdir(Dir.pwd + '/' + project_name)
-			isay "Executing 'bundle install' for complete installation \
-			if this is your first time using the development editor"
+			isay "Using 'bundle install' command for intalling completely"
 		end
 	end
 

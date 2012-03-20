@@ -1,3 +1,3 @@
 get '/' do
-	'This is a default page in /modules/custom/application/routes.rb'
+	'This is a default page ( /modules/front/application/routes.rb' )
 end

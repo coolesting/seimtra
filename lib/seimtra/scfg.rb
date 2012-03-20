@@ -8,7 +8,7 @@ class SCFG
 		:author 		=> 'administrator',
 		:log 			=> false,
 		:log_path 		=> Dir.pwd + '/log/default',
-		:module_focus 	=> 'custom',
+		:module_focus 	=> 'front',
 		:module_repos 	=> File.expand_path('~/SeimRepos'),
 		:website 		=> "https://github.com/coolesting"
 	}

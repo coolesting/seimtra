@@ -1,4 +1,4 @@
 get '/admin' do
-	@titile = 'the admin page'
+	@titile = 'the back ground page'
 	slim :admin
 end
