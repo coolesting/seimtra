@@ -13,7 +13,7 @@ configure :production do
 	set :db_pg, 	'postgres://localhost/db/pg'	
 	set :db_mysql, 	'mysql://localhost/mydb?user=myuser&password=123456'	
 	set :db_memory, 'sqlite:/'
-	set :db_connect, settings.db_connect
+	set :db_connect, settings.db_memory
 
 	DB = Sequel.connect(settings.db_connect)
 

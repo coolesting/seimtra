@@ -5,9 +5,6 @@ class Generator
 
 	def initialize module_name = 'custom'
 		
-		#origin data
-		@panels 		= {}
-
 		#the templates we need to load
 		@tpls			= {}
 
@@ -15,7 +12,7 @@ class Generator
 		@contents 		= {}
 
 		@module_name	= module_name
-		@route_path		= @module_name
+		@route_path		= ''
 		@app_file_name	= 'rb'
 		@tpl_file_name	= 'slim'
 		@app_dir_name	= 'applications'
@@ -29,10 +26,13 @@ class Generator
 		#a condition for deleting, updeting, editting the record
 		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
 
-		#A temporary variable to store the template variable
+		#store the template variables
 		@t				= {}
 
-		#A point for how to identify the data in variables @panels, @boxs, @t
+		#origin data
+		@panels 		= {}
+
+		#a point for how to identify the data in variables @panels, @t
 		@p 				= 0
 	end
 
@@ -40,19 +40,15 @@ class Generator
 		return false unless argv.length > 1
 
 		#by default, the first item will be realize as the route name
-		name = ''
-		unless @operators.include? argv[0].to_sym
-			name = argv.shift
-			@route_path = "#{name}" 
-		end
+		@route_path = "/#{argv.shift}" unless @operators.include? argv[0].to_sym
 
-		#initialize the template panel
+		#initialize data for the panel
 		flag = 0
 		@panels[flag] = {}
 		@panels[flag][:id] = flag
 		@panels[flag][:operator] = 'default'
 
-		#loop array for separating the operator and content of operator
+		#process the operator and itme data
 		while argv.length > 0
 			if @operators.include? argv[0].to_sym
 				flag = flag + 1
@@ -61,21 +57,32 @@ class Generator
 				@panels[flag][:operator] = argv.shift 
 			end
 			@p = flag
-			@t[@p] = {} unless @t.include? @p
-			preprocess_data argv.shift 
+			preprocess_item argv.shift 
 		end
 
 		flag += 1
 
 		return false unless flag > 1
 
-		#process the data
+		#process the operator,
+		#enable or disable some functions,
+		#generate the route header,
+		#load the template it needs.
 		flag.times do | i |
-			if respond_to?("process_#{@panels[i][:operator]}", true)
-				@p = i
-				@t[@p] = {} unless @t.include? @p
-				send "process_#{@panels[i][:operator]}"
+			@p = i
+			if respond_to?("process_#{@panels[@p][:operator]}", true)
+				send "process_#{@panels[@p][:operator]}"
 			end
+		end
+
+		#generate application contents
+		path = get_target_path(@app_dir_name)
+		@t.each do | route_head, data |
+			@contents[path] += "#{route_head}\n"
+			@flowitmes.each do | itme |
+				@contents[path] += send("g_#{itme.to_s}", data) if data.include? itme
+			end	
+			@contents[path] += "end\n\n"
 		end
 
 		#generate template contents
@@ -86,17 +93,6 @@ class Generator
 					@contents[path] += get_erb_content(tpl)
 				end
 			end
-		end
-
-		#generate application contents
-		path = get_target_path(@app_dir_name)
-		@t.each do | route_head, data |
-			@data = data
-			@contents[path] += "#{route_head}\n"
-			@flowitmes.each do | itme |
-				@contents[path] += send("g_#{itme.to_s}") if data.include? itme
-			end	
-			@contents[path] += "end\n\n"
 		end
 	end
 
@@ -262,7 +258,7 @@ class Generator
 			@tpls[tpl_name] << ['list.tpl']
 		end
 
-		def preprocess_data data
+		def preprocess_item data
 			if data.index(':')
 				key, val = data.split(':') 
 			else
@@ -272,16 +268,18 @@ class Generator
 			
 			skey = key.to_sym
 			case skey
-			when :header, :fields, :enable, :disable
-				@t[@p][skey] = val.split(',') if val.index(',')
-			when :source, :table, :action, :method
-				@t[@p][skey] = val
+			when :header, :fields, :enable, :disable, :source, :action, :method
+				if val.index(',')
+					@panels[@p][skey] = val.split(',') 
+				else
+					@panels[@p][skey] = val
+				end
 			when :select_by, :delete_by
-				@t[@p][:sql][skey] = val
+				@panels[@p][:sql][skey] = val
 			when :page_id, :page_size
-				@t[@p][:page][skey] = val
+				@panels[@p][:page][skey] = val
 			when :text, :select, :pawd, :button
-				@t[@p][:form][val] = key
+				@panels[@p][:form][val] = key
 			end
 		end
 
