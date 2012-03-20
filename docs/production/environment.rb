@@ -22,6 +22,6 @@ configure :production do
 end
 
 # rewrite the root route
-# get '/' do
-# 	status, headers, body = call! env.merge("PATH_INFO" => settings.home_page)
-# end
+get '/' do
+	status, headers, body = call! env.merge("path_info" => settings.home_page)
+end
