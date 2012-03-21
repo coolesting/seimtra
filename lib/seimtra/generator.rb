@@ -1,4 +1,3 @@
-require 'erb'	
 class Generator
 
 	attr_accessor :contents, :app_ext, :tpl_ext
@@ -11,6 +10,8 @@ class Generator
 		#output data
 		@contents 		= {}
 
+		@route_heads	= {}
+
 		@module_name	= module_name
 		@route_path		= ''
 		@app_file_name	= 'rb'
@@ -21,7 +22,6 @@ class Generator
 		@operators 		= [:table, :list, :form, :route]
 		@filters		= [:index, :foreign_key, :unique]
 		@route_head		= [:show, :edit, :new, :rm]
-		@flowitmes		= [:vars, :str, :page, :sql, :tpl, :redirect]
 
 		#a condition for deleting, updeting, editting the record
 		@keywords 		= [:primary_key, :Integer, :index, :foreign_key, :unique]
@@ -38,9 +38,13 @@ class Generator
 
 	def run argv
 		return false unless argv.length > 1
+		require 'seimtra/tpltpl'
+		require 'seimtra/apptpl'
 
 		#by default, the first item will be realize as the route name
 		@route_path = "/#{argv.shift}" unless @operators.include? argv[0].to_sym
+
+		@apptpl = Apptpl.new @tpl_file_name, @route_path
 
 		#initialize data for the panel
 		flag = 0
@@ -77,20 +81,19 @@ class Generator
 
 		#generate application contents
 		path = get_target_path(@app_dir_name)
-		@t.each do | route_head, data |
+		@route_heads.each do | route_head, data |
 			@contents[path] += "#{route_head}\n"
-			@flowitmes.each do | itme |
-				@contents[path] += send("g_#{itme.to_s}", data) if data.include? itme
-			end	
+			@contents[path] += @apptpl.run(data)
 			@contents[path] += "end\n\n"
 		end
 
 		#generate template contents
+		@tpltpl = Tpltpl.new
 		if @tpls
 			@tpls.each do | tpl_name, tpls |
 				path = get_target_path(@tpl_dir_name, tpl_name)
-				tpls.each do | tpl |
-					@contents[path] += get_erb_content(tpl)
+				tpls.each do | type |
+					@contents[path] += @tpltpl.send("g_#{type.to_s}")
 				end
 			end
 		end
@@ -128,134 +131,64 @@ class Generator
 			path
 		end
 
-		## 
-		# == get_erb_content
-		# get the ERB template content and parse the it
-		#
-		# == arguments
-		# name, String, the name of template in the one of docs/templates/*
-		def get_erb_content name
-			path = ROOTPATH + "/docs/templates/#{name}"
-			if File.exist? path
-				content = File.read(path)
-				t = ERB.new(content)
-				t.result(binding)
+		def get_tpl_name name = :show
+			if @panels[@p].include? :tpl_name
+				name = "#{@module_name}_#{@panels[@p][:tpl_name]}" 
 			else
-				"No such the file #{path}" 
+				name = "#{@module_name}_#{name.to_s}"
 			end
-		end
-
-		def get_tpl_name name
-			name = "#{@module_name}_#{name.to_s}"
 			@tpls[name] = [] unless @tpls.include? name
 			name
-		end
-
-		##
-		# == get_route_head
-		#
-		# == arguments
-		# meth, String, route method
-		# type, String, the event, :show, :new, edit, :rm
-		def get_route_head meth = 'get', type = :show
-			route_head = "#{meth} '/#{type.to_s}/#{@route_path}' do"
-			@t[route_head] = {} unless @t.include? route_head
-			route_head
 		end
 
 		##
 		# == init_tpl_vars 
 		# initialize template variables
 		#
-		# @t[:vars], pure variables
-		# @t[:page], page variables
-		# @t[:select_sql], a select query
-		# @t[:insert_sql], a insert query
-		# @t[:delete_by], a delete query
-		# @t[:update_by], a update query
-		# @t[:update_sql], a update query
-		# @t[:tpl_name], a template name that should be has a prefix with the module name 
-		# @t[:vars], a pure text variable that containss sub-variable below
-		# @t[:vars][:title], the default page title
+		# the key of @route_heads[h]
+		# :vars, pure variables
+		# :page, page variables that includes the following vars
+		# 		:page_id, the page id
+		# 		:page_size, the page size
+		# :select_sql, a select query
+		# :insert_sql, a insert query
+		# :delete_by], a delete query
+		# :update_by], a update query
+		# :update_sql, a update query
+		# :tpl_name, a template name that should be has a prefix with the module name 
+		# :vars, a pure basic variable that containss sub-variable as the following
+		# 		:title, the default page title
 		def init_tpl_data h, *argv
 			if argv.include? :vars
-				@t[h][:vars]			= {}
-				@t[h][:vars][:title] 	= @route_path
+				@route_heads[h][:vars]			= {}
+				@route_heads[h][:vars][:title] 	= @route_path
 			end
 			
 			if argv.include? :page
-				@t[h][:page]			= {}
-				@t[h][:page][:page_id]	= 1
-				@t[h][:page][:page_size]= 10
+				@route_heads[h][:page]				= {}
+				@route_heads[h][:page][:page_id]	= 1
+				@route_heads[h][:page][:page_size]	= 10
 			end
 		end
 
-		##
-		# == g_vars
-		def g_vars
-			str = ''
-			@data[:vars].each do | key,val |
-				str += "\t@#{key.to_s} = '#{val}'\n"
-			end
-			str
-		end
-
-		##
-		# == g_page
-		def g_page
-			arr = [
-				"\t@page_id = #{@data[:page][:page_id]}\n",
-				"\t@page_size = #{@data[:page][:page_size]}\n\n",
-				"\t@page_id = params[:page_id] if params[:page_id] != nil",
-				" and params[:page_id] > 0\n",
-				"\t@page_offset = (@page_id.to_i - 1)*@page_size\n"
-			]
-			arr.join
-		end
-
-		##
-		# == g_str
-		def g_str
-			"\t'#{@data[:str]}'\n"
-		end
-
-		##
-		# == g_sql
-		def g_sql
-			@data[:sql]
-		end
-
-		##
-		# == g_tpl
-		def g_tpl
-			"\t#{@tpl_file_name} :#{@data[:tpl_name]}\n"
-		end
-
-		##
-		# == g_redirect
-		def g_redirect
-			"\tredirect '#{@data[:redirect]}\n'"
-		end
-
-		##
-		# == process_route
 		def process_route
-			h = get_route_head
+			h = @apptpl.get_route_head
 			init_tpl_data h, :vars, :page
 		end
 
-		##
-		# == process_table
 		def process_table
-			tpl_name = get_tpl_name :show
-			@tpls[tpl_name] << ['table.tpl']
+			tpl_name = get_tpl_name
+			@tpls[tpl_name] << :table
 		end
 
-		##
-		# == process_list
 		def process_list
-			tpl_name = get_tpl_name :show
-			@tpls[tpl_name] << ['list.tpl']
+			tpl_name = get_tpl_name
+			@tpls[tpl_name] << :list
+		end
+
+		def process_form
+			tpl_name = get_tpl_name
+			@tpls[tpl_name] << :form
 		end
 
 		def preprocess_item data
@@ -268,11 +201,11 @@ class Generator
 			
 			skey = key.to_sym
 			case skey
-			when :header, :fields, :enable, :disable, :source, :action, :method
+			when :header, :fields, :enable, :disable, :source, :action, :method, :tpl_name
 				if val.index(',')
 					@panels[@p][skey] = val.split(',') 
 				else
-					@panels[@p][skey] = val
+					@panels[@p][skey] = [val]
 				end
 			when :select_by, :delete_by
 				@panels[@p][:sql][skey] = val
@@ -280,6 +213,8 @@ class Generator
 				@panels[@p][:page][skey] = val
 			when :text, :select, :pawd, :button
 				@panels[@p][:form][val] = key
+			when :id, :class
+				@panels[@p][:style][skey] = val
 			end
 		end
 
