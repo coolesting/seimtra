@@ -2,7 +2,7 @@ class Generator
 
 	attr_accessor :contents, :app_ext, :tpl_ext
 
-	def initialize module_name = 'custom'
+	def initialize module_name = 'front'
 		
 		#the templates we need to load
 		@tpls			= {}
@@ -42,9 +42,13 @@ class Generator
 		require 'seimtra/apptpl'
 
 		#by default, the first item will be realize as the route name
-		@route_path = "/#{argv.shift}" unless @operators.include? argv[0].to_sym
+		unless @operators.include? argv[0].to_sym
+			@route_path = "/#{argv.shift}" 
+		else
+			@route_path = "/show" 
+		end
 
-		@apptpl = Apptpl.new @tpl_file_name, @route_path
+		@apptpl = Apptpl.new @tpl_file_name, @route_path, @module_name
 
 		#initialize data for the panel
 		flag = 0
@@ -92,10 +96,17 @@ class Generator
 		if @tpls
 			@tpls.each do | tpl_name, tpls |
 				path = get_target_path(@tpl_dir_name, tpl_name)
-				tpls.each do | type |
-					@contents[path] += @tpltpl.send("g_#{type.to_s}")
+				tpls.each do | var |
+					if @tpltpl.respond_to?("g_#{var.keys[0].to_s}")
+						@contents[path] += @tpltpl.send("g_#{var.keys[0].to_s}", @panels[var.values[0]])
+					end
 				end
 			end
+		end
+
+		#remove null contents
+		@contents.each do | path, content |
+			@contents.delete(path) if content == ""
 		end
 	end
 
@@ -109,6 +120,10 @@ class Generator
 			@panels
 		when 2
 			@t
+		when 3
+			@route_heads
+		when 4
+			@tpls
 		else
 			@contents
 		end
@@ -123,8 +138,7 @@ class Generator
 		# == arguments
 		# type, String, the string value is templates, or applications
 		# name, String, the file name
-		#
-		def get_target_path type, name = @module_name
+		def get_target_path type, name = "routor"
 			ext = type == @tpl_dir_name ? @tpl_file_name : @app_file_name
 			path = "modules/#{@module_name}/#{type}/#{name}.#{ext}"
 			@contents[path] = '' unless @contents.include? path
@@ -142,8 +156,8 @@ class Generator
 		end
 
 		##
-		# == init_tpl_vars 
-		# initialize template variables
+		# == g_app 
+		# initialize template variables of application
 		#
 		# the key of @route_heads[h]
 		# :vars, pure variables
@@ -158,7 +172,11 @@ class Generator
 		# :tpl_name, a template name that should be has a prefix with the module name 
 		# :vars, a pure basic variable that containss sub-variable as the following
 		# 		:title, the default page title
-		def init_tpl_data h, *argv
+		def g_app meth, route = @route_path, *argv
+			route = "/#{route}" unless route[0] == "/"
+			h = @apptpl.generate_routor meth, route
+			@route_heads[h] = {} unless @route_heads.include? h
+
 			if argv.include? :vars
 				@route_heads[h][:vars]			= {}
 				@route_heads[h][:vars][:title] 	= @route_path
@@ -172,50 +190,61 @@ class Generator
 		end
 
 		def process_route
-			h = @apptpl.get_route_head
-			init_tpl_data h, :vars, :page
+			g_app_data(@apptpl.generate_routor, :vars, :page)
 		end
 
 		def process_table
 			tpl_name = get_tpl_name
-			@tpls[tpl_name] << :table
+			@tpls[tpl_name] << {:table => @p}
 		end
 
 		def process_list
 			tpl_name = get_tpl_name
-			@tpls[tpl_name] << :list
+			@tpls[tpl_name] << {:list => @p}
 		end
 
 		def process_form
+			g_app :post, 'edit'
+			g_app :get
+
 			tpl_name = get_tpl_name
-			@tpls[tpl_name] << :form
+			@tpls[tpl_name] << {:form => @p}
 		end
 
 		def preprocess_item data
-			if data.index(':')
-				key, val = data.split(':') 
-			else
-				key = "fields"
+
+			if data.index(":") == nil
+				key	= "fields"
 				val = data
+			else
+				key, val = data.split ':', 2
 			end
-			
+
 			skey = key.to_sym
+
 			case skey
-			when :header, :fields, :enable, :disable, :source, :action, :method, :tpl_name
+			when :header, :fields, :enable, :disable
 				if val.index(',')
 					@panels[@p][skey] = val.split(',') 
 				else
-					@panels[@p][skey] = [val]
+					@panels[@p][skey] = val
 				end
+			when :tpl_name, :routor
+				@panels[@p][skey] = val
 			when :select_by, :delete_by
+				@panels[@p][:sql] = {} unless @panels[@p].include? :sql
 				@panels[@p][:sql][skey] = val
 			when :page_id, :page_size
+				@panels[@p][:page] = {} unless @panels[@p].include? :page
 				@panels[@p][:page][skey] = val
-			when :text, :select, :pawd, :button
-				@panels[@p][:form][val] = key
-			when :id, :class
-				@panels[@p][:style][skey] = val
+			when :text, :pawd, :button, :select
+				@panels[@p][:element] = {} unless @panels[@p].include? :element
+				@panels[@p][:element][val] = key
+			when :id, :class, :action, :method
+				@panels[@p][:attr] = {} unless @panels[@p].include? :attr
+				@panels[@p][:attr][skey] = val
 			end
+
 		end
 
 		def subprocess_data(with, argv)

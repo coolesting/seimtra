@@ -1,6 +1,7 @@
 class Apptpl
 		
-	def initialize tpl_type, route_path
+	def initialize tpl_type, route_path, module_name
+		@module_name= module_name
 		@route_path	= route_path
 		@tpl_type	= tpl_type
 		@flowitmes	= [:vars, :str, :page, :sql, :tpl, :redirect]
@@ -39,7 +40,7 @@ class Apptpl
 
 	def g_sql data
 		data[:sql]
-\	end
+	end
 
 	def g_tpl data
 		"\t#{@tpl_type} :#{data[:tpl_name]}\n"
@@ -50,13 +51,13 @@ class Apptpl
 	end
 
 	##
-	# == get_route_head
+	# == generate_routor
 	#
 	# == arguments
 	# meth, String, route method
-	# type, String, the event, :show, :new, edit, :rm
-	def get_route_head meth = 'get', type = :show
-		route_head = "#{meth} '/#{type.to_s}/#{@route_path}' do"
+	# routor, String
+	def generate_routor meth = :get, routor = @route_path
+		route_head = "#{meth.to_s} '/#{@module_name}#{routor}' do"
 	end
 
 end
