@@ -70,7 +70,7 @@ Create a migration record.
 
   3s db create users String:username String:password String:salt -a
 
-the option *-a* will auto adds the *primary id*, *changed time*, and *created time*.
+the option *-a* will auto adds the *primary_id*, *changed* time, and *created* time.
 You could alter this migration file before running to the database.
 
   3s db -r
