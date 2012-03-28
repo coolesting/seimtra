@@ -151,15 +151,29 @@ class Generator
 			else
 				name = "#{@module_name}_#{name.to_s}"
 			end
-			@tpls[name] = [] unless @tpls.include? name
 			name
 		end
 
 		##
-		# == g_app 
+		# == set_app 
+		# initializing the panel of application
+		#
+		# == arguments
+		# method, Symbol, the http method name
+		# routor, String, the routor path
+		# parameters, Hash, the parameter variables
+		def set_app meth, route = @route_path, *argv
+			route = "/#{route}" unless route[0] == "/"
+			h = @apptpl.generate_routor meth, route
+			@route_heads[h] = {} unless @route_heads.include? h
+			@route_heads[h] = argv
+			p @route_heads[h]
+		end
+
+		##
+		# == init_data
 		# initialize template variables of application
 		#
-		# the key of @route_heads[h]
 		# :vars, pure variables
 		# :page, page variables that includes the following vars
 		# 		:page_id, the page id
@@ -172,16 +186,12 @@ class Generator
 		# :tpl_name, a template name that should be has a prefix with the module name 
 		# :vars, a pure basic variable that containss sub-variable as the following
 		# 		:title, the default page title
-		def g_app meth, route = @route_path, *argv
-			route = "/#{route}" unless route[0] == "/"
-			h = @apptpl.generate_routor meth, route
-			@route_heads[h] = {} unless @route_heads.include? h
-
+		def init_data argv
 			if argv.include? :vars
 				@route_heads[h][:vars]			= {}
 				@route_heads[h][:vars][:title] 	= @route_path
 			end
-			
+
 			if argv.include? :page
 				@route_heads[h][:page]				= {}
 				@route_heads[h][:page][:page_id]	= 1
@@ -189,30 +199,37 @@ class Generator
 			end
 		end
 
+		def set_tpl tpl_name, patten
+			@tpls[tpl_name] = [] unless @tpls.include? tpl_name
+			@tpls[tpl_name] << {patten => @p}
+		end
+
 		def process_route
-			g_app_data(@apptpl.generate_routor, :vars, :page)
 		end
 
 		def process_table
-			tpl_name = get_tpl_name
-			@tpls[tpl_name] << {:table => @p}
+			tpl_name = get_tpl_name :table
+			set_tpl tpl_name, :table
 		end
 
 		def process_list
-			tpl_name = get_tpl_name
-			@tpls[tpl_name] << {:list => @p}
+			tpl_name = get_tpl_name :list
+			set_tpl tpl_name, :list
+
+			@panels[@p][:tpl_name] = tpl_name
+			set_app :get, "list", @panels[@p]
 		end
 
 		def process_form
-			g_app :post, 'edit'
-			g_app :get
+			tpl_name = get_tpl_name :form
+			set_tpl tpl_name, :form
 
-			tpl_name = get_tpl_name
-			@tpls[tpl_name] << {:form => @p}
+			@panels[@p][:tpl_name] = tpl_name
+			set_app :get, "edit", @panels[@p]
+			set_app :post, "edit"
 		end
 
 		def preprocess_item data
-
 			if data.index(":") == nil
 				key	= "fields"
 				val = data

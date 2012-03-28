@@ -15,7 +15,14 @@ class Tpltpl
 	end
 
 	def g_list data
-		"This is a list"
+		str = ""
+		str += "- if @data\n"
+		str += "ul\n"
+		str += "\t- for item in @data do\n"
+		str += "\tli = itme\n"
+		str += "- else\n"
+		str += "\tp Nothing is here.\n"
+		str
 	end
 
 	def g_form data

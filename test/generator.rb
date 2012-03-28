@@ -14,7 +14,7 @@ class Stest
 		#
 		# 	3s g list username:password:email
 		#
-		argv[2] = ['list', 'username:password:email']
+		argv[2] = ['list', 'username,password,email']
 
 		# Example 03, create a form 
 		# 	
