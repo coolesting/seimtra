@@ -10,7 +10,8 @@ class SCFG
 		:log_path 		=> Dir.pwd + '/log/default',
 		:module_focus 	=> 'front',
 		:module_repos 	=> File.expand_path('~/SeimRepos'),
-		:website 		=> "https://github.com/coolesting"
+		:website 		=> "https://github.com/coolesting",
+		:open			=> "on"
 	}
 
 	@@options = {}
@@ -37,6 +38,7 @@ class SCFG
 			set :changed, Time.now
 			set :version, Seimtra::Info::VERSION
 			set :status, SCFG::OPTIONS[:status]
+			set :open, SCFG::OPTIONS[:open]
 			set :email, SCFG::OPTIONS[:email]
 			set :author, SCFG::OPTIONS[:author]
 		end

@@ -94,7 +94,7 @@ class SeimtraThor < Thor
 
 		#create some folders and files that depends on the structure of module
 		def module_init name
-			folders = ['applications', 'templates', 'others'] 
+			folders = ['applications', 'templates', 'others', 'languages'] 
  			folders.each do | folder |
 				path = "modules/#{name}/#{folder}"
 				empty_directory(path) unless File.exist? path
