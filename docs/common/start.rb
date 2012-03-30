@@ -4,7 +4,9 @@ require './environment'
 
 L = {}
 C = {}
+
 templates = []
+languages = ""
 applications = []
 
 Dir[settings.root + "/modules/*/others/info.yml"].each do | file |
@@ -17,8 +19,10 @@ Dir[settings.root + "/modules/*/others/info.yml"].each do | file |
 			applications += Dir[settings.root + "/modules/#{content['name']}/applications/*.rb"]
 
 			if content.include?('lang')
-				lang = settings.root + "/modules/#{content['name']}/languages/#{content['name']}.rb"
-				applications << lang if File.exist?(lang)
+				lang = settings.root + "/modules/#{content['name']}/languages/#{content['lang']}.rb"
+				if File.exist?(lang)
+					languages << File.read(lang)
+				end
 			end
 		end
 
@@ -32,6 +36,11 @@ helpers do
 	end
 end
 
-applications.each do |routor|
+languages.split("\n").each do | l |
+	key, val = l.split("=", 2) if l.index("=")
+	L[key] = val
+end
+
+applications.each do | routor |
 	require routor
 end
