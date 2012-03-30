@@ -9,7 +9,7 @@ templates = []
 languages = ""
 applications = []
 
-Dir[settings.root + "/modules/*/others/info.yml"].each do | file |
+Dir[settings.root + "/modules/*/info"].each do | file |
     content = YAML.load_file file
 	if content.class.to_s == 'Hash' and content.include?('name') 
 		C[content['name']] = content 
@@ -19,7 +19,7 @@ Dir[settings.root + "/modules/*/others/info.yml"].each do | file |
 			applications += Dir[settings.root + "/modules/#{content['name']}/applications/*.rb"]
 
 			if content.include?('lang')
-				lang = settings.root + "/modules/#{content['name']}/languages/#{content['lang']}.rb"
+				lang = settings.root + "/modules/#{content['name']}/languages/#{content['lang']}.lang"
 				if File.exist?(lang)
 					languages << File.read(lang)
 				end

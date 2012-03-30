@@ -1,5 +1,3 @@
-require 'yaml'
-
 class SCFG
 
 	OPTIONS = {
@@ -22,9 +20,9 @@ class SCFG
 		##
 		# @name, string, file name
 		# @custom, boolean,  a path you specify
-		def setpath(name, custom = false)
+		def setpath name, custom = false
 			if custom == false 
-				@path = name == nil ? 'Seimfile' : "modules/#{name}/others/info.yml"
+				@path = name == nil ? 'Seimfile' : "modules/#{name}/info"
 			else
 				@path = name
 				@path = File.expand_path(name) unless File.exist?(name)
@@ -32,7 +30,7 @@ class SCFG
 			@@options[@path] = {} unless @@options.include? @path
 		end
 
-		def init(name = nil, custom = false)
+		def init name = nil, custom = false
 			setpath(name, custom)
 			set :created, Time.now
 			set :changed, Time.now
@@ -43,16 +41,7 @@ class SCFG
 			set :author, SCFG::OPTIONS[:author]
 		end
 
-		def load(name = nil, custom = false)
-			setpath(name, custom)
-			if File.exist?(@path)
-				if content = YAML.load_file(@path)
-					@@options[@path] = content
-				end
-			end
-		end
-
-		def set(key, val)
+		def set key, val
 			@@options[@path][key.to_s] = val
 			unless @@changed.include? @path
 				@@options[@path]['changed'] = Time.now
@@ -60,15 +49,33 @@ class SCFG
 			end
 		end
 
-		def get(key = nil)
+		def get key = nil
 			key == nil ? @@options[@path] : @@options[@path][key.to_s]
+		end
+
+		def load name = nil, custom = false
+			setpath(name, custom)
+			if File.exist?(@path)
+				content = ""
+				content << File.read(@path)
+				if content.index("\n") and content.index("=")
+					content.split("\n").each do | con |
+						key,val = con.split("=")
+						@@options[@path][key] = val
+					end
+				end
+			end
 		end
 
 		def save
 			unless @@changed.empty?
 				@@changed.each do |path|
+					content = ""
+					@@options[path].each do | key, val |
+						content << "#{key}=#{val}\n"
+					end
 					File.open(path, 'w+') do |f|
-						f.write(YAML::dump(@@options[path]))
+						f.write(content)
 					end
 				end
 			end
