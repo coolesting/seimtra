@@ -92,7 +92,7 @@ class SeimtraThor < Thor
 			false
 		end
 
-		#create some folders and files that depends on the structure of module
+		#generate the needs file
 		def module_init name
 			folders = ['applications', 'templates', 'languages'] 
  			folders.each do | folder |
@@ -105,6 +105,7 @@ class SeimtraThor < Thor
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path
 			end
+			Dir.chdir(Dir.pwd + '/modules/' + name)
 		end
 
 		def isay str
@@ -124,7 +125,7 @@ class SeimtraThor < Thor
 		# @custom, boolean, see the method SCFG.load
 		def show_info name = nil, argv = 0, str = nil, custom = false
 			SCFG.load(name, custom) if name != nil
-			if argv.length > 0
+			if argv.class.to_s == "Array" and argv.length > 0
 				argv.each do | item |
 					key, val = item.split(':')
 					SCFG.set key, val 

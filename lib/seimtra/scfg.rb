@@ -19,7 +19,7 @@ class SCFG
 
 		##
 		# @name, string, file name
-		# @custom, boolean,  a path you specify
+		# @custom, boolean,  a specifying path
 		def setpath name, custom = false
 			if custom == false 
 				@path = name == nil ? 'Seimfile' : "modules/#{name}/info"
@@ -49,22 +49,30 @@ class SCFG
 			end
 		end
 
+		#get the value from loaded panel
 		def get key = nil
 			key == nil ? @@options[@path] : @@options[@path][key.to_s]
 		end
 
-		def load name = nil, custom = false
-			setpath(name, custom)
-			if File.exist?(@path)
-				content = ""
-				content << File.read(@path)
+		#get the value from file
+		def get_all name
+			content = ""
+			result  = {}
+			if name != nil and File.exist?(name)
+				content << File.read(name)
 				if content.index("\n") and content.index("=")
 					content.split("\n").each do | con |
 						key,val = con.split("=")
-						@@options[@path][key] = val
+						result[key] = val
 					end
 				end
 			end
+			result
+		end
+
+		def load name = nil, custom = false
+			setpath(name, custom)
+			@@options[@path] = get_all @path
 		end
 
 		def save

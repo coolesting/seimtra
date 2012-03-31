@@ -121,11 +121,17 @@ class SeimtraThor < Thor
 
 			SCFG.load
 			SCFG.set :module_focus, name
+			File.open(Dir.pwd + "/modules/#{name}/README.rdoc", "w+") do | f |
+				f.write("== INTRODUCTION\n#{info[:description]}")
+			end
 
 		# list the modules
 		elsif opt == 'list'
-			Dir[Dir.pwd + '/modules/*'].each do | m |
-				isay m.split('/').last
+			Dir[Dir.pwd + '/modules/*/info'].each do | i |
+				res = SCFG.get_all i
+				if res.include? 'name' and res.include? 'description'
+ 					isay("#{res['name']} : #{res['description']}")
+				end
 			end
 
 		# show/set the module info
