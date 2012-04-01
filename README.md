@@ -60,7 +60,7 @@ See the module how many is in current project,
 We will not teach you how to create a database, but the connected approach about the mysql, postgresql, sqlite that be wrote to file environment.rb.
 More details please see the document of [Sequel](http://sequel.rubyforge.org/documentation.html).
 
-Now, we reseach the *3s db* command.
+Now, we reseach the *3s* *db* command.
 See the db info
 
   3s db -o
@@ -70,7 +70,7 @@ Create a migration record.
 
   3s db create users String:username String:password String:salt -a
 
-the option *-a* will auto adds the *primary_id*, *changed* time, and *created* time.
+the option *-a* will auto adds the *primary* *id*, *changed* *time*, and *created* *time*.
 You could alter this migration file before running to the database.
 
   3s db -r
