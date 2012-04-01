@@ -6,11 +6,14 @@ Seimtra is a web application system that creates an application structure with s
 # INSTALLATION
 
 	gem install seimtra
+
 or
+
 	git clone git://github.com/coolesting/seimtra.git
 
 
 # USAGE
+
 
 ### Step 01, Creating a project
 

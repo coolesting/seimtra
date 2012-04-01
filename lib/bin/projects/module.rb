@@ -121,8 +121,8 @@ class SeimtraThor < Thor
 
 			SCFG.load
 			SCFG.set :module_focus, name
-			File.open(Dir.pwd + "/modules/#{name}/README.rdoc", "w+") do | f |
-				f.write("== INTRODUCTION\n#{info[:description]}")
+			File.open(Dir.pwd + "/modules/#{name}/README.md", "w+") do | f |
+				f.write("## INTRODUCTION\n\n#{info[:description]}")
 			end
 
 		# list the modules
