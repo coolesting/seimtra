@@ -1,4 +1,4 @@
-# INTRDDUCTION
+# INTRODUCTION
 
 Seimtra is a web application system that creates an application structure with sinatra, sequel, slim. And it still integrates generated function as the ROR.
 
