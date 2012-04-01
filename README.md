@@ -9,8 +9,8 @@ Seimtra is a web application system that creates an application structure with s
 or
 	git clone git://github.com/coolesting/seimtra.git
 
-# USAGE
 
+# USAGE
 
 ### Step 01, Creating a project
 
