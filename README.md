@@ -6,7 +6,8 @@ Seimtra is a web application system that creates an application structure with s
 # INSTALLATION
 
 	gem install seimtra
-
+or
+	git clone git://github.com/coolesting/seimtra.git
 
 # USAGE
 
@@ -23,7 +24,7 @@ Check the info of the project
 
 	3s info
 
-#### Note : Whatever you want to do something to this project, please enter to the root directory of your project, then using your command line to it.
+> Note : Whatever you want to do something to this project, please enter to the root directory of your project, then using your command line to it.
 
 
 ### Step 02, Creating a module
@@ -36,7 +37,7 @@ For example, we need a menber administration in the new project, so we do this.
 
 	3s m new users
 
-we create a module called *users*,  then check the info about this module.
+we create a module called __users__,  then check the info about this module.
 
 	3s m info
 
@@ -44,7 +45,7 @@ or
 
 	3s m info users
 
-#### Note : the *3s* will set the default module by new module name to config file after you create a new module. we can see the config item *module_focus* after command *3s info*
+> Note : the __3s__ will set the default module by new module name to config file after you create a new module. we can see the config item __module_focus__ after command __3s info__
 
 And we could set the module info with,
 
@@ -60,19 +61,19 @@ See the module how many is in current project,
 We will not teach you how to create a database, but the connected approach about the mysql, postgresql, sqlite that be wrote to file environment.rb.
 More details please see the document of [Sequel](http://sequel.rubyforge.org/documentation.html).
 
-Now, we reseach the *3s* *db* command.
+Now, we reseach the __3s db__ command.
 See the db info
 
 	3s db -o
-`	3s db -o --details
+	3s db -o --details
 
 Create a migration record.
 
 	3s db create users String:username String:password String:salt -a
 
-the option *-a* will auto adds the *primary id*, *changed time*, and *created time*.
+the option __-a__ will auto adds the __primary id__, __changed time__, and __created time__.
 You could alter this migration file before running to the database.
 
 	3s db -r
 
-#### Note : anything about the migration record please see the sequel.
+> Note : anything about the migration record please see the sequel.
