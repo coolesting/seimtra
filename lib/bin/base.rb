@@ -100,7 +100,7 @@ class SeimtraThor < Thor
 				empty_directory(path) unless File.exist? path
 			end
 
-			files = ['info', 'README.md']
+			files = [F_INFO, F_README]
 			files.each do | file |
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path

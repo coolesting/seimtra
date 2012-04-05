@@ -32,7 +32,7 @@ Check the info of the project
 
 ### Step 02, Creating a module
 
-This is modular structure application that consist of some variety of modules.
+This is a modular structure application that consists of some variety of modules.
 It divides all function into each module. So, whatever we want to do something, we need to
 create a new module in order to collect the same application.
 

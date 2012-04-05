@@ -9,7 +9,7 @@ templates = []
 languages = ""
 applications = []
 
-Dir[settings.root + "/modules/*/info"].each do | file |
+Dir[settings.root + "/modules/*/info.cfg"].each do | file |
     content = YAML.load_file file
 	if content.class.to_s == 'Hash' and content.include?('name') 
 		C[content['name']] = content 

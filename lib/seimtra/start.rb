@@ -5,6 +5,10 @@ require 'seimtra/info'
 require 'seimtra/scfg'
 require 'seimtra/db'
 
+#file name
+F_INFO = "info.cfg"
+F_README = "README.md"
+
 class SeimtraThor < Thor
 	def self.source_root
 		ROOTPATH
