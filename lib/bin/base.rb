@@ -32,14 +32,6 @@ class SeimtraThor < Thor
 		end
 	end
 
-	desc "config [ARGV]", "Your customize config"
-	def config(*argv)
-		path, file = Utils.get_custom_info
-		run (file) unless File.exists?(File.expand_path(path))
-		show_info path, argv, "Your customize config", true
-	end
-
-
 end
 
 class SeimtraThor < Thor
@@ -105,7 +97,7 @@ class SeimtraThor < Thor
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path
 			end
-			Dir.chdir(Dir.pwd + '/modules/' + name)
+			Dir.chdir(Dir.pwd)
 		end
 
 		def isay str
@@ -117,22 +109,15 @@ class SeimtraThor < Thor
 			exit
 		end
 
-		#get/set the yaml file
-		#
-		# @name, string, the file path you need to load
-		# @argv, array, the argv you want to set
-		# @str, string, you want to show the word to the terminal
-		# @custom, boolean, see the method SCFG.load
-		def show_info name = nil, argv = 0, str = nil, custom = false
-			SCFG.load(name, custom) if name != nil
-			if argv.class.to_s == "Array" and argv.length > 0
-				argv.each do | item |
-					key, val = item.split(':')
-					SCFG.set key, val 
-				end
+		def show_info result, title = "Current info"
+			isay("========= #{title} ========= \n")
+			unless result.class.to_s == "Hash"
+				say("The return values is not a Hash in function show_info") 
+				exit
 			end
-			isay("========= #{str} ========= \n") unless str == nil
-			SCFG.get.each do |k,v| isay "#{k.to_s} : #{v}" end
+			result.each do |k,v| 
+				isay "#{k.to_s} : #{v}"
+			end
 		end
 
 		def get_file_num file_path, change_str = true

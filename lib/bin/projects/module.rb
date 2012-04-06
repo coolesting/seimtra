@@ -103,9 +103,11 @@ class SeimtraThor < Thor
 			module_init name
 
 			path = get_custom_info.first
-			SCFG.load path, true
+			SCFG.load :path => path
 			info = {}
 			info[:name] 		= name
+			info[:open] 		= SCFG::OPTIONS[:open]
+			info[:load_order] 	= SCFG::OPTIONS[:load_order]
 			info[:created] 		= Time.now
 			info[:version] 		= '0.0.1'
 			info[:email] 		= SCFG.get(:email) ? SCFG.get(:email) : ask("What is the email of your ?")
@@ -114,7 +116,7 @@ class SeimtraThor < Thor
 			info[:description] 	= ask("The description of the module ?")
 
 			#set module config
-			SCFG.load name
+			SCFG.load :name => name
 			info.each do |k,v|
 				SCFG.set(k,v)
 			end
@@ -141,7 +143,16 @@ class SeimtraThor < Thor
 				name = argv.shift if argv[0].index(':') == nil
 			end
 			error("The module #{name} is not existing") unless module_exist? name 
-			show_info(name, argv, "#{name} module info")
+
+			if argv.length > 0
+				SCFG.load :name => name
+				argv.each do | item |
+					k, v = item.split ":"
+					SCFG.set k,v
+				end
+			end
+
+			show_info(SCFG.load(:name => name, :return => true, :current => true), "#{name} module info")
 		end
 	end
 

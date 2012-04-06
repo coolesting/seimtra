@@ -1,3 +1,14 @@
+## 
+# == Usage
+# Whatever you want to load any config file, you need to use the SCFG.load
+# method, then, set or get the values by key.
+#
+# == Arguments of SCFG.load
+# :name, module name
+# :path, specifying complete path
+# :return, return the values
+# :current, load current options as the return values
+
 class SCFG
 
 	OPTIONS = {
@@ -9,57 +20,33 @@ class SCFG
 		:module_focus 	=> 'front',
 		:module_repos 	=> File.expand_path('~/SeimRepos'),
 		:website 		=> "https://github.com/coolesting",
-		:open			=> "on"
+		:open			=> "on",
+		:load_order		=> 9
 	}
 
 	@@options = {}
 	@@changed = []
+	@@path	  = 'Seimfile'
 
 	class << self
 
-		##
-		# @name, string, file name
-		# @custom, boolean,  a specifying path
-		def setpath name, custom = false
-			if custom == false 
-				@path = name == nil ? 'Seimfile' : "modules/#{name}/#{F_INFO}"
-			else
-				@path = name
-				@path = File.expand_path(name) unless File.exist?(name)
-			end
-			@@options[@path] = {} unless @@options.include? @path
-		end
+		#load config to the @@options by @@path
+		def load options = {}
 
-		def init name = nil, custom = false
-			setpath(name, custom)
-			set :created, Time.now
-			set :changed, Time.now
-			set :version, Seimtra::Info::VERSION
-			set :status, SCFG::OPTIONS[:status]
-			set :open, SCFG::OPTIONS[:open]
-			set :email, SCFG::OPTIONS[:email]
-			set :author, SCFG::OPTIONS[:author]
-		end
-
-		def set key, val
-			@@options[@path][key.to_s] = val
-			unless @@changed.include? @path
-				@@options[@path]['changed'] = Time.now
-				@@changed << @path 
-			end
-		end
-
-		#get the value from loaded panel
-		def get key = nil
-			key == nil ? @@options[@path] : @@options[@path][key.to_s]
-		end
-
-		#get the value from file
-		def get_all name
+			result = {}
+			isload = false
 			content = ""
-			result  = {}
-			if name != nil and File.exist?(name)
-				content << File.read(name)
+
+			@@path = options[:path] if options.include? :path
+			@@path = "modules/#{options[:name]}/#{F_INFO}" if options.include? :name
+			@@path = File.expand_path(@@path)
+			isload = true if File.exist?(@@path)
+
+			#load from config file
+			if options.include?(:current) and @@options.include?(@@path)
+				result = @@options[@@path]
+			elsif isload == true
+				content << File.read(@@path)
 				if content.index("\n") and content.index("=")
 					content.split("\n").each do | con |
 						key,val = con.split("=")
@@ -67,12 +54,35 @@ class SCFG
 					end
 				end
 			end
-			result
+
+			@@options[@@path] = {} unless @@options.include?(@@path)
+			@@options[@@path] = result
+
+			#return the result
+			if options.include? :return
+				result 
+			else
+				isload
+			end
 		end
 
-		def load name = nil, custom = false
-			setpath(name, custom)
-			@@options[@path] = get_all @path
+		def set key, val
+			changed
+			@@options[@@path][key.to_s] = val
+		end
+
+		def get key
+			@@options[@@path].include?(key.to_s) ? @@options[@@path][key.to_s] : ''
+		end
+
+		def init
+			set :created, Time.now
+			set :changed, Time.now
+			set :version, Seimtra::Info::VERSION
+			set :status, SCFG::OPTIONS[:status]
+			set :open, SCFG::OPTIONS[:open]
+			set :email, SCFG::OPTIONS[:email]
+			set :author, SCFG::OPTIONS[:author]
 		end
 
 		def save
@@ -89,7 +99,13 @@ class SCFG
 			end
 		end
 
+		def changed
+			unless @@changed.include? @@path
+				@@options[@@path]['changed'] = Time.now
+				@@changed << @@path 
+			end
+		end
+
 	end
 
 end
-
