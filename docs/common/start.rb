@@ -9,12 +9,25 @@ templates = []
 languages = ""
 applications = []
 
+def get_file file
+	result = {}
+	content = ''
+	content << File.read(file) if File.exist? file
+	if content.index("\n") and content.index("=")
+		content.split("\n").each do | res |
+			key,val = res.split("=")
+			result[key] = val
+		end
+	end
+	result
+end
+
 Dir[settings.root + "/modules/*/info.cfg"].each do | file |
-    content = YAML.load_file file
-	if content.class.to_s == 'Hash' and content.include?('name') 
+	content = get_file file
+	unless content.empty? and content.include?('name') 
 		C[content['name']] = content 
 
-		if content.include?('open') and content['open'] == true
+		if content.include?('open') and content['open'] == "on"
 			templates << settings.root + "/modules/#{content['name']}/templates"
 			applications += Dir[settings.root + "/modules/#{content['name']}/applications/*.rb"]
 
