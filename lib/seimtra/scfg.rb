@@ -58,6 +58,10 @@ class SCFG
 			@@options[@@path] = {} unless @@options.include?(@@path)
 			@@options[@@path] = result
 
+			if options.include? :init
+				init
+			end
+
 			#return the result
 			if options.include? :return
 				result 

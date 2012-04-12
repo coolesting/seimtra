@@ -2,26 +2,26 @@ class SeimtraThor < Thor
 	include Thor::Actions
 	
 	desc "new [NAME]", "Create a project with the name given"
-	def new(project_name = 'seimtra_project', mode = 'production')
+	def new(project_name = 'seimtra_project', mode = 'dev')
 		directory 'docs/common', project_name
-		SCFG.init
-		SCFG.set :log, SCFG::OPTIONS[:log]
-		SCFG.set :log_path, SCFG::OPTIONS[:log_path]
-		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
-		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
-
-		if mode == 'production'
+		unless mode == 'dev'
 			directory 'docs/production', project_name
-			SCFG.set :status, 'production'
+			status = "production"
 			Dir.chdir(Dir.pwd + '/' + project_name)
 			run("bundle install")
 			isay "Initializing complete."
 		else
 			directory 'docs/development', project_name
-			SCFG.set :status, 'development'
-			Dir.chdir(Dir.pwd + '/' + project_name)
+			status = "development"
 			isay "Using 'bundle install' command for intalling completely"
 		end
+
+		SCFG.load :path => "#{Dir.pwd}/#{project_name}/Seimfile", :init => true
+		SCFG.set :status, status
+		SCFG.set :log, SCFG::OPTIONS[:log]
+		SCFG.set :log_path, SCFG::OPTIONS[:log_path]
+		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
+		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
 	end
 
 	desc "version", "The version of Seimtra"
