@@ -130,7 +130,7 @@ class SeimtraThor < Thor
 		# list the modules
 		elsif opt == 'list'
 			Dir[Dir.pwd + '/modules/*/' + F_INFO].each do | i |
-				res = SCFG.get_all i
+				res = SCFG.load :path => i, :return => true
 				if res.include? 'name' and res.include? 'description'
  					isay("#{res['name']} : #{res['description']}")
 				end
