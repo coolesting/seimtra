@@ -1,6 +1,7 @@
 #
 # please don't modify the file unless you know what are you doing.
 require './environment'
+require './lib'
 
 L = {}
 C = {}
@@ -8,19 +9,6 @@ C = {}
 templates = []
 languages = ""
 applications = []
-
-def get_file file
-	result = {}
-	content = ''
-	content << File.read(file) if File.exist? file
-	if content.index("\n") and content.index("=")
-		content.split("\n").each do | res |
-			key,val = res.split("=")
-			result[key] = val
-		end
-	end
-	result
-end
 
 Dir[settings.root + "/modules/*/info.cfg"].each do | file |
 	content = get_file file
