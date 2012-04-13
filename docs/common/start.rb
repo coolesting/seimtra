@@ -4,7 +4,7 @@ require './environment'
 require './lib'
 
 L = {}
-C = {}
+I = {}
 
 templates = []
 languages = ""
@@ -13,7 +13,7 @@ applications = []
 Dir[settings.root + "/modules/*/info.cfg"].each do | file |
 	content = get_file file
 	unless content.empty? and content.include?('name') 
-		C[content['name']] = content 
+		I[content['name']] = content 
 
 		if content.include?('open') and content['open'] == "on"
 			templates << settings.root + "/modules/#{content['name']}/templates"
