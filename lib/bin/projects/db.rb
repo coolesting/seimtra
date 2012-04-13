@@ -83,7 +83,7 @@ class SeimtraThor < Thor
 		empty_directory(mpath) unless File.directory?(mpath)
 
 		#create a migration record
- 		if operator != nil 
+ 		unless operator == nil 
 
 			unless doperator.include? operator.to_sym
 				error("The #{operator} is a error operator, you allow to use create, \

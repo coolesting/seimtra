@@ -21,6 +21,7 @@ class SCFG
 		:module_repos 	=> File.expand_path('~/SeimRepos'),
 		:website 		=> "https://github.com/coolesting",
 		:open			=> "on",
+		:level			=> 0,
 		:load_order		=> 9
 	}
 

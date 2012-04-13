@@ -108,6 +108,7 @@ class SeimtraThor < Thor
 			info[:name] 		= name
 			info[:open] 		= SCFG::OPTIONS[:open]
 			info[:load_order] 	= SCFG::OPTIONS[:load_order]
+			info[:load_order] 	= SCFG::OPTIONS[:level]
 			info[:created] 		= Time.now
 			info[:version] 		= '0.0.1'
 			info[:email] 		= res.include?('email') ? res['email'] : ask("What is the email of your ?")
