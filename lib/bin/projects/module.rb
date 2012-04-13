@@ -103,28 +103,28 @@ class SeimtraThor < Thor
 			module_init name
 
 			path = get_custom_info.first
-			SCFG.load :path => path
+			res = SCFG.load :path => path, :return => true
 			info = {}
 			info[:name] 		= name
 			info[:open] 		= SCFG::OPTIONS[:open]
 			info[:load_order] 	= SCFG::OPTIONS[:load_order]
 			info[:created] 		= Time.now
 			info[:version] 		= '0.0.1'
-			info[:email] 		= SCFG.get(:email) ? SCFG.get(:email) : ask("What is the email of your ?")
-			info[:author]		= SCFG.get(:author) ? SCFG.get(:author) : ask("What is your name ?")
+			info[:email] 		= res.include?('email') ? res['email'] : ask("What is the email of your ?")
+			info[:author]		= res.include?('author') ? res['author'] : ask("What is your name ?")
 			info[:website] 		= SCFG::OPTIONS[:website] + "/seimtra-#{name}"
 			info[:description] 	= ask("The description of the module ?")
 
-			#set module config
+			File.open(Dir.pwd + "/modules/#{name}/" + F_README, "w+") do | f |
+				f.write("## INTRODUCTION\n\n#{info[:description]}")
+			end
+			
+			SCFG.load :path => 'Seimfile'
+			SCFG.set 'module_focus', name
+
 			SCFG.load :name => name
 			info.each do |k,v|
 				SCFG.set(k,v)
-			end
-
-			SCFG.load
-			SCFG.set :module_focus, name
-			File.open(Dir.pwd + "/modules/#{name}/" + F_README, "w+") do | f |
-				f.write("## INTRODUCTION\n\n#{info[:description]}")
 			end
 
 		# list the modules
@@ -132,7 +132,7 @@ class SeimtraThor < Thor
 			Dir[Dir.pwd + '/modules/*/' + F_INFO].each do | i |
 				res = SCFG.load :path => i, :return => true
 				if res.include? 'name' and res.include? 'description'
- 					isay("#{res['name']} : #{res['description']}")
+ 					isay("#{res['name']} : #{res['description']} (#{res['open']})")
 				end
 			end
 
