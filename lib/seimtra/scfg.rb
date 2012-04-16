@@ -48,10 +48,12 @@ class SCFG
 				result = @@options[@@path]
 			elsif isload == true
 				content << File.read(@@path)
-				if content.index("\n") and content.index("=")
-					content.split("\n").each do | con |
-						key,val = con.split("=")
-						result[key] = val
+				if content.index("\n")
+					content.split("\n").each do | line |
+						unless line[0] == '"' and line.index("=")
+							key,val = line.split("=")
+							result[key] = val
+						end
 					end
 				end
 			end
