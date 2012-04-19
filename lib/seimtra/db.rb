@@ -81,4 +81,14 @@ class Db
 		Sequel.extension :migration
 		Sequel::Migrator.run DB, path, argv
 	end
+
+	def insert table, options = {}
+		unless options.empty?
+			DB[table].insert(options)
+		end
+	end
+
+	def select table
+		DB[table]
+	end
 end

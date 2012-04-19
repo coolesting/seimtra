@@ -1,29 +1,25 @@
 class SeimtraThor < Thor
 
-	desc "info [ARGV]", "Show the info of config file"
-	def info *argv
-		name = ''
-		if argv.length > 0 
-			name = argv.shift unless argv[0].index(":")
-		end
+	desc "info [NAME]", "Show the info of project, config and module"
+	method_option :project, :type => :boolean, :aliases => '-p'
+	method_option :configs, :type => :boolean, :aliases => '-c'
+	def info name = ''
 
-		if name == 'config'
-			SCFG.load(:path => get_custom_info.first, :return => true)
-			str = "Your config info"
+		if options.configs?
+			path = get_custom_info.first
+			result = SCFG.load :path => path, :return => true
+			str = "config file info of #{path}"
+		elsif options.project?
+			result = SCFG.load :return => true
+			str = "current project info"
 		else
-			SCFG.load(:return => true)
-			str = "Current project info"
+ 			name = name == '' ? SCFG.get(:module_focus) : name
+			error("The module #{name} is not existing") unless module_exist? name 
+			result = SCFG.load :name => name, :return => true
+			str = "#{name} module info"
 		end
 
-		if argv.length > 0
-			argv.each do | item |
-				if item.index ":"
-					k, v = item.split ":"
-					SCFG.set k,v
-				end
-			end
-		end
+		show_info(result, str)
 
-		show_info(SCFG.load(:current => true, :return => true), str)
 	end
 end

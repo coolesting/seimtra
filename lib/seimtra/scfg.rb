@@ -8,6 +8,7 @@
 # :path, specifying complete path
 # :return, return the values
 # :current, load current options as the return values
+# :type, a format type, by default, it is normal text, other is list
 
 class SCFG
 
@@ -48,7 +49,23 @@ class SCFG
 				result = @@options[@@path]
 			elsif isload == true
 				content << File.read(@@path)
-				if content.index("\n")
+
+				#format the data with various types
+				if options[:type] == :list and content.index("\n\n")
+					result = []
+					content.split("\n\n").each do | lines |
+						row = {}
+						lines.split("\n").each do | line |
+							unless line[0] == '"' and line.index("=")
+								key, val = line.split("=")
+								row[key] = val
+							end
+						end
+						result << row unless row.empty?
+					end
+
+				# default format type
+				elsif content.index("\n")
 					content.split("\n").each do | line |
 						unless line[0] == '"' and line.index("=")
 							key,val = line.split("=")
@@ -56,6 +73,7 @@ class SCFG
 						end
 					end
 				end
+
 			end
 
 			@@options[@@path] = {} unless @@options.include?(@@path)

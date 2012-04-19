@@ -2,10 +2,7 @@ require 'sinatra'
 require 'sequel'
 require 'slim'
 
-# Note: you must keep the settings.db_connect value available if you 
-# need the database
-set :environment, 'development'
-configure :development do
+configure do
 
 	set :home_page, '/index.html'
 
@@ -51,6 +48,8 @@ configure :development do
 
 	set :db_memory, 'sqlite:/'
 
+	#change the db_connect that you want
+	#if you not need the database, set the value :db_connect to 'closed'
 	set :db_connect, settings.db_sqlite
 
 	DB = Sequel.connect(settings.db_connect)
@@ -59,6 +58,6 @@ configure :development do
 	disable :logging
 end
 
-get '/' do
-	status, headers, body = call! env.merge("PATH_INFO" => settings.home_page)
-end
+# get '/' do
+# 	status, headers, body = call! env.merge("PATH_INFO" => settings.home_page)
+# end

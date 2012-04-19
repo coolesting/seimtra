@@ -1,33 +1,54 @@
-#
 # please don't modify the file unless you know what are you doing.
+require 'seimtra/info'
 require './environment'
 require './lib'
-
-L = {}
-I = {}
 
 templates = []
 languages = ""
 applications = []
 
-Dir[settings.root + "/modules/*/info.cfg"].each do | file |
-	content = get_file file
-	unless content.empty? and content.include?('name') 
-		I[content['name']] = content 
+#module info
+I = {}
 
-		if content.include?('open') and content['open'] == "on"
-			templates << settings.root + "/modules/#{content['name']}/templates"
-			applications += Dir[settings.root + "/modules/#{content['name']}/applications/*.rb"]
-
-			if content.include?('lang')
-				lang = settings.root + "/modules/#{content['name']}/languages/#{content['lang']}.lang"
-				if File.exist?(lang)
-					languages << File.read(lang)
-				end
-			end
+#get the info from local file
+if settings.db_connect == "closed"
+	Dir[settings.root + "/modules/*/" + Seimtra::File::INFO].each do | file |
+		content = get_file file
+		unless content.empty? and content.include?('name') and content.include?('open') and content['open'] == "on"
+			I[content['name']] = content 
 		end
-
 	end
+
+#enable the database
+else
+	info = DB[:info]
+	modules = M = DB[:modules]
+
+	infos = {}
+	info.each do | row |
+		infos[row[:mid]] = {row[:ikey] => row[:ival]}
+	end
+	modules.each do | row |
+		I[row[:module_name]] = infos[row[:mid]]
+	end
+end
+
+if I.empty?
+	puts "The module info can not be empty."
+	exit
+end
+
+I.each do | name, content |
+	#preprocess the templates loaded item
+	templates << settings.root + "/modules/#{name}/templates"
+
+	#preprocess the applications loaded routors
+	applications += Dir[settings.root + "/modules/#{name}/applications/*.rb"]
+
+	#preprocess the language loaded packets
+	language = content.include?('lang') ? content['lang'] : "en"
+	path = settings.root + "/modules/#{name}/languages/#{language}.lang"
+	languages << File.read(path) if File.exist?(path)
 end
 
 set :views, templates
@@ -37,9 +58,12 @@ helpers do
 	end
 end
 
-languages.split("\n").each do | l |
-	key, val = l.split("=", 2) if l.index("=")
-	L[key] = val
+class Languages; end
+L = Languages.new
+languages.split("\n").each do | line |
+	key, val = line.split("=", 2) if line.index("=")
+	str = "def L.#{key}; '#{val}' end"
+	eval str
 end
 
 applications.each do | routor |

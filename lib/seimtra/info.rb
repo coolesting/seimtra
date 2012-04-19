@@ -10,4 +10,9 @@ module Seimtra
 		DESCRIPTION	= 'A framework integration to modular developing for web appliction'
 	end
 
+	module File
+		INFO 		= 'infos.cfg'
+		README		= "README.md"
+	end
+
 end

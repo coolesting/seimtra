@@ -131,10 +131,12 @@ class SeimtraThor < Thor
 			path = mpath
 			path = Dir[gpath + "/*"].sort.last if options.schema?
 			error("No schema at #{path}") unless File.exist?(path)
-
-			db.run path, :table => :schema_info, :column => module_current.to_sym
-# 			run("sequel -m #{path} #{version} #{dbcont}")
-
+			
+			unless Dir[path + "/*"].empty?
+				db.run path, :table => :schema_info, :column => module_current.to_sym
+			else
+				error "No migration files at #{path}"
+			end
 			isay "Implementing complete"
 		end
 
@@ -146,8 +148,8 @@ class SeimtraThor < Thor
 
 		#output the schema/migration
 		if options.output?
-			isay "The adapter is :  #{db.get_scheme}."
-			isay "The schema as the following."
+			isay "The current adapter of database is #{db.get_scheme}."
+			isay "The details of schema as the following."
 			puts "\n"
 
 			#puts the tables of database to array of hash

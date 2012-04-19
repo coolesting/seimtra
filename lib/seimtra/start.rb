@@ -6,8 +6,8 @@ require 'seimtra/scfg'
 require 'seimtra/db'
 
 #file name
-F_INFO = "info.cfg"
-F_README = "README.md"
+F_INFO = Seimtra::File::INFO
+F_README = Seimtra::File::README
 
 class SeimtraThor < Thor
 	def self.source_root

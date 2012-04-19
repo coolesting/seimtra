@@ -1,10 +1,11 @@
 class SeimtraThor < Thor
 	include Thor::Actions
 	
-	desc "new [NAME]", "Create a project with the name given"
-	def new(project_name = 'seimtra_project', mode = 'dev')
+	desc "init [NAME]", "Create a project with the name given"
+	method_option :dev, :type => :boolean
+	def init project_name = 'seimtra_project'
 		directory 'docs/common', project_name
-		unless mode == 'dev'
+		unless options.dev?
 			directory 'docs/production', project_name
 			status = "production"
 			Dir.chdir(Dir.pwd + '/' + project_name)
@@ -22,6 +23,9 @@ class SeimtraThor < Thor
 		SCFG.set :log_path, SCFG::OPTIONS[:log_path]
 		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
 		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
+		
+ 		install_modules = ["admin", "front", "users"]
+		invoke "install", install_modules
 	end
 
 	desc "version", "The version of Seimtra"
@@ -40,10 +44,14 @@ class SeimtraThor < Thor
 	no_tasks do
 
 		# return ture if the module is existing
-		def module_exist?(name)
-			Dir['modules/*'].each do | module_name |
-				m = module_name.split('/').last
-				return true if m == name
+		def module_exist? name, path = false
+			if path == true
+				return true if File.exist? name
+			else
+				Dir['modules/*'].each do | module_name |
+					m = module_name.split('/').last
+					return true if m == name
+				end
 			end
 			false
 		end
