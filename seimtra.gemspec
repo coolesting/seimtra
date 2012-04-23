@@ -1,13 +1,14 @@
-require File.expand_path('../lib/seimtra/info', __FILE__)
+require File.expand_path('../lib/seimtra/base', __FILE__)
 Gem::Specification.new do |s|
-	s.name 		= Seimtra::Info::NAME
-	s.date 		= Seimtra::Info::DATE
-	s.version 	= Seimtra::Info::VERSION
-	s.email 	= "coolesting@gmail.com"
-	s.authors 	= Seimtra::Info::AUTHORS
- 	s.homepage 	= "https://github.com/coolesting/seimtra"
-	s.description = Seimtra::Info::DESCRIPTION
-  	s.summary 	= Seimtra::Info::SUMMARY
+
+	s.name 		= Seimtra::Base::Info[:name]
+	s.date 		= Seimtra::Base::Info[:created]
+	s.version 	= Seimtra::Base::Info[:version]
+	s.email 	= Seimtra::Base::Info[:email]
+	s.authors 	= Seimtra::Base::Info[:author]
+ 	s.homepage 	= Seimtra::Base::Info[:homepage]
+	s.description = Seimtra::Base::Info[:description]
+  	s.summary 	= Seimtra::Base::Info[:summary]
 
 
 	s.executables = ['seimtra', '3s']
@@ -17,4 +18,5 @@ Gem::Specification.new do |s|
   	s.add_dependency 'sequel'
   	s.add_dependency 'slim'
   	s.add_dependency 'thor'
+
 end

@@ -103,7 +103,7 @@ class SCFG
 		def init
 			set :created, Time.now
 			set :changed, Time.now
-			set :version, Seimtra::Info::VERSION
+			set :version, Seimtra::Base::Info[:version]
 			set :status, SCFG::OPTIONS[:status]
 			set :open, SCFG::OPTIONS[:open]
 			set :email, SCFG::OPTIONS[:email]

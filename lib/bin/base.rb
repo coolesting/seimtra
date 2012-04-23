@@ -94,14 +94,12 @@ class SeimtraThor < Thor
 
 		#generate the needs file
 		def module_init name
-			folders = ['applications', 'templates', 'languages'] 
- 			folders.each do | folder |
+			Seimtra::Base::Folders.values.each do | folder |
 				path = "modules/#{name}/#{folder}"
 				empty_directory(path) unless File.exist? path
 			end
 
-			files = [F_INFO, F_README]
-			files.each do | file |
+			Seimtra::Base::Files.values.each do | file |
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path
 			end

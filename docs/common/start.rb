@@ -1,5 +1,5 @@
 # please don't modify the file unless you know what are you doing.
-require 'seimtra/info'
+require 'seimtra/base'
 require './environment'
 require './lib'
 
@@ -12,7 +12,7 @@ I = {}
 
 #get the info from local file
 if settings.db_connect == "closed"
-	Dir[settings.root + "/modules/*/" + Seimtra::File::INFO].each do | file |
+	Dir[settings.root + "/modules/*/" + Seimtra::Base::Files[:info]].each do | file |
 		content = get_file file
 		unless content.empty? and content.include?('name') and content.include?('open') and content['open'] == "on"
 			I[content['name']] = content 
