@@ -102,7 +102,7 @@ class SeimtraThor < Thor
 			mid = db_modules[:module_name => name][:mid]
 
 			#info file	
-			path = Dir.pwd + "/modules/#{name}/F_INFO"
+			path = Dir.pwd + "/modules/#{name}/" + F_INFO
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
 				result.each do | item |
