@@ -7,17 +7,18 @@ class SeimtraThor < Thor
 		directory 'docs/common', project_name
 		unless options.dev?
 			directory 'docs/production', project_name
-			status = "production"
 			Dir.chdir(Dir.pwd + '/' + project_name)
+			status = "production"
 			run("bundle install")
 			isay "Initializing complete."
 		else
 			directory 'docs/development', project_name
+			Dir.chdir(Dir.pwd + '/' + project_name)
 			status = "development"
-			isay "Using 'bundle install' command for intalling completely"
+			isay "Using 'bundle install' command for Binding the Gem applications, if you use the initializing command fisrt time"
 		end
 
-		SCFG.load :path => "#{Dir.pwd}/#{project_name}/Seimfile", :init => true
+		SCFG.load :path => "#{Dir.pwd}/Seimfile", :init => true
 		SCFG.set :status, status
 		SCFG.set :log, SCFG::OPTIONS[:log]
 		SCFG.set :log_path, SCFG::OPTIONS[:log_path]
@@ -25,7 +26,7 @@ class SeimtraThor < Thor
 		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
 		
  		install_modules = ["admin", "front", "users"]
-		invoke "install", install_modules
+		run "3s install " + install_modules.join(' ')
 	end
 
 	desc "version", "The version of Seimtra"
