@@ -1,6 +1,6 @@
 ## INTRODUCTION
 
-A core module that includes core mechanism and several methods.
+A core module that includes several core system module.
 
 * support the menu system
 
@@ -13,19 +13,20 @@ A core module that includes core mechanism and several methods.
 
 ## MENU SYSTEM
 
-  Example 01
+```
+Example 01
 
-  name=top_menu
-  description=my menu at home page
+name=top_menu
+description=my menu at home page
 
-  Example 02
+Example 02
 
-  name=left_bar
-  description=the side bar on the left of page
+name=left_bar
+description=the side bar on the left of page
 
-  name=right_bar
-  description=the side bar on the right of page
-
+name=right_bar
+description=the side bar on the right of page
+```
 
 just add the option below to your menus.list file , if the file is not existing, create it.
 one null line as the separator to define each menu.
