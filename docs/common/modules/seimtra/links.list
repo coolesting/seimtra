@@ -1,0 +1,15 @@
+menu=admin
+name=modules
+link=/admin/modules
+
+menu=admin
+name=menus
+link=/admin/menus
+
+menu=admin
+name=links
+link=/admin/links
+
+menu=admin
+name=settings
+link=/admin/settings
