@@ -12,9 +12,10 @@ or
 	git clone git://github.com/coolesting/seimtra.git
 
 
-## How to deploy a project with seimtra
+## How to deploy a project
 
 	3s init myproject
+	cd myproject
 
 check the information of the project
 
@@ -29,26 +30,28 @@ run the project
 
 ## Creating a module
 
-This is a modular structure application that consists of some variety of modules.
+This is a modular structure web application that consists of some variety of modules.
 It divides difference function into corresponding itself module. 
 So, whatever we want to do something, we should create a new module for similar function in corresponding module.
+
+	3s new mymodule
 
 
 ## About the database
 
-Everything database operation is based on Sequel, for more details see the [Sequel](http://sequel.rubyforge.org/documentation.html).
+Any database operations are based on Sequel, for more details see the [Sequel](http://sequel.rubyforge.org/documentation.html).
 
-See the db info
+see the db info
 
 	3s db -o
 	3s db -o --details
 
-Create a migration record
+create a migration record
 
 	3s db create users String:username String:password String:salt -a
 
 The option *-a* will automatic adds the key *primary id*, *changed time*, and *created time*.
 
-Run the migration record
+run the migration record
 
 	3s db -r
