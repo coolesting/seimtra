@@ -21,7 +21,7 @@ if settings.db_connect == "closed"
 
 #enable the database
 else
-	info = DB[:info]
+	info = DB[:infos]
 	modules = M = DB[:modules]
 
 	infos = {}

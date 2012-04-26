@@ -1,6 +1,6 @@
 Sequel.migration do
 	change do
-		create_table(:info) do
+		create_table(:infos) do
 			Integer :mid
 			String :ikey
 			String :ival

@@ -3,7 +3,7 @@ Sequel.migration do
 		create_table(:menus) do
 			primary_key :mid
 			String :name
-			String :desciption
+			String :description
 		end
 	end
 end

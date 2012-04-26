@@ -25,7 +25,7 @@ class SeimtraThor < Thor
 		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
 		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
 		
- 		install_modules = ["admin", "front", "users"]
+ 		install_modules = ["admin", "front", "seimtra", "users"]
 		run "3s install " + install_modules.join(' ')
 	end
 
