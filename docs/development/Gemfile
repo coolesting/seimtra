@@ -13,4 +13,4 @@ gem 'mysql'
 
 gem 'thin'
 gem 'rake'
-
+gem 'redcarpet'
