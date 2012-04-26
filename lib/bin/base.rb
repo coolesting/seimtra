@@ -24,6 +24,10 @@ class SeimtraThor < Thor
 		SCFG.set :log_path, SCFG::OPTIONS[:log_path]
 		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
 		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
+		SCFG.set :remote_repository, SCFG::OPTIONS[:remote_repos]
+		SCFG.set :root_enable, 'on'
+		SCFG.set :root_username, random_string
+		SCFG.set :root_password, random_string
 		
  		install_modules = ["admin", "front", "seimtra", "users"]
 		run "3s install " + install_modules.join(' ')
@@ -43,6 +47,12 @@ class SeimtraThor < Thor
 
 	#build-in method of the class
 	no_tasks do
+
+		#return a random string with the size given
+		def random_string size = 10
+			charset = ('a'..'z').to_a + ('0'..'9').to_a + ('A'..'Z').to_a
+			(0...size).map{ charset.to_a[rand(charset.size)]}.join
+		end
 
 		# return ture if the module is existing
 		def module_exist? name, path = false

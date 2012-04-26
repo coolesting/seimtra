@@ -20,6 +20,7 @@ class SCFG
 		:log_path 		=> Dir.pwd + '/log/default',
 		:module_focus 	=> 'front',
 		:module_repos 	=> File.expand_path('~/SeimRepos'),
+		:remote_repos 	=> '',
 		:website 		=> "https://github.com/coolesting",
 		:open			=> "on",
 		:level			=> 0,
