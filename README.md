@@ -19,7 +19,7 @@ or
 
 check the information of the project
 
-	3s info
+	3s info -p
 
 run the project
 	
