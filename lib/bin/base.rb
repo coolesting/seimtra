@@ -25,9 +25,7 @@ class SeimtraThor < Thor
 		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
 		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
 		SCFG.set :remote_repository, SCFG::OPTIONS[:remote_repos]
-		SCFG.set :root_enable, 'on'
-		SCFG.set :root_username, random_string
-		SCFG.set :root_password, random_string
+		SCFG.set :root_privilege, random_string
 		
  		install_modules = ["admin", "front", "seimtra", "users"]
 		run "3s install " + install_modules.join(' ')
@@ -35,10 +33,8 @@ class SeimtraThor < Thor
 
 	desc "version", "The version of Seimtra"
 	def version
-		require 'seimtra/info'
-		Seimtra::Info::constants(false).each do |name|
-			isay "#{name.to_s.downcase} : #{eval("Seimtra::Info::" + name.to_s)}"
-		end
+		str = "Seimtra Information"
+		show_info Seimtra::Base::Info, str
 	end
 
 end
@@ -49,7 +45,7 @@ class SeimtraThor < Thor
 	no_tasks do
 
 		#return a random string with the size given
-		def random_string size = 10
+		def random_string size = 12
 			charset = ('a'..'z').to_a + ('0'..'9').to_a + ('A'..'Z').to_a
 			(0...size).map{ charset.to_a[rand(charset.size)]}.join
 		end
@@ -127,14 +123,20 @@ class SeimtraThor < Thor
 		end
 
 		def show_info result, title = "Current info"
-			isay("========= #{title} ========= \n")
+			isay "="*20
+			isay title
+			isay "="*20
 			unless result.class.to_s == "Hash"
-				say("The return values is not a Hash in function show_info") 
+				say("The return values is not a Hash.") 
 				exit
 			end
-			result.each do |k,v| 
-				isay "#{k.to_s} : #{v}"
+
+			str = "\n"
+			result.each do | key, val | 
+				key = key.to_s + " "
+				str += "#{key.ljust(17, '-')} #{val}\n"
 			end
+			isay str
 		end
 
 		def get_file_num file_path, change_str = true
