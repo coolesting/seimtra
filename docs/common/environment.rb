@@ -4,25 +4,6 @@ require 'slim'
 
 configure do
 
-	set :home_page, '/index.html'
-
-	##
-	# sqlite
-	#
-	#	yum install sqlite3*
-	#	gem install sqlite3
-	set :db_sqlite, 'sqlite://db/data.db'
-
-	##
-	# postgresql
-	#
-	#	yum install postgres*
-	#	gem install pg
-	#	initdb -D db/pg
-	#	postgres -D db/pg
-	#	createdb db/pg
-	set :db_pg, 'postgres://localhost/db/pg'	
-
 	## 
 	# mysql
 	#
@@ -48,14 +29,34 @@ configure do
 
 	set :db_memory, 'sqlite:/'
 
+	##
+	# postgresql
+	#
+	#	yum install postgres*
+	#	gem install pg
+	#	initdb -D db/pg
+	#	postgres -D db/pg
+	#	createdb db/pg
+	set :db_pg, 'postgres://localhost/db/pg'	
+
+	##
+	# sqlite
+	#
+	#	yum install sqlite3*
+	#	gem install sqlite3
+	set :db_sqlite, 'sqlite://db/data.db'
+
 	#change the db_connect that you want
-	#if you not need the database, set the value :db_connect to 'closed'
+	#if you not need the database, set the value as 'closed'
 	set :db_connect, settings.db_sqlite
 
 	DB = Sequel.connect(settings.db_connect)
 
 	#set for rackup
 	disable :logging
+
+	#define the home page
+	set :home_page, '/index.html'
 end
 
 # get '/' do

@@ -2,21 +2,17 @@ class SeimtraThor < Thor
 	include Thor::Actions
 	
 	desc "init [NAME]", "Create a project with the name given"
-	method_option :dev, :type => :boolean
+	method_option :status, :type => :string
+	method_option :bundle, :type => :boolean
 	def init project_name = 'seimtra_project'
 		directory 'docs/common', project_name
-		unless options.dev?
-			directory 'docs/production', project_name
-			Dir.chdir(Dir.pwd + '/' + project_name)
-			status = "production"
-			run("bundle install")
-			isay "Initializing complete."
-		else
-			directory 'docs/development', project_name
-			Dir.chdir(Dir.pwd + '/' + project_name)
-			status = "development"
-			isay "Using 'bundle install' command for Binding the Gem applications, if you use the initializing command fisrt time"
-		end
+		Dir.chdir(Dir.pwd + '/' + project_name)
+
+		all_status = ["development", "production", "test"]
+		status = all_status.include?(options[:status]) ? options[:status] : "production"
+
+# 		all_status.delete(status)
+# 		without_status = all_status.join(" ")
 
 		SCFG.load :path => "#{Dir.pwd}/Seimfile", :init => true
 		SCFG.set :status, status
@@ -28,7 +24,9 @@ class SeimtraThor < Thor
 		SCFG.set :root_privilege, random_string
 		
  		install_modules = ["admin", "front", "seimtra", "users"]
-		run "3s install " + install_modules.join(' ')
+		bundler = options.bundle? ? " --bundler" : ""
+		run "3s install " + install_modules.join(' ') + bundler
+		isay "Initializing complete"
 	end
 
 	desc "version", "The version of Seimtra"

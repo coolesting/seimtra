@@ -48,6 +48,7 @@ class SeimtraThor < Thor
 	desc 'install [NAME]', 'Install the module'
 	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :path, :type => :string
+	method_option :bundle, :type => :boolean
 	def install *module_names
 		error "Please enter the module name you want to install" unless module_names.length > 0
 		
@@ -173,6 +174,12 @@ class SeimtraThor < Thor
 					options[:mid] = exist_menus[:name => menu_name][:mid]
  					db.insert :links, options
 				end
+			end
+
+			#bundle install each Gemfile
+			if options.bundle?
+				path = Dir.pwd + "/modules/#{name}/Gemfile"
+				run "bundle install --gemfile=#{path}" if File.exist? path
 			end
 
 		end
