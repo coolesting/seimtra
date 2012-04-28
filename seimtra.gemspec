@@ -1,14 +1,14 @@
 require File.expand_path('../lib/seimtra/base', __FILE__)
 Gem::Specification.new do |s|
 
-	s.name 		= Seimtra::Base::Info[:name]
-	s.date 		= Seimtra::Base::Info[:created]
-	s.version 	= Seimtra::Base::Info[:version]
-	s.email 	= Seimtra::Base::Info[:email]
-	s.authors 	= Seimtra::Base::Info[:author]
- 	s.homepage 	= Seimtra::Base::Info[:homepage]
-	s.description = Seimtra::Base::Info[:description]
-  	s.summary 	= Seimtra::Base::Info[:summary]
+	s.name 		= Seimtra::Base::Version[:name]
+	s.date 		= Seimtra::Base::Version[:created]
+	s.version 	= Seimtra::Base::Version[:version]
+	s.email 	= Seimtra::Base::Version[:email]
+	s.authors 	= Seimtra::Base::Version[:author]
+ 	s.homepage 	= Seimtra::Base::Version[:homepage]
+	s.description = Seimtra::Base::Version[:description]
+  	s.summary 	= Seimtra::Base::Version[:summary]
 
 
 	s.executables = ['seimtra', '3s']

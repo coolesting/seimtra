@@ -11,7 +11,7 @@ module Seimtra
 			:author			=>	'Bruce deng coolesting',
 			:email			=>	'coolesting@gmail.com',
 			:hoempage		=>	'https://github.com/coolesting/seimtra',
-			:summary		=>	'',
+			:summary		=>	'no summary, currentlly',
 			:description	=>	'Seimtra is a web application system.'
 		}
 
@@ -37,6 +37,7 @@ module Seimtra
 			:author 		=> 'unknown',
 			:created 		=> Time.now,
 			:version 		=> '0.0.1',
+			:group_name 	=> 'common',
 			:description	=> 'No description',
 			:dependon		=> ''
 		}
@@ -55,6 +56,11 @@ module Seimtra
 			:email			=> '',
 			:name			=> '',
 			:website		=> ''
+		}
+
+		#default basic setting of module
+		Settings = {
+			:lang			=> 'en'
 		}
 
 	end

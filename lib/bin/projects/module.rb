@@ -65,7 +65,7 @@ class SeimtraThor < Thor
 
 		db = Db.new
 
-		#get the modules that is installed previously
+		#get the modules installed before
 		exist_modules = []
 		if db.select(:modules).exists
 			db.select(:modules).select(:mid, :module_name).each do | row |
@@ -89,8 +89,19 @@ class SeimtraThor < Thor
 
 		#mark down the installed module in database record
 		install_modules.each do | name |
-	  		db.insert(:modules, :module_name => name)
+			path = Dir.pwd + "/modules/#{name}/" + F_INFO
+			result = SCFG.load :path => path , :return => true
+			unless result.empty?
+				module_info_item = Seimtra::Base::Info.keys
+				options = {}
+				result.each do | item |
+					key, val = item
+					options[key.to_sym] = val if module_info_item.include? key.to_sym
+				end
+				db.insert :modules, options
+			end
 		end
+
 
 		#flash the modules info with database record
 		db_modules = db.select :modules
@@ -98,16 +109,6 @@ class SeimtraThor < Thor
 		#scan various file to database
 		install_modules.each do | name |
 			mid = db_modules[:module_name => name][:mid]
-
-			#info file	
-			path = Dir.pwd + "/modules/#{name}/" + F_INFO
-			result = SCFG.load :path => path , :return => true
-			unless result.empty?
-				result.each do | item |
-					key, val = item
-					db.insert :infos, :ikey => key, :ival => val, :mid => mid
-				end
-			end
 
 			#settings file
 			path = Dir.pwd + "/modules/#{name}/settings.cfg"

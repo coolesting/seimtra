@@ -8,37 +8,31 @@ languages = ""
 applications = []
 
 #module info
-I = {}
+M = {}
 
 #get the info from local file
 if settings.db_connect == "closed"
 	Dir[settings.root + "/modules/*/" + Seimtra::Base::Files[:info]].each do | file |
 		content = get_file file
 		unless content.empty? and content.include?('name') and content.include?('open') and content['open'] == "on"
-			I[content['name']] = content 
+			M[content['name']] = content 
 		end
 	end
 
 #enable the database
 else
-	info = DB[:infos]
-	modules = M = DB[:modules]
-
-	infos = {}
-	info.each do | row |
-		infos[row[:mid]] = {row[:ikey] => row[:ival]}
-	end
+	modules = DB[:modules]
 	modules.each do | row |
-		I[row[:module_name]] = infos[row[:mid]]
+		M[row[:module_name]] = row]
 	end
 end
 
-if I.empty?
-	puts "The module info can not be empty."
+if M.empty?
+	puts "The loading module cannot be empty."
 	exit
 end
 
-I.each do | name, content |
+M.each do | name, content |
 	#preprocess the templates loaded item
 	templates << settings.root + "/modules/#{name}/templates"
 
