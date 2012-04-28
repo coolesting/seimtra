@@ -10,7 +10,7 @@ get '/files/:file_name' do
 	static_file params[:file_name], 'files'
 end
 
-helper do
+helpers do
 	def static_file file_name, folder
 
 		module_name = file_name.index('_') ? file_name.split('_').first : ''
