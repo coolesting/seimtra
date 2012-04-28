@@ -22,10 +22,10 @@ class SeimtraThor < Thor
 		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
 		SCFG.set :remote_repository, SCFG::OPTIONS[:remote_repos]
 		SCFG.set :root_privilege, random_string
-		
+
  		install_modules = ["admin", "front", "seimtra", "users"]
 		bundler = options.bundle? ? " --bundler" : ""
-		run "3s install " + install_modules.join(' ') + bundler
+		run "3s add " + install_modules.join(' ') + bundler
 		isay "Initializing complete"
 	end
 
@@ -121,9 +121,9 @@ class SeimtraThor < Thor
 		end
 
 		def show_info result, title = "Current info"
-			isay "="*20
-			isay title
-			isay "="*20
+			isay "\n" + "="*50
+			isay title.center(50, " ") + "\n"
+			isay "="*50
 			unless result.class.to_s == "Hash"
 				say("The return values is not a Hash.") 
 				exit
@@ -132,7 +132,7 @@ class SeimtraThor < Thor
 			str = "\n"
 			result.each do | key, val | 
 				key = key.to_s + " "
-				str += "#{key.ljust(17, '-')} #{val}\n"
+				str += "#{key.ljust(20, '-')} #{val}\n"
 			end
 			isay str
 		end

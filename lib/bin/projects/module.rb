@@ -37,19 +37,22 @@ class SeimtraThor < Thor
 
 	desc 'list', 'List all of the module folders'
 	def list
-		Dir[Dir.pwd + '/modules/*/' + F_INFO].each do | i |
-			result = SCFG.load :path => i, :return => true
+		str = "module list"
+		res = {}
+		Dir[Dir.pwd + '/modules/*/' + F_INFO].each do | info |
+			result = SCFG.load :path => info, :return => true
 			if result.include?('name') and result.include?('description')
- 				isay("#{result['name']} : #{result['description']} (#{result['open']})")
+ 				res[result['name']] = "#{result['description']} (#{result['open']})"
 			end
 		end
+		show_info res, str
 	end
 
-	desc 'install [NAME]', 'Install the module'
+	desc 'add [NAME]', 'Add a module'
 	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :path, :type => :string
 	method_option :bundle, :type => :boolean
-	def install *module_names
+	def add *module_names
 		error "Please enter the module name you want to install" unless module_names.length > 0
 		
 		#check the module installation file whether it is existing
