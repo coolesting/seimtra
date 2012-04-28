@@ -3,7 +3,7 @@ module Seimtra
 	module Base
 
 		#The information about the Seimtra WAS
-		Info = {
+		Version = {
 			:name			=>	'Seimtra',
 			:created		=>	'2011-10-13',
 			:alias_name		=>	'3s',
@@ -11,7 +11,7 @@ module Seimtra
 			:author			=>	'Bruce deng coolesting',
 			:email			=>	'coolesting@gmail.com',
 			:hoempage		=>	'https://github.com/coolesting/seimtra',
-			:summary		=>	'Seimtra is a web application system.',
+			:summary		=>	'',
 			:description	=>	'Seimtra is a web application system.'
 		}
 
@@ -25,6 +25,36 @@ module Seimtra
 			:application	=>	'applications',
 			:templates		=>	'templates',
 			:languages		=>	'languages'
+		}
+
+		#module info that stores in each root directory of module as name info.cfg
+		Info = {
+			:load_order		=> 9,
+			:module_name	=> '',
+			:opened			=> 'on',
+			:status 		=> 'development',
+			:email			=> 'empty',
+			:author 		=> 'unknown',
+			:created 		=> Time.now,
+			:version 		=> '0.0.1',
+			:description	=> 'No description',
+			:dependon		=> ''
+		}
+
+		#the Seimfile default config option
+		Seimfile = {
+			:log 			=> 'off',
+			:log_path 		=> Dir.pwd + '/log/default',
+			:module_focus 	=> 'front',
+			:local_repos 	=> File.expand_path('~/SeimRepos'),
+			:remote_repos 	=> ''
+		}
+
+		#custom user config file
+		Config = {
+			:email			=> '',
+			:name			=> '',
+			:website		=> ''
 		}
 
 	end

@@ -5,7 +5,7 @@ class Db
 	def initialize path = './environment.rb'
 		@msg 	= ''
 		@error 	= false
-		epath = File.expand_path(path)
+		epath 	= File.expand_path(path)
 		if File.exist?(epath)
 			require epath
 		else

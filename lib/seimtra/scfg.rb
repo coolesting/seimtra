@@ -7,25 +7,11 @@
 # :name, module name
 # :path, specifying complete path
 # :return, return the values
+# :init, with the default values to initialize the basic option
 # :current, load current options as the return values
 # :type, a format type, by default, it is normal text, other is list
 
 class SCFG
-
-	OPTIONS = {
-		:status 		=> 'development',
-		:email			=> 'empty',
-		:author 		=> 'administrator',
-		:log 			=> false,
-		:log_path 		=> Dir.pwd + '/log/default',
-		:module_focus 	=> 'front',
-		:module_repos 	=> File.expand_path('~/SeimRepos'),
-		:remote_repos 	=> '',
-		:website 		=> "https://github.com/coolesting",
-		:open			=> "on",
-		:level			=> 0,
-		:load_order		=> 9
-	}
 
 	@@options = {}
 	@@changed = []
@@ -102,13 +88,9 @@ class SCFG
 		end
 
 		def init
-			set :created, Time.now
-			set :changed, Time.now
-			set :version, Seimtra::Base::Info[:version]
-			set :status, SCFG::OPTIONS[:status]
-			set :open, SCFG::OPTIONS[:open]
-			set :email, SCFG::OPTIONS[:email]
-			set :author, SCFG::OPTIONS[:author]
+			Seimtra::Base::Info.each do | key, val |
+				set key, val
+			end
 		end
 
 		def save

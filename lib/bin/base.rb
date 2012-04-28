@@ -16,12 +16,10 @@ class SeimtraThor < Thor
 
 		SCFG.load :path => "#{Dir.pwd}/Seimfile", :init => true
 		SCFG.set :status, status
-		SCFG.set :log, SCFG::OPTIONS[:log]
-		SCFG.set :log_path, SCFG::OPTIONS[:log_path]
-		SCFG.set :module_focus, SCFG::OPTIONS[:module_focus]
-		SCFG.set :module_repository, SCFG::OPTIONS[:module_repos]
-		SCFG.set :remote_repository, SCFG::OPTIONS[:remote_repos]
 		SCFG.set :root_privilege, random_string
+		Seimtra::Base::Seimfile.each do | key, val |
+			SCFG.set key, val
+		end
 
  		install_modules = ["admin", "front", "seimtra", "users"]
 		bundler = options.bundle? ? " --bundler" : ""
@@ -32,7 +30,7 @@ class SeimtraThor < Thor
 	desc "version", "The version of Seimtra"
 	def version
 		str = "Seimtra Information"
-		show_info Seimtra::Base::Info, str
+		show_info Seimtra::Base::Version, str
 	end
 
 end
@@ -115,8 +113,8 @@ class SeimtraThor < Thor
 			say str, "\e[33m"
 		end
 
-		def error msg
-			say msg, "\e[31m"
+		def error str
+			say str, "\e[31m"
 			exit
 		end
 

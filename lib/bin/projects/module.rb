@@ -12,14 +12,8 @@ class SeimtraThor < Thor
 		info 		= {}
 
 		info[:name] 		= name
-		info[:open] 		= SCFG::OPTIONS[:open]
-		info[:load_order] 	= SCFG::OPTIONS[:load_order]
-		info[:load_order] 	= SCFG::OPTIONS[:level]
-		info[:created] 		= Time.now
-		info[:version] 		= '0.0.1'
 		info[:email] 		= res.include?('email') ? res['email'] : ask("What is the email of your ?")
 		info[:author]		= res.include?('author') ? res['author'] : ask("What is your name ?")
-		info[:website] 		= SCFG::OPTIONS[:website] + "/seimtra-#{name}"
 		info[:description] 	= ask("The description of the module ?")
 
 		File.open(Dir.pwd + "/modules/#{name}/" + F_README, "w+") do | f |
@@ -29,9 +23,9 @@ class SeimtraThor < Thor
 		SCFG.load :path => 'Seimfile'
 		SCFG.set 'module_focus', name
 
-		SCFG.load :name => name
-		info.each do |k,v|
-			SCFG.set(k,v)
+		SCFG.load :name => name, :init => true
+		info.each do | key, val |
+			SCFG.set key, val
 		end
 	end
 
