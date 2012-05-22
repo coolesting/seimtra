@@ -24,8 +24,6 @@ class Db
 	# autocomplete field of database
 	#
 	# name string, the table name
-	# argv array, such as ['String:title', 'text:body']
-	#
 	def autocomplete name, argv
 		#match a id
 		i = 1
@@ -33,11 +31,11 @@ class Db
 			id 	= name[0, i] + 'id'
 			i 	= check_column(id.to_sym) ? (i + 1) : 0
 		end
-		argv.unshift("primary_key:#{id}")
+		argv.unshift("#{id},primary_key")
 
 		#match time field
-		argv << 'Time:created'
-		argv << 'Time:changed'
+		argv << 'created,Time'
+		argv << 'changed,Time'
 		argv
 	end
 

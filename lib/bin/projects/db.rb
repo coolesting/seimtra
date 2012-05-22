@@ -7,13 +7,13 @@ class SeimtraThor < Thor
 	# output/dump the schema/migration from database
 	#
 	# == Arguments
-	#
-	# operator, 	string, e.g. , create, alter, rename, drop
-	# argv, 		array, e.g. , ['table_name', 'String:name', 'String:password']
+	# data, 		an array, the format of vaule like this, 
+	# 				['field1', 'field2', 'field3'],
+	# 				or ['field1,primary_id', 'field2,String', 'field3,null:false']
 	#
 	# == Options
 	#
-	# --autocomplete, -a completing the fileds with primary_key, and timestamp, automatically
+	# --autocomplete, -a completing the field with primary_key, and timestamp, automatically
 	# --run, -r		run the migrations
 	# --to, -t		specify a module for implementing the migrating action
 	# --version, -v	specify a version for migrating record
@@ -24,22 +24,23 @@ class SeimtraThor < Thor
 	#
 	# == Examples
 	#
-	# dropdown/rename the table
+	# dropdown, rename, create, alter to table
 	#
-	#	3s db drop :table1,:table2,:table3
-	#	3s db rename :old_table,:new_table
+	#	3s db drop table1 table2 table3
 	#
-	# create/alter the table,
+	#	3s db rename old_table new_table
 	#
-	#	3s db create table_name primary_key:uid String:name String:pawd
+	#	3s db table_name uid,primary_key name,String pawd,String
+	#	3s db table_name name pawd -a
+	#	3s db table_name name pawd email,:string,null=false
 	#
-	#	3s db alter table_name drop_column:column_name
-	#	3s db alter table_name rename_column:old_column_name,:new_column_name
+	#	3s db alter table_name drop_column column_name
 	#
-	# create and auto complete the fileds, primary id, created time,  
+	# create a database with two fields,  
+	# and autocomplete other fields of primary id and created time,
 	# then run the migration records
 	#
-	# 	3s db create table_name String:title text:body -a -r
+	# 	3s db table_name title,String body,text -a -r
 	#
 	# dump the current db schema to a migration file (the default path at db/migrations)
 	#
@@ -63,8 +64,8 @@ class SeimtraThor < Thor
 	method_option :output, :type => :boolean, :aliases => '-o'
 	method_option :details, :type => :boolean
 	method_option :schema, :type => :boolean
-	desc "db [OPERATOR] [ARGV]", "Create/Run the migrations, and output schema/migration of database"
-	def db operator = nil, *argv
+	desc "db [DATA]", "Create/Run the migrations, output schema/migration of database"
+	def db *argv
 
 		#initialize data
 		db 				= Db.new
@@ -75,55 +76,31 @@ class SeimtraThor < Thor
 		path 			= "/modules/#{module_current}/migrations"
 		mpath 			= Dir.pwd + path
 		gpath 			= Dir.pwd + "/db/migrations"
-		doperator		= [:create, :alter, :drop, :rename]
 		dbcont 			= "'#{settings.db_connect}'"
 		version			= options[:version] == nil ? '' : "-M #{options[:version]}"
 
 		empty_directory(gpath) unless File.exist?(gpath)
-		empty_directory(mpath) unless File.directory?(mpath)
 
 		#create a migration record
- 		unless operator == nil 
+ 		if argv.length > 2
 
-			unless doperator.include? operator.to_sym
-				error("The #{operator} is a error operator, you allow to use create, \
-				alter, rename and drop as the operator")
-			end
+			empty_directory(mpath) unless File.directory?(mpath)
 
-			if [:create, :alter].include? operator.to_sym
-				table = argv.shift
-			else
-				table = ''
-			end
-
- 			file_nums = get_file_num(mpath)
-			file = mpath + "/#{file_nums}_#{operator}_#{table}.rb"
+			data 		= arrange_fields argv
+ 			file_nums 	= get_file_num(mpath)
+			file = mpath + "/#{file_nums}_#{data[:operator]}_#{data[:table]}.rb"
 
 			#auto add the primary_key and time to migrating record
 			if options.autocomplete?
-				error db.msg if db.error
-				argv = db.autocomplete(table, argv) if operator == 'create'
-			end
-	
-			create_file file do
-				content = "Sequel.migration do\n"
-				content << "\tchange do\n"
-
-				if argv.count > 0
-					if operator == "drop" or operator == "rename"
-						content << "\t\t#{operator}_table(#{argv.to_s.gsub(",", ", ")})\n"
-					else
-						content << "\t\t#{operator}_table(:#{table}) do\n"
-						argv.each do |item|
-							content << "\t\t\t#{item.sub(":", " :").gsub(",", ", ")}\n"
-						end
-						content << "\t\tend\n"
-					end
+				if data[:operator] == :create
+					data[:fields] = db.autocomplete(data[:table], data[:fields])
 				end
-
-				content << "\tend\n"
-				content << "end\n"
 			end
+
+			content = generate_migration data
+			isay "\n" + "="*20 + " the content as below " + "="*20 + "\n"
+ 			isay content
+ 			#create_file file, content
 		end
 
 		#implement the migrations
