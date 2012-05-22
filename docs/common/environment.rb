@@ -57,6 +57,8 @@ configure do
 
 	#define the home page
 	set :home_page, '/index.html'
+
+	set :cache_static_file, false
 end
 
 # get '/' do
