@@ -100,7 +100,7 @@ class SeimtraThor < Thor
 			content = generate_migration data
 			isay "\n" + "="*20 + " the content as below " + "="*20 + "\n"
  			isay content
- 			#create_file file, content
+ 			create_file file, content
 		end
 
 		#implement the migrations

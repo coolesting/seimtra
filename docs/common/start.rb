@@ -23,7 +23,7 @@ if settings.db_connect == "closed"
 else
 	modules = DB[:modules]
 	modules.each do | row |
-		M[row[:module_name]] = row]
+		M[row[:module_name]] = row
 	end
 end
 
