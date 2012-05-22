@@ -6,9 +6,9 @@ get '/images/:file_name' do
 	static_file params[:file_name], 'images'
 end
 
-get '/files/:file_name' do
-	static_file params[:file_name], 'files'
-end
+# get '/files/:file_name' do
+# 	static_file params[:file_name], 'files'
+# end
 
 helpers do
 	def static_file file_name, folder
@@ -22,7 +22,9 @@ helpers do
 			send_file path, :type => file_type.to_sym
 
 			if settings.cache_static_file
-				#save the file to public/type/filename
+				#save the file to public/folder/file_name
+				path = settings.root + "/public/#{folder}/#{file_name}"
+				file = File.new(path, "r") 
 			end
 		else
 			"No file found at module #{module_name}/#{file_type}/#{file_name}"
