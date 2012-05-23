@@ -49,13 +49,13 @@ class SeimtraThor < Thor
 	def add *module_names
 		error "Please enter the module name you want to install" unless module_names.length > 0
 		
-		#check the module installation file whether it is existing
+		#check the module installation file whether existing
 		module_names.each do | name |
 			if options.remote?
 			end
 			path = Dir.pwd + "/modules/#{name}"
 			path = options[:path] if options[:path] != nil
-			error "No searching for module at path #{path}" unless module_exist? path, true
+			error "No module found at path #{path}" unless module_exist? path, true
 		end
 
 		#run the db migration
@@ -65,7 +65,7 @@ class SeimtraThor < Thor
 
 		db = Db.new
 
-		#get the modules installed before
+		#get the modules that had been installed yet
 		exist_modules = []
 		if db.select(:modules).exists
 			db.select(:modules).select(:mid, :module_name).each do | row |
@@ -87,7 +87,7 @@ class SeimtraThor < Thor
 		#quit if no module to install
 		exit if install_modules.empty?
 
-		#mark down the installed module in database record
+		#mark down the installed module into the database
 		install_modules.each do | name |
 			path = Dir.pwd + "/modules/#{name}/" + F_INFO
 			result = SCFG.load :path => path , :return => true
@@ -103,7 +103,7 @@ class SeimtraThor < Thor
 		end
 
 
-		#flash the modules info with database record
+		#flash the module info with database record
 		db_modules = db.select :modules
 
 		#scan various file to database
