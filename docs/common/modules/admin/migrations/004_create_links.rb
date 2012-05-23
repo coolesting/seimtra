@@ -4,7 +4,7 @@ Sequel.migration do
 			Integer :mid
 			String :name
 			String :link
-			String :desciption
+			String :description
 			Integer :order, :size => 5, :default => 0
 		end
 	end
