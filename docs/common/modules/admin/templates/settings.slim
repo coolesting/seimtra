@@ -1,1 +1,10 @@
-p settings page
+table
+  tr
+	td mid
+	td key
+	td val
+  - @settings.each do | row |
+	tr
+	 td = row[:mid]
+	 td = row[:skey]
+	 td = row[:sval]

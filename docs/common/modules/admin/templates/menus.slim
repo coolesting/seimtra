@@ -1,1 +1,10 @@
-p link menu
+table
+  tr
+    td mid
+	td name
+	td description
+  - @menus.each do | row |
+  	tr
+	  td = row[:mid]
+	  td = row[:name]
+	  td = row[:description]

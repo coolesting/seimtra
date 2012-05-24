@@ -2,13 +2,15 @@ doctype html
 html
 	head
 		title = @title
+		link rel='stylesheet' type='text/css' href='/css/style.css'
 		link rel='stylesheet' type='text/css' href='/css/admin.css'
 	body
-		- unless @links_admin.empty?
-		  #menu : ul
-			- for item in @links_admin do
-				li : a href="#{item[:link]}" #{item[:name]}
-		- else
-			p No menus found
+  		#wrap
+	  		#top_menu
+	  			- unless @links_admin.empty?
+	   	  			- @links_admin.each do | row |
+		  				a href="#{row[:link]}" = row[:name]
+	  			- else
+	      			p No menus found
 
-		#wrap == yield
+	  		#main == yield

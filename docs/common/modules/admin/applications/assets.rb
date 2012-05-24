@@ -13,7 +13,7 @@ end
 helpers do
 	def static_file file_name, folder
 
-		module_name = file_name.index('_') ? file_name.split('_').first : 'front'
+		module_name = file_name.index('_') ? file_name.split('_').first : file_name.split('.').first
 		file_type = file_name.index('.') ? file_name.split('.').last : ''
 		path = settings.root + "/modules/#{module_name}/#{folder}/#{file_name}"
 

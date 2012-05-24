@@ -1,1 +1,8 @@
-p module page
+- M.each do | mid, row |
+  ul
+	div.headline : label = row[:module_name]
+	- row.each do | k, v |
+	  li
+		label = k
+		|  : 
+		label = v

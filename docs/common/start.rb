@@ -12,18 +12,20 @@ M = {}
 
 #get the info from local file
 if settings.db_connect == "closed"
-	Dir[settings.root + "/modules/*/" + Seimtra::Base::Files[:info]].each do | file |
-		content = get_file file
-		unless content.empty? and content.include?('name') and content.include?('open') and content['open'] == "on"
-			M[content['name']] = content 
-		end
-	end
+# 	Dir[settings.root + "/modules/*/" + Seimtra::Base::Files[:info]].each do | file |
+# 		content = get_file file
+# 		unless content.empty? and content.include?('name') and content.include?('open') and content['open'] == "on"
+# 			M[content['name']] = content 
+# 		end
+# 	end
+puts "The dasebase connect is closed."
+exit
 
 #enable the database
 else
 	modules = DB[:modules]
 	modules.each do | row |
-		M[row[:module_name]] = row
+		M[row[:mid]] = row
 	end
 end
 
@@ -32,17 +34,19 @@ if M.empty?
 	exit
 end
 
-M.each do | name, content |
-	#preprocess the templates loaded item
-	templates << settings.root + "/modules/#{name}/templates"
+M.each do | mid, row |
+	if row[:opened] == "on"
+		#preprocess the templates loaded item
+		templates << settings.root + "/modules/#{row[:module_name]}/templates"
 
-	#preprocess the applications loaded routors
-	applications += Dir[settings.root + "/modules/#{name}/applications/*.rb"]
+		#preprocess the applications loaded routors
+		applications += Dir[settings.root + "/modules/#{row[:module_name]}/applications/*.rb"]
 
-	#preprocess the language loaded packets
-	language = content.include?('lang') ? content['lang'] : "en"
-	path = settings.root + "/modules/#{name}/languages/#{language}.lang"
-	languages << File.read(path) if File.exist?(path)
+		#preprocess the language loaded packets
+		language = row.include?('lang') ? row['lang'] : "en"
+		path = settings.root + "/modules/#{row[:module_name]}/languages/#{language}.lang"
+		languages << File.read(path) if File.exist?(path)
+	end
 end
 
 set :views, templates
@@ -52,14 +56,15 @@ helpers do
 	end
 end
 
-class Languages; end
-L = Languages.new
+L = {}
 languages.split("\n").each do | line |
-	key, val = line.split("=", 2) if line.index("=")
-	str = "def L.#{key}; '#{val}' end"
-	eval str
+	if line.index("=")
+		key, val = line.split("=", 2) 
+		L[key] = val
+	end
 end
 
 applications.each do | routor |
 	require routor
 end
+

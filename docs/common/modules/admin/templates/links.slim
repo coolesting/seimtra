@@ -1,1 +1,12 @@
-p link page
+table
+  tr
+    td mid
+	td name
+	td link
+	td order
+  - @links.each do | row |
+  	tr
+	  td = row[:mid]
+	  td = row[:name]
+	  td = row[:link]
+	  td = row[:order]
