@@ -1,19 +1,35 @@
 menu=admin
 name=modules
 link=/admin/modules
+description=Display the module you installed.
+order=8
 
 menu=admin
 name=menus
 link=/admin/menus
+description=Display all of menus.
+order=2
 
 menu=admin
 name=links
 link=/admin/links
+description=Display all of links.
+order=3
 
 menu=admin
 name=settings
 link=/admin/settings
+description=About the system settings.
+order=9
 
 menu=admin
 name=admin
 link=/admin
+description=A administration console.
+order=1
+
+menu=admin
+name=home
+link=/
+description=Backing to frontground page.
+order=10
