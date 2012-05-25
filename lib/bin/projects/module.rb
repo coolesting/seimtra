@@ -139,6 +139,7 @@ class SeimtraThor < Thor
 						key, val = item	
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
+					options[:mid] = mid
  					db.insert :menus, options
 				end
 
@@ -169,7 +170,8 @@ class SeimtraThor < Thor
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 						menu_name = val if key == "menu"
 					end
-					options[:mid] = exist_menus[:name => menu_name][:mid]
+					options[:menu_id] = exist_menus[:name => menu_name][:id]
+					options[:mid] = mid
  					db.insert :links, options
 				end
 			end
