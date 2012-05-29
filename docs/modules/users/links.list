@@ -1,3 +1,8 @@
-menu=front
+bid=2
+name=users
+link=/admin/users
+odrer=9
+
+bid=3
 name=users
 link=/users

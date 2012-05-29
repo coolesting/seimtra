@@ -2,6 +2,10 @@ get '/users' do
 	slim :users
 end
 
+get '/admin/users' do
+	slim :users
+end
+
 get '/users/register' do
 	slim :users_register
 end

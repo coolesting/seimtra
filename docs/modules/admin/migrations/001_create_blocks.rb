@@ -1,10 +1,12 @@
 Sequel.migration do
 	change do
-		create_table(:menus) do
-			primary_key :id
+		create_table(:blocks) do
+			primary_key :bid
 			Integer :mid
 			String :name
+			String :type
 			String :description
+			DateTime :created
 		end
 	end
 end

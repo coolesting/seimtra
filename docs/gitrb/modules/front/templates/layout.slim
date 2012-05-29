@@ -1,0 +1,11 @@
+doctype html
+html
+	head
+		title = @title
+		link rel='stylesheet' type='text/css' href='/css/style.css'
+	body
+		ul
+			li : a href='/users' users
+			li : a href='/users/register' register
+			li : a href='/users/login' login
+		#wrap == yield

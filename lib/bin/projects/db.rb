@@ -62,7 +62,7 @@ class SeimtraThor < Thor
 	method_option :version, :type => :numeric, :aliases => '-v' 
 	method_option :dump, :type => :string
 	method_option :output, :type => :boolean, :aliases => '-o'
-	method_option :details, :type => :boolean
+	method_option :details, :type => :boolean, :aliases => '-d'
 	method_option :schema, :type => :boolean
 	desc "db [DATA]", "Create/Run the migrations, output schema/migration of database"
 	def db *argv

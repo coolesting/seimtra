@@ -1,12 +1,13 @@
-table
-  tr
-    td mid
-	td name
-	td link
-	td order
-  - @links.each do | row |
-  	tr
-	  td = row[:mid]
-	  td = row[:name]
-	  td = row[:link]
-	  td = row[:order]
+table.table
+	thead
+    	th module
+		th name
+		th link
+		th order
+	tbody
+  		- @links.each do | row |
+ 			tr
+	  			td = M[row[:bid]][:module_name]
+	  			td = row[:name]
+	  			td = row[:link]
+	  			td = row[:order]

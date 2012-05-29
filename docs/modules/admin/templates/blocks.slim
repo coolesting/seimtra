@@ -1,0 +1,13 @@
+table.table
+	thead
+		th menu id
+		th module
+		th name
+		th description
+	tbody
+		- @blocks.each do | row |
+			tr
+				td = row[:id]
+				td = M[row[:mid]][:module_name]
+				td = row[:name]
+				td = row[:description]

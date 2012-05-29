@@ -1,15 +1,13 @@
 class SeimtraThor < Thor
 	
-	long_desc <<-DOC
-	DOC
 	desc "new [NAME]", "Create a new module"
 	def new name
 		error('The module is existing.') if module_exist?(name)
 		module_init name
 
-		path 		= get_custom_info.first
-		res 		= SCFG.load :path => path, :return => true
-		info 		= {}
+		info 				= {}
+		path 				= get_custom_info.first
+		res 				= SCFG.load :path => path, :return => true
 
 		info[:name] 		= name
 		info[:email] 		= res.include?('email') ? res['email'] : ask("What is the email of your ?")
@@ -52,6 +50,7 @@ class SeimtraThor < Thor
 		#check the module installation file whether existing
 		module_names.each do | name |
 			if options.remote?
+				#get the module installation packet from remote repository
 			end
 			path = Dir.pwd + "/modules/#{name}"
 			path = options[:path] if options[:path] != nil
@@ -120,11 +119,11 @@ class SeimtraThor < Thor
 				end
 			end
 
-			#menu file
-			path = Dir.pwd + "/modules/#{name}/menus.list"
+			#block file
+			path = Dir.pwd + "/modules/#{name}/blocks.list"
 			result = SCFG.load :path => path , :return => true, :type => :list
  			unless result.empty?
-				table_fields = db.select(:menus).columns!
+				table_fields = db.select(:blocks).columns!
 
 				result2 = []
 				if result.class.to_s == "Hash"
@@ -139,19 +138,16 @@ class SeimtraThor < Thor
 						key, val = item	
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
-					options[:mid] = mid
- 					db.insert :menus, options
+					options[:mid] 	= mid
+					options[:type] 	= "link" unless options.include? :type
+ 					db.insert :blocks, options
 				end
 
 			end
 
-			#link file
-			exist_menus = db.select :menus
-
-			#default menu name
-			menu_name 	= "front"
-			path 		= Dir.pwd + "/modules/#{name}/links.list"
-			result 		= SCFG.load :path => path , :return => true, :type => :list
+			#link files
+			path			= Dir.pwd + "/modules/#{name}/links.list"
+			result 			= SCFG.load :path => path , :return => true, :type => :list
 
  			unless result.empty?
 				table_fields = db.select(:links).columns!
@@ -168,10 +164,8 @@ class SeimtraThor < Thor
 					line.each do | item |
 						key, val = item	
 						options[key.to_sym] = val if table_fields.include? key.to_sym
-						menu_name = val if key == "menu"
 					end
-					options[:menu_id] = exist_menus[:name => menu_name][:id]
-					options[:mid] = mid
+					options[:bid] = 1 unless options.include? :bid
  					db.insert :links, options
 				end
 			end
