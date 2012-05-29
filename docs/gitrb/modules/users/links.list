@@ -1,8 +1,0 @@
-bid=2
-name=users
-link=/admin/users
-order=9
-
-bid=3
-name=users
-link=/users
