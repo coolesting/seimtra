@@ -138,8 +138,10 @@ class SeimtraThor < Thor
 						key, val = item	
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
-					options[:mid] 	= mid
-					options[:type] 	= "link" unless options.include? :type
+					options[:mid]		= mid
+					options[:type] 		= "link" unless options.include? :type
+					options[:display]	= "center" unless options.include? :display
+					options[:layout]	= "frontground" unless options.include? :layout
  					db.insert :blocks, options
 				end
 
