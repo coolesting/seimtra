@@ -2,7 +2,7 @@ module Seimtra
 
 	module Base
 
-		#The information about the Seimtra WAS
+		#the information about the Seimtra WAS
 		Version = {
 			:name			=>	'Seimtra',
 			:created		=>	'2011-10-13',
@@ -15,12 +15,13 @@ module Seimtra
 			:description	=>	'Seimtra is a web application system.'
 		}
 
-		#The file struction of this system
+		#the file struction of this system is required
 		Files = {
 			:info			=>	'infos.cfg',
 			:readme			=>	'README.md'
 		}
 
+		#the required folders
 		Folders = {
 			:application	=>	'applications',
 			:templates		=>	'templates',
@@ -62,6 +63,14 @@ module Seimtra
 		Settings = {
 			:lang			=> 'en'
 		}
+
+		Intall_module	= ["admin", "front", "users"] 
+
+		Block_display	= ["frontground", "background", "none"]
+
+		Block_layout	= ["center", "top", "bottom", "left", "right"]
+
+		Block_type		= ["link", "text"]
 
 	end
 

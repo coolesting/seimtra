@@ -21,7 +21,7 @@ class SeimtraThor < Thor
 			SCFG.set key, val
 		end
 
- 		install_modules = ["admin", "front", "users"]
+ 		install_modules = Seimtra::Base::Intall_module
 		bundler = options.bundle? ? " --bundler" : ""
 		run "3s add " + install_modules.join(' ') + bundler
 		isay "Initializing complete"

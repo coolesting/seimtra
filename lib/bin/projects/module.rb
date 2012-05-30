@@ -139,9 +139,9 @@ class SeimtraThor < Thor
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
 					options[:mid]		= mid
-					options[:type] 		= "link" unless options.include? :type
-					options[:display]	= "center" unless options.include? :display
-					options[:layout]	= "frontground" unless options.include? :layout
+					options[:type] 		= Seimtra::Base::Block_type[0] unless options.include? :type
+					options[:display]	= Seimtra::Base::Block_display[0] unless options.include? :display
+					options[:layout]	= Seimtra::Base::Block_layout[0] unless options.include? :layout
  					db.insert :blocks, options
 				end
 
