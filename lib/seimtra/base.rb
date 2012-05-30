@@ -1,6 +1,6 @@
 module Seimtra
 
-	module Base
+	module Sbase
 
 		#the information about the Seimtra WAS
 		Version = {
@@ -64,13 +64,13 @@ module Seimtra
 			:lang			=> 'en'
 		}
 
-		Intall_module	= ["admin", "front", "users"] 
+		Block =	{
+			:display	=> ["frontground", "background", "none"],
+			:layout		=> ["center", "top", "bottom", "left", "right"],
+			:type		=> ["link", "text"]
+		}
 
-		Block_display	= ["frontground", "background", "none"]
-
-		Block_layout	= ["center", "top", "bottom", "left", "right"]
-
-		Block_type		= ["link", "text"]
+		Intall_module = ["admin", "front", "users"] 
 
 	end
 

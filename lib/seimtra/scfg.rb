@@ -88,7 +88,7 @@ class SCFG
 		end
 
 		def init
-			Seimtra::Base::Info.each do | key, val |
+			Sbase::Info.each do | key, val |
 				set key, val
 			end
 		end

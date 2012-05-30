@@ -2,14 +2,20 @@ ROOTPATH = File.expand_path('../../../', __FILE__)
 
 require 'thor'
 require 'seimtra/base'
+
+include Seimtra
+
 require 'seimtra/scfg'
 require 'seimtra/db'
 
 #file name
-F_INFO = Seimtra::Base::Files[:info]
-F_README = Seimtra::Base::Files[:readme]
+F_INFO = Sbase::Files[:info]
+F_README = Sbase::Files[:readme]
 
 class SeimtraThor < Thor
+
+	include Seimtra
+
 	def self.source_root
 		ROOTPATH
 	end

@@ -17,11 +17,11 @@ class SeimtraThor < Thor
 		SCFG.load :path => "#{Dir.pwd}/Seimfile", :init => true
 		SCFG.set :status, status
 		SCFG.set :root_privilege, random_string
-		Seimtra::Base::Seimfile.each do | key, val |
+		Sbase::Seimfile.each do | key, val |
 			SCFG.set key, val
 		end
 
- 		install_modules = Seimtra::Base::Intall_module
+ 		install_modules = Sbase::Intall_module
 		bundler = options.bundle? ? " --bundler" : ""
 		run "3s add " + install_modules.join(' ') + bundler
 		isay "Initializing complete"
@@ -30,7 +30,7 @@ class SeimtraThor < Thor
 	desc "version", "The version of Seimtra"
 	def version
 		str = "Seimtra Information"
-		show_info Seimtra::Base::Version, str
+		show_info Sbase::Version, str
 	end
 
 end
@@ -97,12 +97,12 @@ class SeimtraThor < Thor
 
 		#generate the needs file
 		def module_init name
-			Seimtra::Base::Folders.values.each do | folder |
+			Sbase::Folders.values.each do | folder |
 				path = "modules/#{name}/#{folder}"
 				empty_directory(path) unless File.exist? path
 			end
 
-			Seimtra::Base::Files.values.each do | file |
+			Sbase::Files.values.each do | file |
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path
 			end

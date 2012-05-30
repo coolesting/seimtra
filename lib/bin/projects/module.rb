@@ -91,7 +91,7 @@ class SeimtraThor < Thor
 			path = Dir.pwd + "/modules/#{name}/" + F_INFO
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
-				module_info_item = Seimtra::Base::Info.keys
+				module_info_item = Sbase::Info.keys
 				options = {}
 				result.each do | item |
 					key, val = item
@@ -138,10 +138,17 @@ class SeimtraThor < Thor
 						key, val = item	
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
-					options[:mid]		= mid
-					options[:type] 		= Seimtra::Base::Block_type[0] unless options.include? :type
-					options[:display]	= Seimtra::Base::Block_display[0] unless options.include? :display
-					options[:layout]	= Seimtra::Base::Block_layout[0] unless options.include? :layout
+					options[:mid] = mid
+
+					default_num_id = 0
+					[:type, :display, :layout].each do | item |
+						if options.include? item
+							index_id = Sbase::Block[item].index(options[item])
+							options[item] = index_id == nil ? default_num_id : index_id
+						else
+							options[item] = default_num_id
+						end
+					end
  					db.insert :blocks, options
 				end
 
