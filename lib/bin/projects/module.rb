@@ -115,7 +115,7 @@ class SeimtraThor < Thor
 			unless result.empty?
 				result.each do | item |
 					key, val = item
-					db.insert :settings, :skey => key, :sval => val, :mid => mid
+					db.insert :settings, :skey => key, :sval => val, :mid => mid, :changed => Time.now
 				end
 			end
 
