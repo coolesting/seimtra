@@ -14,10 +14,10 @@ class SeimtraThor < Thor
 # 		all_status.delete(status)
 # 		without_status = all_status.join(" ")
 
-		SCFG.load :path => "#{Dir.pwd}/Seimfile", :init => true
+		SCFG.load :path => "#{Dir.pwd}/Seimfile"
 		SCFG.set :status, status
 		SCFG.set :root_privilege, random_string
-		Sbase::Seimfile.each do | key, val |
+		Sbase::Project_info.each do | key, val |
 			SCFG.set key, val
 		end
 

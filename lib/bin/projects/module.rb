@@ -91,7 +91,7 @@ class SeimtraThor < Thor
 			path = Dir.pwd + "/modules/#{name}/" + F_INFO
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
-				module_info_item = Sbase::Info.keys
+				module_info_item = Sbase::Module_info.keys
 				options = {}
 				result.each do | item |
 					key, val = item

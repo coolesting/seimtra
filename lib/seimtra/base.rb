@@ -29,7 +29,7 @@ module Seimtra
 		}
 
 		#module info that stores in each root directory of module as name info.cfg
-		Info = {
+		Module_info = {
 			:load_order		=> 9,
 			:module_name	=> '',
 			:opened			=> 'on',
@@ -44,7 +44,7 @@ module Seimtra
 		}
 
 		#the Seimfile default config option
-		Seimfile = {
+		Project_info = {
 			:log 			=> 'off',
 			:log_path 		=> Dir.pwd + '/log/default',
 			:module_focus 	=> 'front',
