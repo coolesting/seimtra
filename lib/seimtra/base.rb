@@ -65,12 +65,11 @@ module Seimtra
 		}
 
 		Block =	{
-			:display	=> ["frontground", "background", "none"],
-			:layout		=> ["center", "top", "bottom", "left", "right"],
-			:type		=> ["link", "text"]
+			:display		=> ["center", "header", "footer", "left", "right", "none"],
+			:type			=> ["link", "text"]
 		}
 
-		Intall_module = ["admin", "front", "users"] 
+		Required_module = ["seimtra", "front", "users"] 
 
 	end
 

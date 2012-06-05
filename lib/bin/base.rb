@@ -21,7 +21,7 @@ class SeimtraThor < Thor
 			SCFG.set key, val
 		end
 
- 		install_modules = Sbase::Intall_module
+ 		install_modules = Sbase::Required_module
 		bundler = options.bundle? ? " --bundler" : ""
 		run "3s add " + install_modules.join(' ') + bundler
 		isay "Initializing complete"

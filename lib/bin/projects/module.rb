@@ -141,7 +141,7 @@ class SeimtraThor < Thor
 					options[:mid] = mid
 
 					default_num_id = 0
-					[:type, :display, :layout].each do | item |
+					Sbase::Block.keys.each do | item |
 						if options.include? item
 							index_id = Sbase::Block[item].index(options[item])
 							options[item] = index_id == nil ? default_num_id : index_id
@@ -174,7 +174,7 @@ class SeimtraThor < Thor
 						key, val = item	
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
-					options[:bid] = 1 unless options.include? :bid
+					options[:mid] = mid unless options.include? :mid
  					db.insert :links, options
 				end
 			end
