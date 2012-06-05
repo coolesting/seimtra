@@ -69,7 +69,7 @@ module Seimtra
 			:type			=> ["link", "text"]
 		}
 
-		Required_module = ["seimtra", "front", "users"] 
+		Required_module = ["system", "front", "users"] 
 
 	end
 
