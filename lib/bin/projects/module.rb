@@ -155,11 +155,11 @@ class SeimtraThor < Thor
 			end
 
 			#link files
-			path			= Dir.pwd + "/modules/#{name}/links.list"
+			path			= Dir.pwd + "/modules/#{name}/panel.list"
 			result 			= SCFG.load :path => path , :return => true, :type => :list
 
  			unless result.empty?
-				table_fields = db.select(:links).columns!
+				table_fields = db.select(:panel).columns!
 
 				result2 = []
 				if result.class.to_s == "Hash"
@@ -175,7 +175,7 @@ class SeimtraThor < Thor
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
 					options[:mid] = mid unless options.include? :mid
- 					db.insert :links, options
+ 					db.insert :panel, options
 				end
 			end
 
