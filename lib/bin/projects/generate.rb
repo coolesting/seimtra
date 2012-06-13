@@ -2,11 +2,11 @@ class SeimtraThor < Thor
 
 	# = Generator
 	#
-	# Create the view for module
+	# Create the scaffold for module
 	#
 	# == Arguments
 	#
-	# argv, 		string, more details please check the seimtra/generate.rb
+	# argv, 		table name, field1, field2, field3 ...
 	#
 	# == Options
 	#
@@ -14,48 +14,31 @@ class SeimtraThor < Thor
 	#
 	# == Examples 
 	#
-	# example 01, create a routes
-	#
-	# 	3s route get;login post;login
-	#
-	# example 02, create a table 
-	#
-	#	3s g table username:password:email
-	#
-	# example 03, create a list
-	#
-	# 	3s g list username:password:email
-	#
-	# example 04, create a form
-	#
-	#	3s g form text:username pawd:password text:email
-	# 
-	# example 05, create the example02-04 at once time
-	#
-	# 	3s g table username:password:email \ 
-	# 	list username:password:email \
-	# 	form text:username pawd:password text:email
+	# 3s g table_name field1 field2 field3
 	#
 
-	desc "generate [ROUTE_NAME] [VIEW_TYPE] [ARGV]", "Generate the view for module"
+	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
 	map 'g' => :generate
-	def generate(*argv)
-		if argv.length > 0
-			module_current = get_module options[:to]
-			require "seimtra/generator"
-			g = Generator.new module_current
-			g.run argv
-			g.contents.each do |path, content|
-				if File.exist? path
-					prepend_to_file path, content
-				else
-					create_file path, content
-				end
+	def generate *argv
+
+		if argv.length > 2
+			module_name = options[:to] ? options[:to] : get_module
+			file_name	= argv.shift
+
+			files 		= {
+				"tmp/route.app"	=> "modules/#{module_name}/#{Sbase::Folders[:app]}/#{file_name}.rb",
+				"tmp/view.tpl"	=> "modules/#{module_name}/#{Sbase::Folders[:tpl]}/#{file_name}.slim",
+				"tmp/form.tpl"	=> "modules/#{module_name}/#{Sbase::Folders[:tpl]}/#{file_name}_form.slim"
+			}
+
+			files.each do | source, target |
+				template(source, target) unless File.exist?(target)
 			end
  		else
-			error 'please check  "3s help generate" for usage of the command'
+			error 'At least two more arguments.'
 		end
+
 	end
 
 end

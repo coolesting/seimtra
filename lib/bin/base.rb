@@ -60,7 +60,7 @@ class SeimtraThor < Thor
 		end
 
 		# return the real module name, others is default module in config file
-		def get_module name
+		def get_module name = nil
 			curmod = name == nil ? SCFG.get(:module_focus) : name
 			error("The module #{curmod} is not existing") unless module_exist? curmod 
 			curmod

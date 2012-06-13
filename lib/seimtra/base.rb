@@ -23,9 +23,9 @@ module Seimtra
 
 		#the required folders
 		Folders = {
-			:application	=>	'applications',
-			:templates		=>	'templates',
-			:languages		=>	'languages'
+			:app			=>	'applications',
+			:tpl			=>	'templates',
+			:lang			=>	'languages'
 		}
 
 		#module info that stores in each root directory of module as name info.cfg
