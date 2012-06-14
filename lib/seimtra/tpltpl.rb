@@ -105,14 +105,14 @@ class Tpltpl
 	#
 	# == arguments
 	# name, String, the name of template in the one of docs/templates/*
-	def get_erb_content name
-		path = ROOTPATH + "/docs/templates/#{name}"
+	def get_erb_content path
+		path = ROOTPATH + path
 		if File.exist? path
 			content = File.read(path)
 			t = ERB.new(content)
 			t.result(binding)
 		else
-			"No such the file #{path}" 
+			"No such the file at #{path}" 
 		end
 	end
 

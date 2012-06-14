@@ -27,22 +27,36 @@ class SeimtraThor < Thor
 	map 'g' => :generate
 	def generate *argv
 
-		if argv.length > 2
-			module_name = options[:to] ? options[:to] : get_module
-			file_name	= argv.shift
+		error 'At least two more arguments.' unless argv.length > 2
+		
+		module_name 		= options[:to] ? options[:to] : get_module
+		file_name			= argv.shift
 
-			files 				= {}
-			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{file_name}.rb" if options.route?
-			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}.slim" if options.view?
-			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}_form.slim" if options.form?
+		files 				= {}
+		files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}.slim" if options.view?
+		files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}_form.slim" if options.form?
 
-			files.each do | source, target |
-				source = "tmp/#{source}"
-				target = "modules/#{module_name}/#{target}"
-				template(source, target) unless File.exist?(target)
+		if options.route? or options.view? or options.form?
+			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{file_name}.rb" 
+		end
+
+		#set the template variables
+		@t					= {}
+		@t[:module_name]	= module_name
+		@t[:file_name]		= file_name
+		@t[:table_name]		= file_name
+		@t[:key_id]			= argv[0]
+		@t[:fields]			= argv
+
+		files.each do | source, target |
+			source = "tmp/#{source}"
+			target = "modules/#{module_name}/#{target}"
+			unless File.exist?(target)
+				template(source, target)
+			else
+				content = get_erb_content source
+				append_to_file target, content
 			end
- 		else
-			error 'At least two more arguments.'
 		end
 
 	end

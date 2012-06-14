@@ -144,6 +144,18 @@ class SeimtraThor < Thor
 			end
 		end
 
+		def get_erb_content path
+			require 'erb'
+			path = ROOTPATH + "/" + path
+			if File.exist? path
+				content = File.read(path)
+				t = ERB.new(content)
+				t.result(binding)
+			else
+				"No such the file at #{path}" 
+			end
+		end
+
 	end
 
 	#some methods about the Sequel
