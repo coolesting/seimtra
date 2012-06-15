@@ -1,12 +1,9 @@
 table.table
-	- display_fields = [:pid, :name, :link, :status, :description, :order]
-	thead
-		- display_fields.each do | item |
-			th = L[item]
+	thead<% @t[:fields].each do | field | %>
+		th = L[:<%=field%>]<% end %>
 		th
 	tbody
-		- @panel.each do | row |
-			tr
-				- display_fields.each do | item |
-					td = row[item]
-				td : a href="/system/panel/edit/#{row[:pid]}" ->
+		- @<%=@t[:file_name]%>.each do | row |
+			tr<% @t[:fields].each do | field | %>
+				td = row[:<%=field%>]<% end %>
+				td : a href="/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/#{row[:<%=@t[:key_id]%>]}" ->

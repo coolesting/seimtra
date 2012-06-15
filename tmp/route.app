@@ -1,41 +1,39 @@
-get '/system/panel' do
+get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
 	opt_events :new
-	slim :system_panel
+	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>
 end
 
-get '/system/panel/new' do
+get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
 	opt_events :save
-	panel_process_fields
-	slim :system_panel_form
+	<%=@t[:file_name]%>_process_fields
+	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>_form
 end
 
-get '/system/panel/edit/:pid' do
+get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
 
 	opt_events :save, :remove
-	@fields = DB[:panel].filter(:pid => params[:pid]).all[0]
+	@fields = DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>]).all[0]
 
-# 	@fields = DB[:panel].select(:pid, :menu, :name, :link, :description, :status, :order).filter(:pid => params[:pid]).all[0]
-
- 	panel_process_fields
- 	slim :system_panel_form
+ 	<%=@t[:file_name]%>_process_fields
+ 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>_form
 
 end
 
-post '/system/panel/new' do
+post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
 
-	panel_process_fields
+	<%=@t[:file_name]%>_process_fields
 
-	DB[:panel].insert(@fields)
+	DB[:<%=@t[:table_name]%>].insert(@fields)
 
-	redirect "/system/panel"
+	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
 
 end
 
-post '/system/panel/edit/:pid' do
+post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
 
-	panel_process_fields
+	<%=@t[:file_name]%>_process_fields
 
-	dataset = DB[:panel].filter(:pid => params[:pid].to_i)
+	dataset = DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i)
 
 	if dataset
 		if params[:opt] == "Remove"
@@ -45,21 +43,21 @@ post '/system/panel/edit/:pid' do
 		end
 	end
 
-	redirect "/system/panel"
+	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
 
 end
 
 helpers do
 
-	def panel_process_fields data = {}
-
-		default_values = {
-			:name			=> "",
-			:link			=> "",
-			:menu			=> "",
-			:description	=> "",
-			:status			=> 0,
-			:order			=> 1
+	def <%=@t[:file_name]%>_process_fields data = {}
+		<%
+			str = ""
+			@t[:fields].each do | field |
+				str += "\n\t\t\t:#{field}\t\t=> ''"
+				str += "," if @t[:fields].last != field
+			end 
+		%>
+		default_values = {<%=str%>
 		}
 
 		default_values.each do | k, v |
@@ -70,15 +68,15 @@ helpers do
 
 		unless data.empty?
 
-			error_msg = 0
+			msg_num = 0
 
 			if data.include? :no_null
 				data[:no_null].each do | field |
-					error_msg = 1 if field == ""
+					msg_num = 1 if field == ""
 				end
 			end
 
-			send_error error_msg
+			send_error msg_num
 
 		end
 
