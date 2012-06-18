@@ -14,7 +14,7 @@ class SeimtraThor < Thor
 		info[:author]		= res.include?('author') ? res['author'] : ask("What is your name ?")
 		info[:description] 	= ask("The description of the module ?")
 
-		File.open(Dir.pwd + "/modules/#{name}/" + F_README, "w+") do | f |
+		File.open(Dir.pwd + "/modules/#{name}/" + Sbase::Files[:readme], "w+") do | f |
 			f.write("## INTRODUCTION\n\n#{info[:description]}")
 		end
 			
@@ -31,7 +31,7 @@ class SeimtraThor < Thor
 	def list
 		str = "module list"
 		res = {}
-		Dir[Dir.pwd + '/modules/*/' + F_INFO].each do | info |
+		Dir[Dir.pwd + '/modules/*/' + Sbase::Files[:info]].each do | info |
 			result = SCFG.load :path => info, :return => true
 			if result.include?('name') and result.include?('description')
  				res[result['name']] = "#{result['description']} (#{result['open']})"
@@ -88,7 +88,7 @@ class SeimtraThor < Thor
 
 		#mark down the installed module into the database
 		install_modules.each do | name |
-			path = Dir.pwd + "/modules/#{name}/" + F_INFO
+			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files_install[:info]
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
 				module_info_item = Sbase::Module_info.keys
@@ -109,21 +109,21 @@ class SeimtraThor < Thor
 		install_modules.each do | name |
 			mid = db_modules[:module_name => name][:mid]
 
-			#settings file
-			path = Dir.pwd + "/modules/#{name}/settings.cfg"
+			#setting file
+			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files_install[:setting]
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
 				result.each do | item |
 					key, val = item
-					db.insert :settings, :skey => key, :sval => val, :mid => mid, :changed => Time.now
+					db.insert :setting, :skey => key, :sval => val, :mid => mid, :changed => Time.now
 				end
 			end
 
 			#block file
-			path = Dir.pwd + "/modules/#{name}/blocks.list"
+			path = Dir.pwd + "/modules/#{name}/"+ Sbase::Files_install[:block]
 			result = SCFG.load :path => path , :return => true, :type => :list
  			unless result.empty?
-				table_fields = db.select(:blocks).columns!
+				table_fields = db.select(:block).columns!
 
 				result2 = []
 				if result.class.to_s == "Hash"
@@ -149,13 +149,13 @@ class SeimtraThor < Thor
 							options[item] = default_num_id
 						end
 					end
- 					db.insert :blocks, options
+ 					db.insert :block, options
 				end
 
 			end
 
-			#link files
-			path			= Dir.pwd + "/modules/#{name}/panel.list"
+			#panel files
+			path			= Dir.pwd + "/modules/#{name}/" + Sbase::Files_install[:panel]
 			result 			= SCFG.load :path => path , :return => true, :type => :list
 
  			unless result.empty?

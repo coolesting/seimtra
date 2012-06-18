@@ -8,10 +8,6 @@ include Seimtra
 require 'seimtra/scfg'
 require 'seimtra/db'
 
-#file name
-F_INFO = Sbase::Files[:info]
-F_README = Sbase::Files[:readme]
-
 class SeimtraThor < Thor
 
 	include Seimtra

@@ -106,6 +106,10 @@ class SeimtraThor < Thor
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path
 			end
+
+			path = "modules/#{name}/" + Sbase::Files_install[:info]
+			create_file(path) unless File.exist? path
+
 			Dir.chdir(Dir.pwd)
 		end
 
