@@ -17,12 +17,12 @@ module Seimtra
 
 		#the file struction of this system is required
 		Files = {
+			:info			=>	'install/info.cfg',
 			:readme			=>	'README.md'
 		}
 
 		#the files under the install folder
 		Files_install = {
-			:info			=>	'install/info.cfg',
 			:setting		=>	'install/setting.cfg',
 			:panel			=>	'install/panel.list',
 			:block			=>	'install/block.list'

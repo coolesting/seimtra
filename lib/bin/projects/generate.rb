@@ -24,6 +24,8 @@ class SeimtraThor < Thor
 	method_option :route, :type => :boolean, :aliases => '-r'
 	method_option :view, :type => :boolean, :aliases => '-v'
 	method_option :form, :type => :boolean, :aliases => '-f'
+	method_option :panel, :type => :boolean, :aliases => '-p'
+	method_option :migrate, :type => :boolean, :aliases => '-m'
 	map 'g' => :generate
 	def generate *argv
 
@@ -57,6 +59,12 @@ class SeimtraThor < Thor
 				content = get_erb_content source
 				append_to_file target, content
 			end
+		end
+
+		if options.migrate?
+		end
+
+		if options.panel?
 		end
 
 	end

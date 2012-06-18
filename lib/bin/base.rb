@@ -37,7 +37,6 @@ end
 
 class SeimtraThor < Thor
 
-	#build-in method of the class
 	no_tasks do
 
 		#return a random string with the size given
@@ -107,9 +106,6 @@ class SeimtraThor < Thor
 				create_file(path) unless File.exist? path
 			end
 
-			path = "modules/#{name}/" + Sbase::Files_install[:info]
-			create_file(path) unless File.exist? path
-
 			Dir.chdir(Dir.pwd)
 		end
 
@@ -158,90 +154,6 @@ class SeimtraThor < Thor
 			else
 				"No such the file at #{path}" 
 			end
-		end
-
-	end
-
-	#some methods about the Sequel
-	no_tasks do
-
-		# == arrange_fields
-		#
-		# arrange the field with the way of Sequel migration
-		# the format of data like this, 
-		# ['table_name', 'field1', 'field2', 'field3']
-		# ['table_name', 'field1,primary_id', 'field2,String', 'field3,:string,null=false']
-		# ['rename', 'old_table', 'new_table]
-		# ['drop', 'field1', 'field2', 'field3']
-		# ['alter', 'table_name', 'field1', 'field2', 'field3']
-		#
-		# == returned value
-		#
-		# :operator, create, alter, drop, rename to the table
-		# :table, table name
-		# :fields
-		def arrange_fields data
-			res = {}
-
-			#operator
-			operators = [:alter, :rename, :drop]
-			res[:operator] = operators.include?(data[0].to_sym) ? data.shift.to_sym : :create
-
-			#table
-			if res[:table] == :rename or res[:table] == :drop
-				res[:table] = data.join "_"
-			else
-				res[:table] = data.shift
-			end
-
-			#fields
-			res[:fields] = []
-			res[:fields] = data if data.length > 0
-			res
-		end
-		
-		def generate_migration data
-				operator 	= data[:operator]
-				table		= data[:table]
-				fields		= data[:fields]
-
-				content = "Sequel.migration do\n"
-				content << "\tchange do\n"
-
-				if operator == :drop or operator == :rename
-					content << "\t\t#{operator}_table "
-					i = 0
-					fields.each do | f |
-						content << ", " if i > 0
-						content << ":#{f}"
-						i = i + 1
-					end
-					content << "\n"
-
-				elsif operator == :create
-					content << "\t\t#{operator}_table(:#{table}) do\n"
-					fields.each do | item |
-						content << "\t\t\tcolumn :"
-						if item.index(",")
- 							content << item.gsub(/=/, " => ").gsub(/,/, ", ")
-						else
-							content << "#{item}, String"
-						end
-						content << "\n"
-					end
-					content << "\t\tend\n"
-
-				elsif operator == :alter
-					content << "\t\t#{operator}_table(:#{table}) do\n"
-					content << "\t\t\t#{fields.shift} :"
-					content << fields.join(", :")
-					content << "\n"
-					content << "\t\tend\n"
-				end
-
-				content << "\tend\n"
-				content << "end\n"
-				content
 		end
 
 	end

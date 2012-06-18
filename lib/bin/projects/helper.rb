@@ -7,14 +7,14 @@ class SeimtraThor < Thor
 		if name != ""
 			error("The module #{name} is not existing") unless module_exist? name 
 			result = SCFG.load :name => name, :return => true
-			str = "#{name} module info"
+			str = "#{name} module infomation"
 		elsif options.configs?
 			path = get_custom_info.first
 			result = SCFG.load :path => path, :return => true
-			str = "config file info of #{path}"
+			str = "configure infomation at #{path}"
 		else
 			result = SCFG.load :return => true
-			str = "current project info"
+			str = "project infomation"
 		end
 
 		show_info(result, str)

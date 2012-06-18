@@ -86,7 +86,7 @@ class SeimtraThor < Thor
 
 			empty_directory(mpath) unless File.directory?(mpath)
 
-			data 		= arrange_fields argv
+			data 		= db.arrange_fields argv
  			file_nums 	= get_file_num(mpath)
 			file = mpath + "/#{file_nums}_#{data[:operator]}_#{data[:table]}.rb"
 
@@ -97,7 +97,7 @@ class SeimtraThor < Thor
 				end
 			end
 
-			content = generate_migration data
+			content = db.generate_migration data
 			isay "\n" + "="*20 + " the content as below " + "="*20 + "\n"
  			isay content
  			create_file file, content

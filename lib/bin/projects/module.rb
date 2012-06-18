@@ -88,7 +88,7 @@ class SeimtraThor < Thor
 
 		#mark down the installed module into the database
 		install_modules.each do | name |
-			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files_install[:info]
+			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
 				module_info_item = Sbase::Module_info.keys

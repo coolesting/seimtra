@@ -27,7 +27,7 @@ class SCFG
 			content = ""
 
 			@@path = options[:path] if options.include? :path
-			@@path = "modules/#{options[:name]}/#{Sbase::Files_install[:info]
+			@@path = "modules/#{options[:name]}/#{Sbase::Files[:info]
 }" if options.include? :name
 			@@path = File.expand_path(@@path)
 			isload = true if File.exist?(@@path)
