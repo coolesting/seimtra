@@ -30,9 +30,9 @@ class SeimtraThor < Thor
 	#
 	#	3s db rename old_table new_table
 	#
-	#	3s db table_name uid,primary_key name,String pawd,String
+	#	3s db table_name uid:primary_key name:string pawd:string
 	#	3s db table_name name pawd -a
-	#	3s db table_name name pawd email,:string,null=false
+	#	3s db table_name name pawd email:string:null=false
 	#
 	#	3s db alter table_name drop_column column_name
 	#
@@ -98,7 +98,7 @@ class SeimtraThor < Thor
 			end
 
 			content = db.generate_migration data
-			isay "\n" + "="*20 + " the content as below " + "="*20 + "\n"
+			isay "\n" + "="*20 + " the content of migration record as below " + "="*20 + "\n"
  			isay content
  			create_file file, content
 		end

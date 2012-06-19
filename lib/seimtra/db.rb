@@ -1,6 +1,6 @@
 class Db
 
-	# A interface for Sequel ORM
+	# A interface class for Sequel ORM
 
 	attr_accessor :msg, :error
 
@@ -20,25 +20,6 @@ class Db
 	def check_column name
 		columns = get_columns
 		columns.include?(name.to_sym) ? true : false
-	end
-
-	## 
-	# autocomplete field of database
-	#
-	# name string, the table name
-	def autocomplete name, argv
-		#match a id
-		i = 1
-		while i > 0 
-			id 	= name[0, i] + 'id'
-			i 	= check_column(id.to_sym) ? (i + 1) : 0
-		end
-		argv.unshift("#{id},primary_key")
-
-		#match time field
-		argv << 'created,Time'
-		argv << 'changed,Time'
-		argv
 	end
 
 	def get_tables
@@ -92,6 +73,25 @@ class Db
 		DB[table]
 	end
 
+	## 
+	# autocomplete field of database
+	#
+	# name string, 	the table name
+	# argv array, 	the fields
+	def autocomplete name, argv
+		#match a id
+		i = 1
+		while i > 0 
+			id 	= name[0, i] + 'id'
+			i 	= check_column(id.to_sym) ? (i + 1) : 0
+		end
+		argv.unshift("#{id}:primary_key")
+
+		#match time field
+		argv << 'created:datetime'
+		argv << 'changed:datetime'
+		argv
+	end
 
 	# == arrange_fields
 	#
@@ -105,9 +105,10 @@ class Db
 	#
 	# == returned value
 	#
-	# :operator, create, alter, drop, rename to the table
-	# :table, table name
-	# :fields
+	# it is a hash value, the key as the following
+	# :operator, symbol ---- create, alter, drop, rename
+	# :table, 	string 	---- table name
+	# :fields	array 	---- 
 		
 	def arrange_fields data
 		res = {}
@@ -151,8 +152,8 @@ class Db
 			content << "\t\t#{operator}_table(:#{table}) do\n"
 			fields.each do | item |
 				content << "\t\t\tcolumn :"
-				if item.index(",")
- 					content << item.gsub(/=/, " => ").gsub(/,/, ", ")
+				if item.index(":")
+ 					content << item.gsub(/=/, " => ").gsub(/:/, ", :")
 				else
 					content << "#{item}, String"
 				end
