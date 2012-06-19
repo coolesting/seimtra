@@ -5,7 +5,7 @@ class SeimtraThor < Thor
 	method_option :status, :type => :string
 	method_option :bundle, :type => :boolean
 	def init project_name = 'seimtra_project'
-		directory 'docs', project_name
+		directory 'docs/project', project_name
 		Dir.chdir(Dir.pwd + '/' + project_name)
 
 		all_status = ["development", "production", "test"]

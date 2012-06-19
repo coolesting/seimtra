@@ -16,16 +16,12 @@ class SeimtraThor < Thor
 	#
 	# create a scaffold
 	#
-	#	3s g table_name field1 field2 field3 -rvf
+	#	3s g table_name field1 field2 field3
 	#
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
-	method_option :route, :type => :boolean, :aliases => '-r'
-	method_option :view, :type => :boolean, :aliases => '-v'
-	method_option :form, :type => :boolean, :aliases => '-f'
-	method_option :panel, :type => :boolean, :aliases => '-p'
-	method_option :migrate, :type => :boolean, :aliases => '-m'
+	method_option :system, :type => :boolean, :aliases => '-s'
 	map 'g' => :generate
 	def generate *argv
 
@@ -33,14 +29,6 @@ class SeimtraThor < Thor
 		
 		module_name 		= options[:to] ? options[:to] : get_module
 		file_name			= argv.shift
-
-		files 				= {}
-		files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}.slim" if options.view?
-		files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}_form.slim" if options.form?
-
-		if options.route? or options.view? or options.form?
-			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{file_name}.rb" 
-		end
 
 		#set the template variables
 		@t					= {}
@@ -50,22 +38,27 @@ class SeimtraThor < Thor
 		@t[:key_id]			= argv[0]
 		@t[:fields]			= argv
 
-		files.each do | source, target |
-			source = "tmp/#{source}"
-			target = "modules/#{module_name}/#{target}"
-			unless File.exist?(target)
-				template(source, target)
-			else
-				content = get_erb_content source
-				append_to_file target, content
+		files 				= {}
+
+		if options.system?
+
+			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}.slim"
+			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}_form.slim"
+			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{file_name}.rb" 
+
+			files.each do | source, target |
+				source = "#{Sbase::Paths[:tpl_system]}/#{source}"
+				target = "modules/#{module_name}/#{target}"
+				unless File.exist?(target)
+					template(source, target)
+				else
+					content = get_erb_content source
+					append_to_file target, content
+				end
 			end
+
 		end
 
-		if options.migrate?
-		end
-
-		if options.panel?
-		end
 
 	end
 

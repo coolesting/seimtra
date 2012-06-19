@@ -3,7 +3,7 @@ module Seimtra
 	module Sbase
 
 		#the information about the Seimtra WAS
-		Version = {
+		Version 			= 	{
 			:name			=>	'Seimtra',
 			:created		=>	'2011-10-13',
 			:alias_name		=>	'3s',
@@ -16,28 +16,32 @@ module Seimtra
 		}
 
 		#the file struction of this system is required
-		Files = {
+		Files 				= 	{
 			:info			=>	'install/info.cfg',
 			:readme			=>	'README.md'
 		}
 
 		#the files under the install folder
-		Files_install = {
+		Files_install		 = {
 			:setting		=>	'install/setting.cfg',
 			:panel			=>	'install/panel.list',
 			:block			=>	'install/block.list'
 		}
 
 		#the required folders
-		Folders = {
+		Folders 			= {
 			:app			=>	'applications',
 			:tpl			=>	'templates',
 			:lang			=>	'languages',
 			:install		=>	'install'
 		}
 
+		Paths				= {
+			:tpl_system		=> 'docs/templates/system'
+		}
+
 		#module info that stores in each root directory of module as name info.cfg
-		Module_info = {
+		Module_info			 = {
 			:load_order		=> 9,
 			:module_name	=> '',
 			:opened			=> 'on',
@@ -52,7 +56,7 @@ module Seimtra
 		}
 
 		#the Seimfile default config option
-		Project_info = {
+		Project_info 		= {
 			:log 			=> 'off',
 			:log_path 		=> Dir.pwd + '/log/default',
 			:module_focus 	=> 'front',
@@ -61,18 +65,18 @@ module Seimtra
 		}
 
 		#custom user config file
-		Config = {
+		Config 				= {
 			:email			=> '',
 			:name			=> '',
 			:website		=> ''
 		}
 
 		#default basic setting of module
-		Settings = {
+		Settings 			= {
 			:lang			=> 'en'
 		}
 
-		Block =	{
+		Block 				=	{
 			:display		=> ["center", "header", "footer", "left", "right", "none"],
 			:type			=> ["link", "text"]
 		}
