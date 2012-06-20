@@ -109,7 +109,7 @@ class Db
 	# :operator, symbol ---- create, alter, drop, rename
 	# :table, 	string 	---- table name
 	# :fields	array 	---- 
-		
+
 	def arrange_fields data
 		res = {}
 

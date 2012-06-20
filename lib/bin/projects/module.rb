@@ -83,9 +83,10 @@ class SeimtraThor < Thor
 			end
 		end
 
-		#quit if no module to install
+		#quit if no module to be installed
 		exit if install_modules.empty?
 
+		#start to install the module
 		#mark down the installed module into the database
 		install_modules.each do | name |
 			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
@@ -101,16 +102,15 @@ class SeimtraThor < Thor
 			end
 		end
 
-
 		#flash the module info with database record
 		db_modules = db.select :modules
 
-		#scan various file to database
+		#scan installing files to database
 		install_modules.each do | name |
 			mid = db_modules[:module_name => name][:mid]
 
 			#setting file
-			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files_install[:setting]
+			path = Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:setting]
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
 				result.each do | item |
@@ -120,26 +120,27 @@ class SeimtraThor < Thor
 			end
 
 			#block file
-			path = Dir.pwd + "/modules/#{name}/"+ Sbase::Files_install[:block]
+			path = Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:block]
 			result = SCFG.load :path => path , :return => true, :type => :list
  			unless result.empty?
 				table_fields = db.select(:block).columns!
 
-				result2 = []
+				data_arr = []
 				if result.class.to_s == "Hash"
-					result2 << result
+					data_arr << result
 				else
-					result2 = result
+					data_arr = result
 				end
 
-				result2.each do | line |
+				data_arr.each do | line |
 					options = {}
 					line.each do | item |
 						key, val = item	
 						options[key.to_sym] = val if table_fields.include? key.to_sym
 					end
 					options[:mid] = mid
-
+					
+					#set the default value for some fields of table
 					default_num_id = 0
 					Sbase::Block.keys.each do | item |
 						if options.include? item
@@ -155,20 +156,20 @@ class SeimtraThor < Thor
 			end
 
 			#panel files
-			path			= Dir.pwd + "/modules/#{name}/" + Sbase::Files_install[:panel]
+			path			= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:panel]
 			result 			= SCFG.load :path => path , :return => true, :type => :list
 
  			unless result.empty?
 				table_fields = db.select(:panel).columns!
 
-				result2 = []
+				data_arr = []
 				if result.class.to_s == "Hash"
-					result2 << result
+					data_arr << result
 				else
-					result2 = result
+					data_arr = result
 				end
 
-				result2.each do | line |
+				data_arr.each do | line |
 					options = {}
 					line.each do | item |
 						key, val = item	

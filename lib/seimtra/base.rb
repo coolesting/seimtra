@@ -22,11 +22,14 @@ module Seimtra
 		}
 
 		#the files under the install folder
-		Files_install		 = {
+		File_install		 = {
 			:setting		=>	'install/setting.cfg',
 			:panel			=>	'install/panel.list',
 			:block			=>	'install/block.list'
 		}
+
+		#file type of scfg class
+		File_type 			= [:cfg, :list] 
 
 		#the required folders
 		Folders 			= {
@@ -37,6 +40,8 @@ module Seimtra
 		}
 
 		Paths				= {
+			:config_ms		=> 'c:\.Seimtra',
+			:config_lx		=> '~/.Seimtra',
 			:tpl_system		=> 'docs/templates/system'
 		}
 

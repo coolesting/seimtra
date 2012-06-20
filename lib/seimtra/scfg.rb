@@ -31,6 +31,10 @@ class SCFG
 }" if options.include? :name
 			@@path = File.expand_path(@@path)
 			isload = true if File.exist?(@@path)
+			
+			#the file type
+			file_type = @@path.split(".").last.to_sym
+			file_type = Sbase::File_type[0] unless Sbase::File_type.include? file_type
 
 			#load from config file
 			if options.include?(:current) and @@options.include?(@@path)
@@ -38,8 +42,8 @@ class SCFG
 			elsif isload == true
 				content << File.read(@@path)
 
-				#format the data with various types
-				if options[:type] == :list and content.index("\n\n")
+				#list file
+				if file_type == :list and content.index("\n\n")
 					result = []
 					content.split("\n\n").each do | lines |
 						row = {}
@@ -51,9 +55,9 @@ class SCFG
 						end
 						result << row unless row.empty?
 					end
-
-				# default format type
-				elsif content.index("\n")
+				
+				#cfg file
+				elsif file_type == :cfg and content.index("\n")
 					content.split("\n").each do | line |
 						unless line[0] == '"' and line.index("=")
 							key,val = line.split("=")

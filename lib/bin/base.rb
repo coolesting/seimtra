@@ -70,12 +70,12 @@ class SeimtraThor < Thor
 			path = Dir.pwd
 			#windows
 			if /\w:\\?/.match(path)
-				path = 'c:\.Seimtra'
-				file = 'echo '' > C:\.Semitra'
-			#others
+				path = Sbase::Paths[:config_ms]
+				file = "echo '' > #{path}"
+			#linux
 			else
-				path = '~/.Seimtra'
-				file = 'touch ~/.Seimtra'
+				path = Sbase::Paths[:config_lx]
+				file = "touch #{path}"
 			end
 			[path,file]
 		end
