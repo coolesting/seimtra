@@ -121,7 +121,7 @@ class SeimtraThor < Thor
 
 			#block file
 			path = Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:block]
-			result = SCFG.load :path => path , :return => true, :type => :list
+			result = SCFG.load :path => path , :return => true
  			unless result.empty?
 				table_fields = db.select(:block).columns!
 
@@ -157,7 +157,7 @@ class SeimtraThor < Thor
 
 			#panel files
 			path			= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:panel]
-			result 			= SCFG.load :path => path , :return => true, :type => :list
+			result 			= SCFG.load :path => path , :return => true
 
  			unless result.empty?
 				table_fields = db.select(:panel).columns!
