@@ -14,13 +14,14 @@ class SeimtraThor < Thor
 	#
 	# == Examples 
 	#
-	# create a scaffold to system module
+	# create a scaffold of panel at system module
 	#
-	#	3s g table_name field1 field2 field3 --to=system
+	#	3s g table_name field1 field2 field3 -p
 	#
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
+	method_option :panel, :type => :boolean, :aliases => '-p'
 	map 'g' => :generate
 	def generate *argv
 
@@ -42,7 +43,7 @@ class SeimtraThor < Thor
 
 		files 				= {}
 
-		if module_name == "system"
+		if options.panel?
 
 			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}.slim"
 			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}_form.slim"

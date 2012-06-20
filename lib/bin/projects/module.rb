@@ -40,152 +40,28 @@ class SeimtraThor < Thor
 		show_info res, str
 	end
 
-	desc 'add [NAME]', 'Add a module'
+	desc 'add [MODULE_NAMES]', 'Add a module'
 	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :path, :type => :string
-	method_option :bundle, :type => :boolean
 	def add *module_names
-		error "Please enter the module name you want to install" unless module_names.length > 0
-		
-		#check the module installation file whether existing
-		module_names.each do | name |
-			if options.remote?
-				#get the module installation packet from remote repository
-			end
-			path = Dir.pwd + "/modules/#{name}"
-			path = options[:path] if options[:path] != nil
-			error "No module found at path #{path}" unless module_exist? path, true
-		end
+
+		ss = Seimtra_system.new
+		modules = ss.check_module module_names
+		error ss.msg if ss.error
 
 		#run the db migration
-		module_names.each do | name |
+		modules.each do | name |
 			run "3s db -r --to=#{name}"
 		end
 
-		db = Db.new
+		ss.add_module modules
 
-		#get the modules that had been installed yet
-		exist_modules = []
-		if db.select(:modules).exists
-			db.select(:modules).select(:mid, :module_name).each do | row |
-				exist_modules << row[:module_name] unless exist_modules.include? row[:module_name] and row[:module_name] != nil
-			end
-		end
-
-		#compare the exist_modules and install_modules,
-		#delete the existing module if you don't want to install again
-		install_modules = []
-		module_names.each do | name |
-			if exist_modules.empty? or exist_modules.include?(name) == false
-				install_modules << name
-			else
-				isay "The '#{name}' module has been installed."
-			end
-		end
-
-		#quit if no module to be installed
-		exit if install_modules.empty?
-
-		#start to install the module
-		#mark down the installed module into the database
-		install_modules.each do | name |
-			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
-			result = SCFG.load :path => path , :return => true
-			unless result.empty?
-				module_info_item = Sbase::Module_info.keys
-				options = {}
-				result.each do | item |
-					key, val = item
-					options[key.to_sym] = val if module_info_item.include? key.to_sym
-				end
-				db.insert :modules, options
-			end
-		end
-
-		#flash the module info with database record
-		db_modules = db.select :modules
-
-		#scan installing files to database
-		install_modules.each do | name |
-			mid = db_modules[:module_name => name][:mid]
-
-			#setting file
-			path = Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:setting]
-			result = SCFG.load :path => path , :return => true
-			unless result.empty?
-				result.each do | item |
-					key, val = item
-					db.insert :setting, :skey => key, :sval => val, :mid => mid, :changed => Time.now
-				end
-			end
-
-			#block file
-			path = Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:block]
-			result = SCFG.load :path => path , :return => true
- 			unless result.empty?
-				table_fields = db.select(:block).columns!
-
-				data_arr = []
-				if result.class.to_s == "Hash"
-					data_arr << result
-				else
-					data_arr = result
-				end
-
-				data_arr.each do | line |
-					options = {}
-					line.each do | item |
-						key, val = item	
-						options[key.to_sym] = val if table_fields.include? key.to_sym
-					end
-					options[:mid] = mid
-					
-					#set the default value for some fields of table
-					default_num_id = 0
-					Sbase::Block.keys.each do | item |
-						if options.include? item
-							index_id = Sbase::Block[item].index(options[item])
-							options[item] = index_id == nil ? default_num_id : index_id
-						else
-							options[item] = default_num_id
-						end
-					end
- 					db.insert :block, options
-				end
-
-			end
-
-			#panel files
-			path			= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:panel]
-			result 			= SCFG.load :path => path , :return => true
-
- 			unless result.empty?
-				table_fields = db.select(:panel).columns!
-
-				data_arr = []
-				if result.class.to_s == "Hash"
-					data_arr << result
-				else
-					data_arr = result
-				end
-
-				data_arr.each do | line |
-					options = {}
-					line.each do | item |
-						key, val = item	
-						options[key.to_sym] = val if table_fields.include? key.to_sym
-					end
-					options[:mid] = mid unless options.include? :mid
- 					db.insert :panel, options
-				end
-			end
-
-			#bundle install each Gemfile
+		#bundle install each Gemfile
+		modules.each do | name |
 			if options.bundle?
 				path = Dir.pwd + "/modules/#{name}/Gemfile"
 				run "bundle install --gemfile=#{path}" if File.exist? path
 			end
-
 		end
 
 	end

@@ -57,7 +57,7 @@ class SCFG
 					end
 				
 				#cfg file
-				elsif file_type == :cfg and content.index("\n")
+				elsif content.index("\n")
 					content.split("\n").each do | line |
 						unless line[0] == '"' and line.index("=")
 							key,val = line.split("=")

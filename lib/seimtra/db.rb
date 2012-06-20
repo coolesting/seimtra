@@ -70,7 +70,7 @@ class Db
 	end
 
 	def select table
-		DB[table]
+		DB.tables.include?(table) ? DB[table.to_sym] : nil
 	end
 
 	## 
@@ -172,6 +172,154 @@ class Db
 		content << "\tend\n"
 		content << "end\n"
 		content
+	end
+
+end
+
+
+class Seimtra_system < Db
+
+	#a db extension for several business application
+
+	def check_module module_names
+
+		#get all of module, if no verifying module for installing
+		install_modules = []
+		local_modules	= []
+		db_modules		= []
+
+		Dir["modules/*/#{Sbase::Files[:info]}"].each do | item |
+			local_modules << item.split("/")[1]
+		end
+
+		if select(:modules)
+			select(:modules).all.each do | row |
+				db_modules << row[:module_name] unless row[:module_name] == "" or row[:module_name] == nil
+			end
+		end
+
+		install_modules = module_names.empty? ? local_modules : module_names
+
+		db_modules.each do | item |
+			install_modules.delete item if install_modules.include? item
+		end
+
+		if install_modules.empty?
+			@error 	= true
+			@msg	= "No module to be installed."
+		else
+			install_modules
+		end
+	end
+
+	def add_module install_modules
+
+		install_modules.each do | name |
+			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
+			result = SCFG.load :path => path , :return => true
+			unless result.empty?
+				module_info_item = Sbase::Module_info.keys
+				options = {}
+				result.each do | item |
+					key, val = item
+					options[key.to_sym] = val if module_info_item.include? key.to_sym
+				end
+				insert :modules, options
+			end
+		end
+
+		#scan installing files to database
+		install_modules.each do | name |
+			add_setting name
+			add_panel name
+			add_block name	
+		end
+
+	end
+
+	def add_setting name
+
+		mid 	= DB[:modules].filter(:module_name => name).get(:mid)
+		path 	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:setting]
+		result 	= SCFG.load :path => path , :return => true
+
+		unless result.empty?
+			result.each do | item |
+				key, val = item
+				insert :setting, :skey => key, :sval => val, :mid => mid, :changed => Time.now
+			end
+		end	
+
+	end
+
+	def add_panel name
+
+		mid 	= DB[:modules].filter(:module_name => name).get(:mid)
+		path	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:panel]
+		result 	= SCFG.load :path => path , :return => true
+
+ 		unless result.empty?
+			table_fields = DB[:panel].columns!
+
+			data_arr = []
+			if result.class.to_s == "Hash"
+				data_arr << result
+			else
+				data_arr = result
+			end
+
+			data_arr.each do | line |
+				options = {}
+				line.each do | item |
+					key, val = item	
+					options[key.to_sym] = val if table_fields.include? key.to_sym
+				end
+				options[:mid] = mid unless options.include? :mid
+ 				insert :panel, options
+			end
+		end
+
+	end
+
+	def add_block name
+
+		mid 	= DB[:modules].filter(:module_name => name).get(:mid)
+		path 	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:block]
+		result	= SCFG.load :path => path , :return => true
+
+ 		unless result.empty?
+			table_fields = DB[:block].columns!
+
+			data_arr = []
+			if result.class.to_s == "Hash"
+				data_arr << result
+			else
+				data_arr = result
+			end
+
+			data_arr.each do | line |
+				options = {}
+				line.each do | item |
+					key, val = item	
+					options[key.to_sym] = val if table_fields.include? key.to_sym
+				end
+				options[:mid] = mid
+					
+				#set the default value for some fields of table
+				default_num_id = 0
+				Sbase::Block.keys.each do | item |
+					if options.include? item
+						index_id = Sbase::Block[item].index(options[item])
+						options[item] = index_id == nil ? default_num_id : index_id
+					else
+						options[item] = default_num_id
+					end
+				end
+ 				insert :block, options
+			end
+
+		end
+
 	end
 
 end
