@@ -15,7 +15,7 @@ class Db
 			@msg	= 'No such the file ' + epath
 		end
 	end
-	
+
 	#@name symbol
 	def check_column name
 		columns = get_columns
@@ -257,7 +257,9 @@ class Seimtra_system < Db
 		unless result.empty?
 			result.each do | item |
 				key, val = item
-				insert :setting, :skey => key, :sval => val, :mid => mid, :changed => Time.now
+				unless DB[:setting].filter(:skey => key, :mid => mid).get(:skey)
+					insert :setting, :skey => key, :sval => val, :mid => mid, :changed => Time.now
+				end
 			end
 		end	
 
@@ -286,7 +288,10 @@ class Seimtra_system < Db
 					options[key.to_sym] = val if table_fields.include? key.to_sym
 				end
 				options[:mid] = mid unless options.include? :mid
- 				insert :panel, options
+
+				unless DB[:panel].filter(:name => options[:name], :mid => mid).get(:name)
+ 					insert :panel, options
+				end
 			end
 		end
 
@@ -326,7 +331,10 @@ class Seimtra_system < Db
 						options[item] = default_num_id
 					end
 				end
- 				insert :block, options
+
+				unless DB[:block].filter(:name => options[:name], :mid => mid).get(:name)
+ 					insert :block, options
+				end
 			end
 
 		end
