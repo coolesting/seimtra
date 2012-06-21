@@ -95,10 +95,9 @@ class Db
 
 	# == arrange_fields
 	#
-	# arrange the field with the way of Sequel migration
-	# the format of data like this, 
+	# arrange the field with the way of Sequel migration format
 	# ['table_name', 'field1', 'field2', 'field3']
-	# ['table_name', 'field1,primary_id', 'field2,String', 'field3,:string,null=false']
+	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:null=false']
 	# ['rename', 'old_table', 'new_table]
 	# ['drop', 'field1', 'field2', 'field3']
 	# ['alter', 'table_name', 'field1', 'field2', 'field3']
@@ -124,9 +123,21 @@ class Db
 			res[:table] = data.shift
 		end
 
-		#fields
+		#fields and field types
 		res[:fields] = []
-		res[:fields] = data if data.length > 0
+		res[:types] = {}
+		if data.length > 0
+			data.each do | item |
+				if item.include?(":")
+					arr = item.split(":")
+					res[:fields] << arr[0]
+					res[:types][arr[0]] = arr[1]
+				else
+					res[:fields] << item
+				end
+			end
+		end
+
 		res
 	end
 
