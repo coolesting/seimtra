@@ -1,5 +1,6 @@
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
 	opt_events :new
+	@<%=@t[:table_name]%> = DB[:<%=@t[:table_name]%>]
 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>
 end
 

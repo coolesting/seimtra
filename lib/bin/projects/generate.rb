@@ -16,12 +16,14 @@ class SeimtraThor < Thor
 	#
 	# create a scaffold of panel at system module
 	#
-	#	3s g table_name field1 field2 field3 -p
+	#	3s g table_name field1 field2 field3 -sm
 	#
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
-	method_option :panel, :type => :boolean, :aliases => '-p'
+	method_option :system, :type => :boolean, :aliases => '-s'
+	method_option :migration, :type => :boolean, :aliases => '-m'
+	method_option :with, :type => :hash
 	map 'g' => :generate
 	def generate *argv
 
@@ -43,11 +45,13 @@ class SeimtraThor < Thor
 
 		files 				= {}
 
-		if options.panel?
+		if options.system?
 
-			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}.slim"
-			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{module_name}_#{file_name}_form.slim"
-			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{file_name}.rb" 
+			@t[:module_name]	= "system"
+
+			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}.slim"
+			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}_form.slim"
+			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{@t[:file_name]}.rb" 
 
 			files.each do | source, target |
 				source = "#{Sbase::Paths[:tpl_system]}/#{source}"
@@ -61,7 +65,23 @@ class SeimtraThor < Thor
 			end
 
 			#add a panel link
+			panel_menu	= options[:menu] ? options[:menu] : "custom"
+			panel_name	= options[:name] ? options[:name] : @t[:file_name]
+			panel_des	= options[:description] ? options[:description] : ""
 
+			path 	= "modules/#{module_name}/#{Sbase::File_install[:panel]}"
+			panel 	= "\nmenu=#{panel_menu}"
+			panel 	+= "\nname=#{panel_name}"
+			panel 	+= "\nlink=/#{@t[:module_name]}/#{@t[:file_name]}"
+			panel 	+= "\ndescription=#{panel_des}"
+
+			append_to_file path, panel
+			ss = Seimtra_system.new
+			ss.add_panel module_name
+		end
+
+		if options.migration?
+			run "3s db #{@t[:table_name]} #{@t[:fields].join(' ')} -r"
 		end
 
 	end

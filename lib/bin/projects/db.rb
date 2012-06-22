@@ -98,7 +98,7 @@ class SeimtraThor < Thor
 			end
 
 			content = db.generate_migration data
-			isay "\n" + "="*20 + " the content of migration record as below " + "="*20 + "\n"
+			isay "\n" + "#"*15 + " your migration content as the following " + "#"*15 + "\n"
  			isay content
  			create_file file, content
 		end
