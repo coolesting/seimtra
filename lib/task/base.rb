@@ -4,6 +4,7 @@ class SeimtraThor < Thor
 	desc "init [NAME]", "Create a project with the name given"
 	method_option :status, :type => :string
 	method_option :bundle, :type => :boolean
+	map "new" => :init
 	def init project_name = 'seimtra_project'
 		directory 'docs/project', project_name
 		Dir.chdir(Dir.pwd + '/' + project_name)
@@ -28,6 +29,7 @@ class SeimtraThor < Thor
 	end
 
 	desc "version", "The version of Seimtra"
+	map "v" => :version
 	def version
 		str = "Seimtra Information"
 		show_info Sbase::Version, str

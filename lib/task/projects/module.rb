@@ -1,7 +1,7 @@
 class SeimtraThor < Thor
 	
-	desc "new [NAME]", "Create a new module"
-	def new name
+	desc "create [NAME]", "Create some directories of module structure"
+	def create name
 		error('The module is existing.') if module_exist?(name)
 		module_init name
 
@@ -40,9 +40,10 @@ class SeimtraThor < Thor
 		show_info res, str
 	end
 
-	desc 'add [MODULE_NAMES]', 'Add a module'
+	desc 'add [MODULE_NAMES]', 'Add a module to current system'
 	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :path, :type => :string
+	map "new" => :add
 	def add *module_names
 
 		ss = Seimtra_system.new
