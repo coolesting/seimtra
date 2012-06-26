@@ -48,28 +48,30 @@ module Seimtra
 			:mod_repos		=> ''
 		}
 
-		#module info that stores in each root directory of module as name info.cfg
-		Module_info			 = {
-			:load_order		=> 9,
-			:module_name	=> '',
-			:opened			=> 'on',
-			:status 		=> 'development',
-			:email			=> 'empty',
-			:author 		=> 'unknown',
-			:created 		=> Time.now,
-			:version 		=> '0.0.1',
-			:group_name 	=> 'common',
-			:description	=> 'No description',
-			:dependon		=> ''
-		}
+		Infos 				= {
+			#the Seimfile default config option
+			:project			=> {
+				:log 			=> 'off',
+				:log_path 		=> Dir.pwd + '/log/default',
+				:module_focus 	=> 'front',
+				:local_repos 	=> File.expand_path('~/SeimRepos'),
+				:remote_repos 	=> ''
+			},
 
-		#the Seimfile default config option
-		Project_info 		= {
-			:log 			=> 'off',
-			:log_path 		=> Dir.pwd + '/log/default',
-			:module_focus 	=> 'front',
-			:local_repos 	=> File.expand_path('~/SeimRepos'),
-			:remote_repos 	=> ''
+			#module info that stores in each root directory of module as name info.cfg
+			:module			 	=> {
+				:load_order		=> 9,
+				:module_name	=> '',
+				:opened			=> 'on',
+				:status 		=> 'development',
+				:email			=> 'empty',
+				:author 		=> 'unknown',
+				:created 		=> Time.now,
+				:version 		=> '0.0.1',
+				:group_name 	=> 'common',
+				:description	=> 'No description',
+				:dependon		=> ''
+			}
 		}
 
 		#custom user config file

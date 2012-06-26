@@ -20,7 +20,7 @@ class SeimtraThor < Thor
 		SCFG.load :path => "#{Dir.pwd}/Seimfile"
 		SCFG.set :status, status
 		SCFG.set :root_privilege, random_string
-		Sbase::Project_info.each do | key, val |
+		Sbase::Infos[:project].each do | key, val |
 			SCFG.set key, val
 		end
 		
@@ -125,16 +125,22 @@ class SeimtraThor < Thor
 			isay "\n" + "="*50
 			isay title.center(50, " ") + "\n"
 			isay "="*50
-			unless result.class.to_s == "Hash"
-				say("The return values is not a Hash.") 
-				exit
-			end
 
-			str = "\n"
-			result.each do | key, val | 
-				key = key.to_s + " "
-				str += "#{key.ljust(20, '-')} #{val}\n"
+			str = ""
+			if result.class.to_s == "Hash"
+				result.each do | key, val | 
+					key = key.to_s + " "
+					str += "\n#{key.ljust(20, '-')} #{val}"
+				end
+			elsif result.class.to_s == "Array"
+				result.each do | item | 
+					str += "\n" + item.to_s
+				end
+			else
+				str += str
 			end
+			
+			str += "\n"
 			isay str
 		end
 

@@ -30,13 +30,7 @@ class SeimtraThor < Thor
 	desc 'list', 'List all of the module folders'
 	def list
 		str = "module list"
-		res = {}
-		Dir[Dir.pwd + '/modules/*/' + Sbase::Files[:info]].each do | info |
-			result = SCFG.load :path => info, :return => true
-			if result.include?('name') and result.include?('description')
- 				res[result['name']] = "#{result['description']} (#{result['open']})"
-			end
-		end
+		res = Dir[Dir.pwd + '/modules/*/' + Sbase::Files[:info]]
 		show_info res, str
 	end
 

@@ -92,8 +92,8 @@ class SCFG
 			@@options[@@path].include?(key.to_s) ? @@options[@@path][key.to_s] : ''
 		end
 
-		def init
-			Sbase::Info.each do | key, val |
+		def init name = :module
+			Sbase::Infos[name].each do | key, val |
 				set key, val
 			end
 		end
