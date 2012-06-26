@@ -45,6 +45,7 @@ class SeimtraThor < Thor
 
 		files 				= {}
 
+		#add a scaffold for system module
 		if options.system?
 
 			@t[:module_name]	= "system"
@@ -69,11 +70,11 @@ class SeimtraThor < Thor
 			panel_name	= options[:name] ? options[:name] : @t[:file_name]
 			panel_des	= options[:description] ? options[:description] : ""
 
-			path 	= "modules/#{module_name}/#{Sbase::File_install[:panel]}"
-			panel 	= "\nmenu=#{panel_menu}"
-			panel 	+= "\nname=#{panel_name}"
-			panel 	+= "\nlink=/#{@t[:module_name]}/#{@t[:file_name]}"
-			panel 	+= "\ndescription=#{panel_des}"
+			path 		= "modules/#{module_name}/#{Sbase::File_install[:panel]}"
+			panel 		= "\nmenu=#{panel_menu}"
+			panel 		+= "\nname=#{panel_name}"
+			panel 		+= "\nlink=/#{@t[:module_name]}/#{@t[:file_name]}"
+			panel 		+= "\ndescription=#{panel_des}"
 
 			append_to_file path, panel
 			ss = Seimtra_system.new

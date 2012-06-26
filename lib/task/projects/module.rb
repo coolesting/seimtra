@@ -43,7 +43,7 @@ class SeimtraThor < Thor
 	desc 'add [MODULE_NAMES]', 'Add a module to current system'
 	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :path, :type => :string
-	map "new" => :add
+	map "install" => :add
 	def add *module_names
 
 		ss = Seimtra_system.new

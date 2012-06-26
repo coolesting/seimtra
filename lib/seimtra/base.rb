@@ -42,7 +42,10 @@ module Seimtra
 		Paths				= {
 			:config_ms		=> 'c:\.Seimtra',
 			:config_lx		=> '~/.Seimtra',
-			:tpl_system		=> 'docs/templates/system'
+			:tpl_system		=> 'docs/templates/system',
+			:docs_repos		=> 'https://github.com/coolesting/seimtra-docs.git',
+			:temp_repos		=> '',
+			:mod_repos		=> ''
 		}
 
 		#module info that stores in each root directory of module as name info.cfg

@@ -3,10 +3,12 @@ class SeimtraThor < Thor
 	
 	desc "init [NAME]", "Create a project with the name given"
 	method_option :status, :type => :string
-	method_option :bundle, :type => :boolean
 	map "new" => :init
 	def init project_name = 'seimtra_project'
-		directory 'docs/project', project_name
+
+		#directory 'docs/project', project_name
+		run "git clone #{Sbase::Paths[:docs_repos]} #{project_name}"
+
 		Dir.chdir(Dir.pwd + '/' + project_name)
 
 		all_status = ["development", "production", "test"]
@@ -21,11 +23,10 @@ class SeimtraThor < Thor
 		Sbase::Project_info.each do | key, val |
 			SCFG.set key, val
 		end
-
- 		install_modules = Sbase::Required_module
-		bundler = options.bundle? ? " --bundler" : ""
-		run "3s add " + install_modules.join(' ') + bundler
-		isay "Initializing complete"
+		
+		#install modules
+		run "3s add "
+		isay "The project Initializes completely"
 	end
 
 	desc "version", "The version of Seimtra"
