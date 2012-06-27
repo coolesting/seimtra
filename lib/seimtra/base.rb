@@ -35,7 +35,6 @@ module Seimtra
 		Folders 			= {
 			:app			=>	'applications',
 			:tpl			=>	'templates',
-			:lang			=>	'languages',
 			:install		=>	'install'
 		}
 
