@@ -24,7 +24,9 @@ or
 # How to deploy a web project with Seimtra ?
 
 	3s init myproject
+
 or
+
 	3s new myproject
 
 start the web application myproject
@@ -59,6 +61,7 @@ add a module called post
 	3s add post
 
 or
+
 	3s install post
 
 install all of modules that have not been installed yet
