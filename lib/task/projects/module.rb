@@ -7,17 +7,17 @@ class SeimtraThor < Thor
 
 		info 				= {}
 		path 				= get_custom_info.first
-		res 				= SCFG.load :path => path, :return => true
+		cfg 				= SCFG.load :path => path, :return => true
 
 		info[:name] 		= name
-		info[:email] 		= res.include?('email') ? res['email'] : ask("What is the email of your ?")
-		info[:author]		= res.include?('author') ? res['author'] : ask("What is your name ?")
+		info[:email] 		= cfg.include?('email') ? cfg['email'] : ask("What is the email of your ?")
+		info[:author]		= cfg.include?('author') ? cfg['author'] : ask("What is your name ?")
 		info[:description] 	= ask("The description of the module ?")
 
 		File.open(Dir.pwd + "/modules/#{name}/" + Sbase::Files[:readme], "w+") do | f |
 			f.write("## INTRODUCTION\n\n#{info[:description]}")
 		end
-			
+
 		SCFG.load :path => 'Seimfile'
 		SCFG.set 'module_focus', name
 
@@ -30,7 +30,10 @@ class SeimtraThor < Thor
 	desc 'list', 'List all of the module folders'
 	def list
 		str = "module list"
-		res = Dir[Dir.pwd + '/modules/*/' + Sbase::Files[:info]]
+		res = []
+		Dir[Dir.pwd + '/modules/*'].each do | path |
+			res << path.split("/").last
+		end
 		show_info res, str
 	end
 
