@@ -83,7 +83,7 @@ class SeimtraThor < Thor
 		end
 
 		if options.migration?
-			run "3s db #{@t[:table_name]} #{@t[:fields].join(' ')} -r"
+			run "3s db #{@t[:table_name]} #{@t[:fields].join(' ')} -r --to=#{module_name}"
 		end
 
 	end
