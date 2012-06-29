@@ -42,9 +42,7 @@ module Seimtra
 			:config_ms		=> 'c:\.Seimtra',
 			:config_lx		=> '~/.Seimtra',
 			:tpl_system		=> 'docs/templates/system',
-			:docs_repos		=> 'https://github.com/coolesting/seimtra-docs.git',
-			:temp_repos		=> '',
-			:mod_repos		=> ''
+			:docs_repos		=> 'https://github.com/coolesting/seimtra-docs.git'
 		}
 
 		Infos 				= {
@@ -52,9 +50,7 @@ module Seimtra
 			:project			=> {
 				:log 			=> 'off',
 				:log_path 		=> Dir.pwd + '/log/default',
-				:module_focus 	=> 'front',
-				:local_repos 	=> File.expand_path('~/SeimRepos'),
-				:remote_repos 	=> ''
+				:module_focus 	=> 'front'
 			},
 
 			#module info that stores in each root directory of module as name info.cfg
@@ -68,17 +64,20 @@ module Seimtra
 				:created 		=> Time.now,
 				:version 		=> '0.0.1',
 				:group_name 	=> 'common',
-				:description	=> 'No description',
-				:dependon		=> ''
+				:dependon		=> '',
+				:description	=> 'No description'
+			},
+
+			#custom user config file
+			:config 			=> {
+				:email			=> '',
+				:name			=> '',
+				:website		=> '',
+				:remote_repos 	=> '',
+				:local_repos 	=> File.expand_path('~/SeimRepos')
 			}
 		}
 
-		#custom user config file
-		Config 				= {
-			:email			=> '',
-			:name			=> '',
-			:website		=> ''
-		}
 
 		#default basic setting of module
 		Settings 			= {
