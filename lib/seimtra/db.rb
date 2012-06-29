@@ -76,8 +76,8 @@ class Db
 	## 
 	# autocomplete field of database
 	#
-	# name string, 	the table name
-	# argv array, 	the fields
+	# @name string, the table name
+	# @argv array, 	the fields
 	def autocomplete name, argv
 		#match a id
 		i = 1
@@ -95,7 +95,8 @@ class Db
 
 	# == arrange_fields
 	#
-	# arrange the field with the way of Sequel migration format
+	# @data array, the details as following
+	#
 	# ['table_name', 'field1', 'field2', 'field3']
 	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:null=false']
 	# ['rename', 'old_table', 'new_table]
@@ -109,7 +110,7 @@ class Db
 	# :table, 	string 	---- table name
 	# :fields	array 	---- 
 
-	def arrange_fields data
+	def arrange_fields data, auto = nil
 		res = {}
 
 		#operator
@@ -127,6 +128,8 @@ class Db
 		res[:fields] = []
 		res[:types] = {}
 		if data.length > 0
+			#auto the fields
+			data = autocomplete(res[:table], data) unless auto == nil
 			data.each do | item |
 				if item.include?(":")
 					arr = item.split(":")

@@ -23,6 +23,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :system, :type => :boolean, :aliases => '-s'
 	method_option :migration, :type => :boolean, :aliases => '-m'
+	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash
 	map 'g' => :generate
 	def generate *argv
@@ -31,7 +32,7 @@ class SeimtraThor < Thor
 
 		db					= Db.new
 		module_name 		= options[:to] ? options[:to] : get_module
-		data				= db.arrange_fields argv
+		data				= db.arrange_fields argv, options[:autocomplete]
 
 		#set the template variables
 		@t					= {}
