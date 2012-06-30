@@ -43,11 +43,25 @@ class SCFG
 				content << File.read(@@path)
 
 				#list file
-				if file_type == :list and content.index("\n\n")
+				if file_type == :list
+
 					result = []
-					content.split("\n\n").each do | lines |
+					content = content.strip
+
+					if content.index("\n\n")
+						content.split("\n\n").each do | lines |
+							row = {}
+							lines.split("\n").each do | line |
+								unless line[0] == '"' and line.index("=")
+									key, val = line.split("=")
+									row[key] = val
+								end
+							end
+							result << row unless row.empty?
+						end
+					else
 						row = {}
-						lines.split("\n").each do | line |
+						content.split("\n").each do | line |
 							unless line[0] == '"' and line.index("=")
 								key, val = line.split("=")
 								row[key] = val
@@ -55,7 +69,7 @@ class SCFG
 						end
 						result << row unless row.empty?
 					end
-				
+
 				#cfg file
 				elsif content.index("\n")
 					content.split("\n").each do | line |

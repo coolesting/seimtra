@@ -208,7 +208,7 @@ class Seimtra_system < Db
 
 		if select(:modules)
 			select(:modules).all.each do | row |
-				db_modules << row[:module_name] unless row[:module_name] == "" or row[:module_name] == nil
+				db_modules << row[:name] unless row[:name] == "" or row[:name] == nil
 			end
 		end
 
@@ -232,7 +232,7 @@ class Seimtra_system < Db
 			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
 			result = SCFG.load :path => path , :return => true
 			unless result.empty?
-				module_info_item = Sbase::Module_info.keys
+				module_info_item = Sbase::Infos[:module].keys
 				options = {}
 				result.each do | item |
 					key, val = item
@@ -253,7 +253,7 @@ class Seimtra_system < Db
 
 	def add_setting name
 
-		mid 	= DB[:modules].filter(:module_name => name).get(:mid)
+		mid 	= DB[:modules].filter(:name => name).get(:mid)
 		path 	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:setting]
 		result 	= SCFG.load :path => path , :return => true
 
@@ -270,7 +270,7 @@ class Seimtra_system < Db
 
 	def add_panel name
 
-		mid 	= DB[:modules].filter(:module_name => name).get(:mid)
+		mid 	= DB[:modules].filter(:name => name).get(:mid)
 		path	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:panel]
 		result 	= SCFG.load :path => path , :return => true
 
@@ -302,7 +302,7 @@ class Seimtra_system < Db
 
 	def add_block name
 
-		mid 	= DB[:modules].filter(:module_name => name).get(:mid)
+		mid 	= DB[:modules].filter(:name => name).get(:mid)
 		path 	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:block]
 		result	= SCFG.load :path => path , :return => true
 

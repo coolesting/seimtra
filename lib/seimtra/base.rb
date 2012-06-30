@@ -55,15 +55,15 @@ module Seimtra
 
 			#module info that stores in each root directory of module as name info.cfg
 			:module			 	=> {
+				:name			=> '',
 				:load_order		=> 9,
-				:module_name	=> '',
 				:opened			=> 'on',
 				:status 		=> 'development',
 				:email			=> 'empty',
 				:author 		=> 'unknown',
 				:created 		=> Time.now,
 				:version 		=> '0.0.1',
-				:group_name 	=> 'common',
+				:group 			=> 'common',
 				:dependon		=> '',
 				:description	=> 'No description'
 			},

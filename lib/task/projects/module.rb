@@ -1,6 +1,7 @@
 class SeimtraThor < Thor
 	
 	desc "create [NAME]", "Create some directories of module structure"
+	map "new" => :create
 	def create name
 		error('The module is existing.') if module_exist?(name)
 		module_init name
@@ -25,6 +26,8 @@ class SeimtraThor < Thor
 		info.each do | key, val |
 			SCFG.set key, val
 		end
+
+		run "3s install"
 	end
 
 	desc 'list', 'List all of the module folders'
@@ -41,6 +44,7 @@ class SeimtraThor < Thor
 	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :path, :type => :string
 	map "install" => :add
+	map "update" => :add
 	def add *module_names
 
 		ss = Seimtra_system.new

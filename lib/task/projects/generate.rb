@@ -49,7 +49,7 @@ class SeimtraThor < Thor
 		#add a scaffold for system module
 		if options.system?
 
-			@t[:module_name]	= "system"
+			@t[:module_name]			= "system"
 
 			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}.slim"
 			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}_form.slim"

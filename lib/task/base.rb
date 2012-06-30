@@ -3,7 +3,6 @@ class SeimtraThor < Thor
 	
 	desc "init [NAME]", "Create a project with the name given"
 	method_option :status, :type => :string
-	map "new" => :init
 	def init project_name = 'seimtra_project'
 
 		#directory 'docs/project', project_name
