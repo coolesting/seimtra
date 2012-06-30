@@ -24,7 +24,7 @@ class SeimtraThor < Thor
 		end
 		
 		#install modules
-		run "3s add "
+		run "3s install "
 		isay "The project Initializes completely"
 	end
 

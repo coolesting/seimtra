@@ -96,6 +96,7 @@ class Db
 	# == arrange_fields
 	#
 	# @data array, the details as following
+	# @auto boolen, 
 	#
 	# ['table_name', 'field1', 'field2', 'field3']
 	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:null=false']
@@ -110,7 +111,7 @@ class Db
 	# :table, 	string 	---- table name
 	# :fields	array 	---- 
 
-	def arrange_fields data, auto = nil
+	def arrange_fields data, auto = false
 		res = {}
 
 		#operator
@@ -129,7 +130,7 @@ class Db
 		res[:types] = {}
 		if data.length > 0
 			#auto the fields
-			data = autocomplete(res[:table], data) unless auto == nil
+			data = autocomplete(res[:table], data) if auto == true
 			data.each do | item |
 				if item.include?(":")
 					arr = item.split(":")
@@ -148,6 +149,7 @@ class Db
 		operator 	= data[:operator]
 		table		= data[:table]
 		fields		= data[:fields]
+		types		= data[:types]
 
 		content = "Sequel.migration do\n"
 		content << "\tchange do\n"
@@ -166,11 +168,15 @@ class Db
 			content << "\t\t#{operator}_table(:#{table}) do\n"
 			fields.each do | item |
 				content << "\t\t\tcolumn :"
-				if item.index(":")
- 					content << item.gsub(/=/, " => ").gsub(/:/, ", :")
+
+# 				if item.index(":")
+#  					content << item.gsub(/=/, " => ").gsub(/:/, ", :")
+				if types.include? item
+					content << "#{item}, :#{types[item]}"
 				else
 					content << "#{item}, String"
 				end
+
 				content << "\n"
 			end
 			content << "\t\tend\n"

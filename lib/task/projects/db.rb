@@ -86,16 +86,10 @@ class SeimtraThor < Thor
 
 			empty_directory(mpath) unless File.directory?(mpath)
 
-			data 		= db.arrange_fields argv
+			auto		= options.autocomplete? ? true : false
+			data 		= db.arrange_fields(argv, auto)
  			file_nums 	= get_file_num(mpath)
-			file = mpath + "/#{file_nums}_#{data[:operator]}_#{data[:table]}.rb"
-
-			#auto add the primary_key and time to migrating record
-			if options.autocomplete?
-				if data[:operator] == :create
-					data[:fields] = db.autocomplete(data[:table], data[:fields])
-				end
-			end
+			file 		= mpath + "/#{file_nums}_#{data[:operator]}_#{data[:table]}.rb"
 
 			content = db.generate_migration data
 			isay "\n" + "#"*15 + " your migration content as the following " + "#"*15 + "\n"

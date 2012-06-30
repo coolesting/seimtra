@@ -16,13 +16,12 @@ class SeimtraThor < Thor
 	#
 	# create a scaffold of panel at system module
 	#
-	#	3s g table_name field1 field2 field3 -sm
+	#	3s g table_name field1 field2 field3 -s
 	#
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :system, :type => :boolean, :aliases => '-s'
-	method_option :migration, :type => :boolean, :aliases => '-m'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash
 	map 'g' => :generate
@@ -32,7 +31,9 @@ class SeimtraThor < Thor
 
 		db					= Db.new
 		module_name 		= options[:to] ? options[:to] : get_module
-		data				= db.arrange_fields argv, options[:autocomplete]
+
+		auto				= options.autocomplete? ? true : false
+		data				= db.arrange_fields argv, auto
 
 		#set the template variables
 		@t					= {}
@@ -49,7 +50,7 @@ class SeimtraThor < Thor
 		#add a scaffold for system module
 		if options.system?
 
-			@t[:module_name]			= "system"
+			@t[:module_name]	= "system"
 
 			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}.slim"
 			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}_form.slim"
@@ -78,14 +79,10 @@ class SeimtraThor < Thor
 			panel 		+= "\ndescription=#{panel_des}"
 
 			append_to_file path, panel
-			ss = Seimtra_system.new
-			ss.add_panel module_name
+
 		end
 
-		if options.migration?
-			run "3s db #{@t[:table_name]} #{@t[:fields].join(' ')} -r --to=#{module_name}"
-		end
-
+		run "3s db #{data[:table]} #{argv.join(' ')} --to=#{module_name}"
 	end
 
 end

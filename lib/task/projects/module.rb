@@ -19,15 +19,10 @@ class SeimtraThor < Thor
 			f.write("## INTRODUCTION\n\n#{info[:description]}")
 		end
 
-		SCFG.load :path => 'Seimfile'
-		SCFG.set 'module_focus', name
-
 		SCFG.load :name => name, :init => true
 		info.each do | key, val |
 			SCFG.set key, val
 		end
-
-		run "3s install"
 	end
 
 	desc 'list', 'List all of the module folders'
