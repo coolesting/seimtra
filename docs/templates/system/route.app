@@ -1,13 +1,17 @@
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
+
 	opt_events :new
 	@<%=@t[:table_name]%> = DB[:<%=@t[:table_name]%>]
 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>
+
 end
 
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
+
 	opt_events :save
 	<%=@t[:file_name]%>_process_fields
 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>_form
+
 end
 
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
