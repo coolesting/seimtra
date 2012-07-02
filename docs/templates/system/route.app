@@ -72,17 +72,11 @@ helpers do
 		end
 
 		unless data.empty?
-
-			msg_num = 0
-
 			if data.include? :no_null
 				data[:no_null].each do | field |
-					msg_num = 1 if field == ""
+					throw_error "The #{fields} can not be empty." if field == ""
 				end
 			end
-
-			send_error msg_num
-
 		end
 
 	end

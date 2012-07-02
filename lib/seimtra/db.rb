@@ -146,6 +146,7 @@ class Db
 	end
 
 	def generate_migration data
+		main_key	= [:primary_key, :index, :foreign_key, :unique]
 		operator 	= data[:operator]
 		table		= data[:table]
 		fields		= data[:fields]
@@ -167,14 +168,18 @@ class Db
 		elsif operator == :create
 			content << "\t\t#{operator}_table(:#{table}) do\n"
 			fields.each do | item |
-				content << "\t\t\tcolumn :"
+				content << "\t\t\t"
 
 # 				if item.index(":")
 #  					content << item.gsub(/=/, " => ").gsub(/:/, ", :")
 				if types.include? item
-					content << "#{item}, :#{types[item]}"
+					if main_key.include? item.to_sym
+						content << "#{types[item]} :#{item}"
+					else
+						content << "#{types[item].capitalize} :#{item}"
+					end
 				else
-					content << "#{item}, String"
+					content << "String :#{item}"
 				end
 
 				content << "\n"
