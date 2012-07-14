@@ -17,7 +17,7 @@ module Seimtra
 
 		#the file struction of this system is required
 		Files 				= 	{
-			:info			=>	'install/info.cfg',
+			:info			=>	'install/module.cfg',
 			:readme			=>	'README.md'
 		}
 
@@ -42,7 +42,8 @@ module Seimtra
 			:config_ms		=> 'c:\.Seimtra',
 			:config_lx		=> '~/.Seimtra',
 			:tpl_system		=> 'docs/templates/system',
-			:docs_repos		=> 'https://github.com/coolesting/seimtra-docs.git'
+			:docs_local		=> '/src/seimtra'
+			:docs_remote	=> 'https://github.com/coolesting/seimtra-docs.git'
 		}
 
 		Infos 				= {
@@ -53,7 +54,7 @@ module Seimtra
 				:module_focus 	=> 'front'
 			},
 
-			#module info that stores in each root directory of module as name info.cfg
+			#the default vaule of module field
 			:module			 	=> {
 				:name			=> '',
 				:load_order		=> 9,

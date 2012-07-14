@@ -5,8 +5,11 @@ class SeimtraThor < Thor
 	method_option :status, :type => :string
 	def init project_name = 'seimtra_project'
 
-		#directory 'docs/project', project_name
-		run "git clone #{Sbase::Paths[:docs_repos]} #{project_name}"
+		if File.exists?(Sbase::Paths[:docs_local] + "/config.ru")
+			directory Sbase::Paths[:docs_local], project_name
+		else
+			run "git clone #{Sbase::Paths[:docs_remote]} #{project_name}"
+		end
 
 		Dir.chdir(Dir.pwd + '/' + project_name)
 

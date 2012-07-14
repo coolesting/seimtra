@@ -1,7 +1,6 @@
 ## 
-# == Usage
-# Whatever you want to load any config file, you need to use the SCFG.load
-# method, then, set or get the values by key.
+# == Description
+# read the config file that has the suffix with .cfg or .list
 #
 # == Arguments of SCFG.load
 # :name, module name
