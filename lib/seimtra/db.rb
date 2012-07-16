@@ -202,13 +202,17 @@ class Db
 end
 
 
+#a db extension for several business methods
 class Seimtra_system < Db
 
-	#a db extension for several business application
-
+	# == description
+	# check the module whether need to be installed
+	#
+	# == returned value
+	# return the module need to be install, otherwise is null 
 	def check_module module_names
 
-		#get all of module, if no verifying module for installing
+		#get all of module if nothing be specified to installing
 		install_modules = []
 		local_modules	= []
 		db_modules		= []
@@ -217,8 +221,8 @@ class Seimtra_system < Db
 			local_modules << item.split("/")[1]
 		end
 
-		if select(:modules)
-			select(:modules).all.each do | row |
+		if select(:module)
+			select(:module).all.each do | row |
 				db_modules << row[:name] unless row[:name] == "" or row[:name] == nil
 			end
 		end
@@ -229,16 +233,12 @@ class Seimtra_system < Db
 			install_modules.delete item if install_modules.include? item
 		end
 
-		if install_modules.empty?
-			@error 	= true
-			@msg	= "No module to be installed."
-		else
-			install_modules
-		end
+		install_modules.empty? ? nil : install_modules
 	end
 
 	def add_module install_modules
-
+		
+		#first of all, install all of module, read the module info, and put into database
 		install_modules.each do | name |
 			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
 			result = SCFG.load :path => path , :return => true
@@ -249,44 +249,28 @@ class Seimtra_system < Db
 					key, val = item
 					options[key.to_sym] = val if module_info_item.include? key.to_sym
 				end
-				insert :modules, options
+				insert :module, options
 			end
 		end
 
-		#scan installing files to database
+		#second, scan the file info in the install folder to database
 		install_modules.each do | name |
-			add_setting name
-			add_panel name
-			add_block name	
+			Dir["modules/#{name}/install/*"].each do | file |
+				write_to_db file
+			end
 		end
 
 	end
 
-	def add_setting name
+	def write_to_db file
 
-		mid 	= DB[:modules].filter(:name => name).get(:mid)
-		path 	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:setting]
-		result 	= SCFG.load :path => path , :return => true
-
-		unless result.empty?
-			result.each do | item |
-				key, val = item
-				unless DB[:setting].filter(:skey => key, :mid => mid).get(:skey)
-					insert :setting, :skey => key, :sval => val, :mid => mid, :changed => Time.now
-				end
-			end
-		end	
-
-	end
-
-	def add_panel name
-
-		mid 	= DB[:modules].filter(:name => name).get(:mid)
-		path	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:panel]
-		result 	= SCFG.load :path => path , :return => true
+		file_name	= file.split("/").last
+		table 		= file_name.split(".").first
+		result 		= SCFG.load :path => file , :return => true
 
  		unless result.empty?
-			table_fields = DB[:panel].columns!
+			table_fields 	= DB[table.to_sym].columns!
+			table_types 	= DB.schema(table.to_sym)
 
 			data_arr = []
 			if result.class.to_s == "Hash"
@@ -299,12 +283,16 @@ class Seimtra_system < Db
 				options = {}
 				line.each do | item |
 					key, val = item	
-					options[key.to_sym] = val if table_fields.include? key.to_sym
+					if table_fields.include? key.to_sym
+						options[key.to_sym] = val
+					end
 				end
-				options[:mid] = mid unless options.include? :mid
 
-				unless DB[:panel].filter(:name => options[:name], :mid => mid).get(:name)
- 					insert :panel, options
+				#do not insert if the data is exsiting
+				unless DB[table.to_sym].filter(options).get(table_fields[0])
+					options[:changed] = Time.now if table_fields.include? :changed 
+					options[:created] = Time.now if table_fields.include? :created 
+ 					insert table.to_sym, options
 				end
 			end
 		end

@@ -42,7 +42,7 @@ module Seimtra
 			:config_ms		=> 'c:\.Seimtra',
 			:config_lx		=> '~/.Seimtra',
 			:tpl_system		=> 'docs/templates/system',
-			:docs_local		=> '/src/seimtra'
+			:docs_local		=> '/src/seimtra',
 			:docs_remote	=> 'https://github.com/coolesting/seimtra-docs.git'
 		}
 

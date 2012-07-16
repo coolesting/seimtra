@@ -1,3 +1,13 @@
+#
+# == Description
+# the file includes all of module task
+#
+# == Usage
+# 3s new
+# 3s list
+# ...
+#
+
 class SeimtraThor < Thor
 	
 	desc "create [NAME]", "Create some directories of module structure"
@@ -44,13 +54,14 @@ class SeimtraThor < Thor
 
 		ss = Seimtra_system.new
 		modules = ss.check_module module_names
-		error ss.msg if ss.error
+		error "No module to be installed." if modules == nil
 
-		#run the db migration
+		#run the db schema
 		modules.each do | name |
 			run "3s db -r --to=#{name}"
 		end
 
+		#inject the info to db
 		ss.add_module modules
 
 		#bundle install each Gemfile
