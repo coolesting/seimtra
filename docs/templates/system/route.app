@@ -1,3 +1,4 @@
+#display
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
 
 	sys_opt :new
@@ -6,6 +7,7 @@ get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
 
 end
 
+#new a record
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
 
 	sys_opt :save
@@ -14,40 +16,36 @@ get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
 
 end
 
-get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
-
-	sys_opt :save, :remove
-	@fields = DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>]).all[0]
-
- 	<%=@t[:file_name]%>_process_fields
- 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>_form
-
-end
-
 post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
 
 	<%=@t[:file_name]%>_process_fields
-
 	DB[:<%=@t[:table_name]%>].insert(@fields)
-
 	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
+
+end
+
+#delete the record
+get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/rm/:<%=@t[:key_id]%>' do
+
+	DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i).delete
+	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
+
+end
+
+#edit the record
+get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
+
+	sys_opt :save
+	@fields = DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>]).all[0]
+ 	<%=@t[:file_name]%>_process_fields
+ 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>_form
 
 end
 
 post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
 
 	<%=@t[:file_name]%>_process_fields
-
-	dataset = DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i)
-
-	if dataset
-		if params[:opt] == "Remove"
-			dataset.delete
-		elsif params[:opt] == "Save"
-			dataset.update(@fields)
-		end
-	end
-
+	DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i).update(@fields)
 	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
 
 end
