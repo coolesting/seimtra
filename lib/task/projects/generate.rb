@@ -1,23 +1,20 @@
 class SeimtraThor < Thor
 
-	# = Generator
-	#
-	# Create the scaffold for module
-	#
-	# == Arguments
-	#
-	# argv, 		table name, field1, field2, field3 ...
-	#
-	# == Options
-	#
-	# --to, -t		specify a module for this operation
-	#
-	# == Examples 
-	#
-	# create a scaffold of panel at system module
-	#
-	#	3s g table_name field1 field2 field3 -s
-	#
+	long_desc <<-DOC
+	== Description
+
+	Create the scaffold for certain module
+
+	3s g table_name field1 field2 field3 -s
+
+	create a post by following
+
+	3s g post pid:integer title content:text created:time changed:time -s
+
+	or
+
+	3s g post title content:text -sa
+	DOC
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'

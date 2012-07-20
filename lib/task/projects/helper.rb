@@ -1,5 +1,25 @@
 class SeimtraThor < Thor
 
+	long_desc <<-DOC
+	== Description
+
+	show the infomation
+
+	== Example
+
+	see project infomation
+
+	3s info
+
+	see config infomation
+
+	3s info -c
+
+	see the module infomation
+
+	3s info module_name
+	DOC
+
 	desc "info [MODULE_NAME]", "Show the info of project, config and module"
 	method_option :configs, :type => :boolean, :aliases => '-c'
 	def info name = ''

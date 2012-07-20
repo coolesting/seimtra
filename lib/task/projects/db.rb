@@ -1,59 +1,71 @@
 class SeimtraThor < Thor
 
 	long_desc <<-DOC
-	# = Database operation
-	#
-	# Create and implement the migration to database,
-	# output/dump the schema/migration from database
-	#
-	# == Arguments
-	# data, 		an array, the format of vaule like this, 
-	# 				['field1', 'field2', 'field3'],
-	# 				or ['field1,primary_id', 'field2,String', 'field3,null:false']
-	#
-	# == Options
-	#
-	# --autocomplete, -a completing the field with primary_key, and timestamp, automatically
-	# --run, -r		run the migrations
-	# --to, -t		specify a module for implementing the migrating action
-	# --version, -v	specify a version for migrating record
-	# --dump, -d	dump the database schema to a migration file
-	# --output, -o	output the schema of database
-	# --details 	output with the details
-	# --schema		implement a global database schema
-	#
-	# == Examples
-	#
-	# dropdown, rename, create, alter to table
-	#
-	#	3s db drop table1 table2 table3
-	#
-	#	3s db rename old_table new_table
-	#
-	#	3s db table_name uid:primary_key name:string pawd:string
-	#	3s db table_name name pawd -a
-	#	3s db table_name name pawd email:string:null=false
-	#
-	#	3s db alter table_name drop_column column_name
-	#
-	# create a database with two fields,  
-	# and autocomplete other fields of primary id and created time,
-	# then run the migration records
-	#
-	# 	3s db table_name title,String body,text -a -r
-	#
-	# dump the current db schema to a migration file (the default path at db/migrations)
-	#
-	#	3s db --dump=D
-	#
-	# implement a db schema using the default file at db/migrations
-	#
-	#	3s db -r --schema
-	#
-	# output the schema of current database
-	#
-	#	3s db -o
-	#	3s db -o --details
+	== Description
+
+	Create and implement the migration to database, output/dump the schema/migration from database
+
+	== Arguments
+
+	data, an array, the format of vaule as the following, 
+
+	['field1', 'field2', 'field3']
+
+	or
+
+	['field1,primary_id', 'field2,String', 'field3,null:false']
+
+	== Options
+
+	--autocomplete, -a completing the field with primary_key, and timestamp, automatically
+
+	--run, -r		run the migrations
+
+	--to, -t		specify a module for implementing the migrating action
+
+	--version, -v	specify a version for migrating record
+
+	--dump, -d	dump the database schema to a migration file
+
+	--output, -o	output the schema of database
+
+	--details 	output with the details
+
+	--schema		implement a global database schema
+
+	== Examples
+
+	dropdown, rename, create, alter to table :
+
+		3s db drop table1 table2 table3
+
+		3s db rename old_table new_table
+
+		3s db table_name uid:primary_key name:string pawd:string
+
+		3s db table_name name pawd -a
+
+		3s db table_name name pawd email:string:null=false
+
+		3s db alter table_name drop_column column_name
+
+	create a database with two fields, and autocomplete primary_id, created, changed time, then run the migration records :
+
+		3s db table_name title,String body,text -a -r
+
+	dump the current db schema to a migration file (the default path at db/migrations) :
+
+		3s db --dump=D
+
+	implement a db schema using the default file at db/migrations :
+
+		3s db -r --schema
+
+	output the schema of current database :
+
+		3s db -o
+
+		3s db -od
 	DOC
 
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'

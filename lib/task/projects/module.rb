@@ -9,7 +9,17 @@
 #
 
 class SeimtraThor < Thor
-	
+
+	long_desc <<-DOC
+	== Description
+
+	create a new module folder structure
+
+	== Example
+
+	3s new module_name	
+	DOC
+
 	desc "create [NAME]", "Create some directories of module structure"
 	map "new" => :create
 	def create name
@@ -35,6 +45,16 @@ class SeimtraThor < Thor
 		end
 	end
 
+	long_desc <<-DOC
+	== Description
+
+	list all of modules
+
+	== Example
+
+	3s list
+	DOC
+
 	desc 'list', 'List all of the module folders'
 	def list
 		str = "module list"
@@ -44,6 +64,24 @@ class SeimtraThor < Thor
 		end
 		show_info res, str
 	end
+
+	long_desc <<-DOC
+	== Description
+
+	add/update the module that had been created yet, but not install, or update after modifying
+
+	== Example
+
+	install all of modules that have not been installed
+
+	3s install
+
+	update the specify module
+
+	3s update module_name
+
+	update all of modules that is modified
+	DOC
 
 	desc 'add [MODULE_NAMES]', 'Add a module to current system'
 	method_option :remote, :type => :boolean, :aliases => '-r'

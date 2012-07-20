@@ -1,6 +1,16 @@
 class SeimtraThor < Thor
 	include Thor::Actions
-	
+
+	long_desc <<-DOC
+	== Description
+
+	create a new project
+
+	== Example
+
+	3s init project_name
+	DOC
+
 	desc "init [NAME]", "Create a project with the name given"
 	method_option :status, :type => :string
 	def init project_name = 'seimtra_project'
@@ -30,6 +40,18 @@ class SeimtraThor < Thor
 		run "3s install "
 		isay "The project Initializes completely"
 	end
+
+	long_desc <<-DOC
+	== Description
+
+	see the version of seimtra
+
+	== Example
+
+	3s version
+
+	3s v
+	DOC
 
 	desc "version", "The version of Seimtra"
 	map "v" => :version
