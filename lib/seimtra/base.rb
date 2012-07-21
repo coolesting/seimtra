@@ -24,8 +24,7 @@ module Seimtra
 		#the files under the install folder
 		File_install		 = {
 			:setting		=>	'install/setting.cfg',
-			:panel			=>	'install/panel.list',
-			:block			=>	'install/block.list'
+			:menu			=>	'install/menu.list',
 		}
 
 		#file type of scfg class
