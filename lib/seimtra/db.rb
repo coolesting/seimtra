@@ -262,6 +262,24 @@ class Seimtra_system < Db
 
 	end
 
+	def update_module modules = []
+
+		if modules.empty? or modules == nil
+			DB[:module].each do | row |
+				modules << row[:name]
+			end
+		end
+
+		modules.each do | name |
+			Dir["modules/#{name}/install/*"].each do | file |
+				write_to_db file
+			end
+		end
+
+	end
+	
+	# write a file to db
+	# @file, string, a file path
 	def write_to_db file
 
 		file_name	= file.split("/").last

@@ -68,19 +68,19 @@ class SeimtraThor < Thor
 	long_desc <<-DOC
 	== Description
 
-	add/update the module that had been created yet, but not install, or update after modifying
+	update the module info to database if the module had been installed yet, 
+	if the module has been installed, just install it.
 
 	== Example
 
-	install all of modules that have not been installed
+	install module
 
 	3s install
+	3s install specifying_module_name
 
-	update the specify module
-
-	3s update module_name
-
-	update all of modules that is modified
+	update module
+	3s update
+	3s update specifying_module_name
 	DOC
 
 	desc 'add [MODULE_NAMES]', 'Add a module to current system'
@@ -92,22 +92,30 @@ class SeimtraThor < Thor
 
 		ss = Seimtra_system.new
 		modules = ss.check_module module_names
-		error "No module to be installed." if modules == nil
 
-		#run the db schema
-		modules.each do | name |
-			run "3s db -r --to=#{name}"
-		end
+		#update
+		if modules == nil
+			ss.update_module module_names
 
-		#inject the info to db
-		ss.add_module modules
+		#install
+		else
 
-		#bundle install each Gemfile
-		modules.each do | name |
-			if options.bundle?
-				path = Dir.pwd + "/modules/#{name}/Gemfile"
-				run "bundle install --gemfile=#{path}" if File.exist? path
+			#run the db schema
+			modules.each do | name |
+				run "3s db -r --to=#{name}"
 			end
+
+			#inject the info to db
+			ss.add_module modules
+
+			#bundle install each Gemfile
+			modules.each do | name |
+				if options.bundle?
+					path = Dir.pwd + "/modules/#{name}/Gemfile"
+					run "bundle install --gemfile=#{path}" if File.exist? path
+				end
+			end
+
 		end
 
 	end
