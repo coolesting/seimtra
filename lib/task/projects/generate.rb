@@ -3,24 +3,23 @@ class SeimtraThor < Thor
 	long_desc <<-DOC
 	== Description
 
-	Create the scaffold for certain module
+	Create the scaffold for current module
 
-	3s g table_name field1 field2 field3 -s
+	3s g table_name field1 field2 field3
 
-	create a post by following
+	create a post to article module
 
-	3s g post pid:integer title content:text created:time changed:time -s
+	3s g post pid:integer title content:text created:time changed:time -t=article
 
 	or
 
-	3s g post title content:text -sa
+	3s g post title content:text -a -t=article
 	DOC
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
-	method_option :system, :type => :boolean, :aliases => '-s'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
-	method_option :with, :type => :hash
+	method_option :with, :type => :hash, :default => {}
 	map 'g' => :generate
 	def generate *argv
 
@@ -45,7 +44,7 @@ class SeimtraThor < Thor
 		files 				= {}
 
 		#add a scaffold for system module
-		if options.system?
+		unless options[:with][:type] == "system"
 
 			@t[:module_name]	= "system"
 
@@ -64,22 +63,21 @@ class SeimtraThor < Thor
 				end
 			end
 
-			#add a panel link
-			panel_menu	= options[:menu] ? options[:menu] : "custom"
-			panel_name	= options[:name] ? options[:name] : @t[:file_name]
-			panel_des	= options[:description] ? options[:description] : ""
+			#add menu
+			menu_name	= options[:name] ? options[:name] : @t[:file_name]
+			menu_des	= options[:description] ? options[:description] : ""
 
-			path 		= "modules/#{module_name}/#{Sbase::File_install[:panel]}"
-			panel 		= "\nmenu=#{panel_menu}"
-			panel 		+= "\nname=#{panel_name}"
-			panel 		+= "\nlink=/#{@t[:module_name]}/#{@t[:file_name]}"
-			panel 		+= "\ndescription=#{panel_des}"
+			path 		= "modules/#{module_name}/#{Sbase::File_install[:menu]}"
+			menu 		= "\nname=#{menu_name}"
+			menu 		+= "\nlink=/#{@t[:module_name]}/#{@t[:file_name]}"
+			menu 		+= "\ndescription=#{menu_des}"
 
-			append_to_file path, panel
+			append_to_file path, menu
 
 		end
 
 		run "3s db #{data[:table]} #{argv.join(' ')} --to=#{module_name}"
+		run "3s update"
 	end
 
 end
