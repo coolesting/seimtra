@@ -54,6 +54,8 @@ end
 
 helpers do
 
+	#fill the @fields with the default value
+	#the @fields will be write into database, or display by template to frontground
 	def <%=@t[:file_name]%>_set_fields
 		<%
 			str = ""
@@ -75,7 +77,7 @@ helpers do
 
 	def <%=@t[:file_name]%>_valid_fields
 		<% @t[:fields].each do | field | %>
-		throw_error "The <%=field%> field can not be empty." if @fields[:<%=field%>] == ""
+		throw_error "The <%=field%> field cannot be empty." if @fields[:<%=field%>] == ""
 		<% end %>
 	end
 
