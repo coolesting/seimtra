@@ -68,53 +68,74 @@ class SeimtraThor < Thor
 	long_desc <<-DOC
 	== Description
 
-	update the module info to database if the module had been installed yet, 
-	if the module has been installed, just install it.
+	install the module
 
 	== Example
 
-	install module
-
 	3s install
 	3s install specifying_module_name
-
-	update module
-	3s update
-	3s update specifying_module_name
 	DOC
 
-	desc 'add [MODULE_NAMES]', 'Add a module to current system'
+	desc 'add [MODULE_NAMES]', 'Add a module to current module'
 	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :path, :type => :string
 	map "install" => :add
-	map "update" => :add
 	def add *module_names
 
 		ss = Seimtra_system.new
 		modules = ss.check_module module_names
 
-		#update
-		if modules == nil
-			ss.update_module module_names
+		#throw the error
+		error "No module to be installed" if modules == nil
 
-		#install
-		else
+		#run the db schema
+		modules.each do | name |
+			run "3s db -r --to=#{name}"
+		end
 
-			#run the db schema
-			modules.each do | name |
-				run "3s db -r --to=#{name}"
+		#inject the info to db
+		ss.add_module modules
+
+		#bundle install each Gemfile
+		modules.each do | name |
+			if options.bundle?
+				path = Dir.pwd + "/modules/#{name}/Gemfile"
+				run "bundle install --gemfile=#{path}" if File.exist? path
 			end
+		end
+
+	end
+
+	long_desc <<-DOC
+	== Description
+
+	update the module info to database if the module had been installed yet, 
+
+	== Example
+
+	3s update
+	3s update specifying_module_name
+	DOC
+
+	desc 'update [MODULE_NAMES]', 'update the module'
+	def update *module_names
+
+ 		ss = Seimtra_system.new
+ 		modules = ss.check_module module_names
+ 
+ 		update_modules = []
+		if modules == nil and module_names.empty?
+			update_modules = ss.get_module
+		else
+			update_modules = module_names
+		end
+
+		update_modules.each do | name |
+
+			run "3s db -r --to=#{name}"
 
 			#inject the info to db
-			ss.add_module modules
-
-			#bundle install each Gemfile
-			modules.each do | name |
-				if options.bundle?
-					path = Dir.pwd + "/modules/#{name}/Gemfile"
-					run "bundle install --gemfile=#{path}" if File.exist? path
-				end
-			end
+			ss.update_module name
 
 		end
 

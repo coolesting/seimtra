@@ -77,7 +77,7 @@ class SeimtraThor < Thor
 		end
 
 		run "3s db #{data[:table]} #{argv.join(' ')} --to=#{module_name}"
-		run "3s update"
+		run "3s update #{module_name}"
 	end
 
 end

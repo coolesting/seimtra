@@ -206,7 +206,7 @@ end
 class Seimtra_system < Db
 
 	# == description
-	# check the module whether need to be installed
+	# check the local file module whether existing in db
 	#
 	# == returned value
 	# return the module need to be install, otherwise is null 
@@ -229,11 +229,12 @@ class Seimtra_system < Db
 
 		install_modules = module_names.empty? ? local_modules : module_names
 
+		return_modules = []
 		db_modules.each do | item |
-			install_modules.delete item if install_modules.include? item
+			return_modules << item unless install_modules.include? item
 		end
 
-		install_modules.empty? ? nil : install_modules
+		return_modules.empty? ? nil : return_modules
 	end
 
 	def add_module install_modules
@@ -262,18 +263,20 @@ class Seimtra_system < Db
 
 	end
 
-	def update_module modules = []
+	def get_module
 
-		if modules.empty? or modules == nil
-			DB[:module].each do | row |
-				modules << row[:name]
-			end
+		modules = []
+		DB[:module].each do | row |
+			modules << row[:name]
 		end
+		modules
 
-		modules.each do | name |
-			Dir["modules/#{name}/install/*"].each do | file |
-				write_to_db file
-			end
+	end
+
+	def update_module module_name
+
+		Dir["modules/#{module_name}/install/*"].each do | file |
+			write_to_db file
 		end
 
 	end
