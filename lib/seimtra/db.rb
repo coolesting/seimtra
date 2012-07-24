@@ -173,7 +173,7 @@ class Db
 # 				if item.index(":")
 #  					content << item.gsub(/=/, " => ").gsub(/:/, ", :")
 				if types.include? item
-					if main_key.include? item.to_sym
+					if main_key.include? types[item].to_sym
 						content << "#{types[item]} :#{item}"
 					else
 						content << "#{types[item].capitalize} :#{item}"
