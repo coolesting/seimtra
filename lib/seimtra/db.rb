@@ -234,6 +234,8 @@ class Seimtra_system < Db
 			return_modules << item unless install_modules.include? item
 		end
 
+		return_modules = local_modules if db_modules.empty?
+
 		return_modules.empty? ? nil : return_modules
 	end
 
