@@ -110,7 +110,7 @@ class Db
 	# :operator, symbol ---- :create, :alter, :drop, :rename
 	# :table, 	string 	---- table name
 	# :fields	array 	---- 
-	# :types,	hash	---- {:field1 => type_name, :field2 => type_name}
+	# :types,	hash	---- {field1 => type_name, field2 => type_name}
 
 	def arrange_fields data, auto = false
 		res = {}
@@ -147,7 +147,7 @@ class Db
 	end
 
 	def generate_migration data
-		main_key	= [:primary_key, :index, :foreign_key, :unique]
+		main_key	= Sbase::Main_key
 		operator 	= data[:operator]
 		table		= data[:table]
 		fields		= data[:fields]

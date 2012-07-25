@@ -89,6 +89,8 @@ module Seimtra
 			:type			=> ["link", "text"]
 		}
 
+		Main_key			= [:primary_key, :index, :foreign_key, :unique]
+
 	end
 
 end
