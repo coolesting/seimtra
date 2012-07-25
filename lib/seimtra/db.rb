@@ -139,6 +139,7 @@ class Db
 					res[:types][arr[0]] = arr[1]
 				else
 					res[:fields] << item
+					res[:types][item] = "string"
 				end
 			end
 		end
@@ -170,19 +171,11 @@ class Db
 			content << "\t\t#{operator}_table(:#{table}) do\n"
 			fields.each do | item |
 				content << "\t\t\t"
-
-# 				if item.index(":")
-#  					content << item.gsub(/=/, " => ").gsub(/:/, ", :")
-				if types.include? item
-					if main_key.include? types[item].to_sym
-						content << "#{types[item]} :#{item}"
-					else
-						content << "#{types[item].capitalize} :#{item}"
-					end
+				if main_key.include? types[item].to_sym
+					content << "#{types[item]} :#{item}"
 				else
-					content << "String :#{item}"
+					content << "#{types[item].capitalize} :#{item}"
 				end
-
 				content << "\n"
 			end
 			content << "\t\tend\n"
