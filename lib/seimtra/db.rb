@@ -106,10 +106,11 @@ class Db
 	#
 	# == returned value
 	#
-	# it is a hash value, the key as the following
-	# :operator, symbol ---- create, alter, drop, rename
+	# it is a hash value, the key-val as the following
+	# :operator, symbol ---- :create, :alter, :drop, :rename
 	# :table, 	string 	---- table name
 	# :fields	array 	---- 
+	# :types,	hash	---- {:field1 => type_name, :field2 => type_name}
 
 	def arrange_fields data, auto = false
 		res = {}

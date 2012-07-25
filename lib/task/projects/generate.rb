@@ -40,6 +40,7 @@ class SeimtraThor < Thor
 		#arrage the data fields
 		@t[:key_id]			= data[:fields][0]
 		@t[:fields]			= data[:fields]
+		@t[:types]			= data[:types]
 
 		files 				= {}
 
