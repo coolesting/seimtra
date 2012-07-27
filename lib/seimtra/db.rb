@@ -73,11 +73,15 @@ class Db
 		DB.tables.include?(table) ? DB[table.to_sym] : nil
 	end
 
-	## 
+	# == autocomplete
 	# autocomplete field of database
-	#
+	# 
+	# == input
 	# @name string, the table name
 	# @argv array, 	the fields
+	#
+	# == output
+	# an array, like this ['aid:primary_key', 'title', 'body', 'created:datetime', 'changed:datetime']
 	def autocomplete name, argv
 		#match a id
 		i = 1
@@ -94,7 +98,9 @@ class Db
 	end
 
 	# == arrange_fields
-	#
+	# arrange the fields with specifying format
+	# 
+	# == input
 	# @data array, the details as following
 	# @auto boolen, 
 	#
@@ -104,8 +110,7 @@ class Db
 	# ['drop', 'field1', 'field2', 'field3']
 	# ['alter', 'table_name', 'field1', 'field2', 'field3']
 	#
-	# == returned value
-	#
+	# == output
 	# it is a hash value, the key-val as the following
 	# :operator, symbol ---- :create, :alter, :drop, :rename
 	# :table, 	string 	---- table name
@@ -199,11 +204,11 @@ end
 #a db extension for several business methods
 class Seimtra_system < Db
 
-	# == description
+	# == check_module
 	# check the local file module whether existing in db
 	#
-	# == returned value
-	# return the module need to be install, otherwise is null 
+	# == output
+	# return the local module that has not been installed to database, otherwise is null 
 	def check_module module_names
 
 		#get all of module if nothing be specified to installing
@@ -259,6 +264,8 @@ class Seimtra_system < Db
 
 	end
 
+	# == get_module
+	# get all of modules in database
 	def get_module
 
 		modules = []
@@ -277,7 +284,10 @@ class Seimtra_system < Db
 
 	end
 	
+	# == write_to_db
 	# write a file to db
+	#
+	# == input
 	# @file, string, a file path
 	def write_to_db file
 

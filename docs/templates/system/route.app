@@ -60,8 +60,8 @@ helpers do
 		<%
 			str = ""
 			@t[:fields].each do | field |
-				str += "\n\t\t\t:#{field}\t\t=> ''"
-				str += "," if @t[:fields].last != field
+				str += "\n\t\t\t:#{field}\t\t=> ''" unless Sbase::Main_key.include? @t[:types][field].to_sym
+				str += "," if @t[:fields].last != field and str != ""
 			end 
 		%>
 		default_values = {<%=str%>
@@ -76,9 +76,9 @@ helpers do
 	end
 
 	def <%=@t[:file_name]%>_valid_fields
-		<% @t[:fields].each do | field | %>
+		<% @t[:fields].each do | field | %><% unless Sbase::Main_key.include? @t[:types][field].to_sym %>
 		throw_error "The <%=field%> field cannot be empty." if @fields[:<%=field%>] == ""
-		<% end %>
+		<% end %><% end %>
 	end
 
 end

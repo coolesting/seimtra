@@ -1,7 +1,5 @@
 form action="#{request.path}" method="post" id="form"
-	ul.ul<% @t[:fields].each do | field | %>
-		<% field_type = @t[:types][field] %>
-		<% if field_type == "string" %>
+	ul.ul<% @t[:fields].each do | field | %><% field_type = @t[:types][field] %><% if field_type == "string" %>
 		li : label <%=field%>
 		li : input type="text" name="<%=field%>" required="required" value="#{@fields[:<%=field%>]}"
 		<% elsif field_type == "integer" %>
@@ -21,6 +19,4 @@ form action="#{request.path}" method="post" id="form"
 		li : input type="time" name="<%=field%>" value="#{@fields[:<%=field%>]}"
 		<% elsif field_type == "color" %>
 		li : label <%=field%>
-		li : input type="color" name="<%=field%>" value="#{@fields[:<%=field%>]}"
-		<% end %>
-		<% end %>
+		li : input type="color" name="<%=field%>" value="#{@fields[:<%=field%>]}"<% end %><% end %>
