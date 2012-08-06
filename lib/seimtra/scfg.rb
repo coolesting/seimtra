@@ -1,8 +1,8 @@
 ## 
 # == Description
-# read the config file that has the suffix with .cfg or .list
+# read and write the config file that includes the suffix .cfg or .list
 #
-# == Arguments of SCFG.load
+# == Arguments
 # :name, module name
 # :path, specifying complete path
 # :return, return the values

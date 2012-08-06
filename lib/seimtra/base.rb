@@ -53,7 +53,7 @@ module Seimtra
 				:module_focus 	=> 'front'
 			},
 
-			#the default vaule of module field
+			#the default module field
 			:module			 	=> {
 				:name			=> '',
 				:load_order		=> 9,
@@ -78,6 +78,10 @@ module Seimtra
 			}
 		}
 
+		Root_user 			= {
+			:name 			=> 'admin',
+			:pawd 			=> 'admin'
+		}
 
 		#default basic setting of module
 		Settings 			= {

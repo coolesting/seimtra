@@ -36,6 +36,16 @@ class SeimtraThor < Thor
 			SCFG.set key, val
 		end
 		
+		#write the admin user to user module
+		require "digest/sha1"
+		user_path = "modules/user/install/user.cfg"
+		user_salt = random_string 5
+		user_pawd = Digest::SHA1.hexdigest(Sbase::Root_user[:pawd] + user_salt)		
+		user_content = "name=#{Sbase::Root_user[:name]}\npawd=#{user_pawd}\nsalt=#{user_salt}\ncreated=#{Time.now}"
+		File.open(user_path, 'w+') do |f|
+			f.write(user_content)
+		end
+
 		#install modules
 		run "3s install "
 		isay "The project Initializes completely"
