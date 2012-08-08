@@ -2,7 +2,12 @@
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
 
 	sys_opt :new
-	@<%=@t[:table_name]%> = DB[:<%=@t[:table_name]%>]
+	ds = DB[:<%=@t[:table_name]%>]
+
+	Sequel.extension :pagination
+ 	@<%=@t[:table_name]%> = ds.paginate(@page_curr, @page_size, ds.count)
+ 	@page_count = @<%=@t[:table_name]%>.page_count
+
 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>
 
 end
