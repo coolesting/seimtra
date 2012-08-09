@@ -15,16 +15,18 @@ module Seimtra
 			:description	=>	'Seimtra is a web application system.'
 		}
 
-		#the file struction of this system is required
+		#the installed files is required
 		Files 				= 	{
 			:info			=>	'install/module.cfg',
 			:readme			=>	'README.md'
 		}
 
-		#the files under the install folder
+		#the other installeed files is optional
 		File_install		 = {
-			:setting		=>	'install/setting.cfg',
-			:menu			=>	'install/menu.list',
+# 			:tag			=>	'install/tag.cfg',
+# 			:user			=>	'install/user.list',
+# 			:setting		=>	'install/setting.cfg',
+			:menu			=>	'install/menu.list'
 		}
 
 		#file type of scfg class
