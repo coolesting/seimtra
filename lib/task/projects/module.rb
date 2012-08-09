@@ -35,10 +35,12 @@ class SeimtraThor < Thor
 		info[:author]		= cfg.include?('author') ? cfg['author'] : ask("What is your name ?")
 		info[:description] 	= ask("The description of the module ?")
 
+		#write the README.md file
 		File.open(Dir.pwd + "/modules/#{name}/" + Sbase::Files[:readme], "w+") do | f |
 			f.write("## INTRODUCTION\n\n#{info[:description]}")
 		end
 
+		#write the module_name/install/module.cfg file
 		SCFG.load :name => name, :init => true
 		info.each do | key, val |
 			SCFG.set key, val
