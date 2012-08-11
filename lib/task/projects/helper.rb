@@ -26,14 +26,14 @@ class SeimtraThor < Thor
 
 		if name != ""
 			error("The module #{name} is not existing") unless module_exist? name 
-			result = SCFG.load :name => name, :return => true
+			result = Sfile.read "modules/#{name}/install/module.cfg"
 			str = "#{name} module infomation"
 		elsif options.configs?
 			path = get_custom_info.first
-			result = SCFG.load :path => path, :return => true
+			result = Sfile.read path
 			str = "configure infomation at #{path}"
 		else
-			result = SCFG.load :return => true
+			result = Sfile.read Dir.pwd + "/Seimfile"
 			str = "project infomation"
 		end
 

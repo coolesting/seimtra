@@ -243,7 +243,7 @@ class Seimtra_system < Db
 		#first of all, install all of module, read the module info, and put into database
 		install_modules.each do | name |
 			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
-			result = SCFG.load :path => path , :return => true
+			result = Sfile.read path
 			unless result.empty?
 				module_info_item = Sbase::Infos[:module].keys
 				options = {}
@@ -293,7 +293,7 @@ class Seimtra_system < Db
 
 		file_name	= file.split("/").last
 		table 		= file_name.split(".").first
-		result 		= SCFG.load :path => file , :return => true
+		result 		= Sfile.read file
 
  		unless result.empty?
 			table_fields 	= DB[table.to_sym].columns!
@@ -330,7 +330,7 @@ class Seimtra_system < Db
 
 		mid 	= DB[:modules].filter(:name => name).get(:mid)
 		path 	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:block]
-		result	= SCFG.load :path => path , :return => true
+		result	= Sfile.read path
 
  		unless result.empty?
 			table_fields = DB[:block].columns!

@@ -28,8 +28,9 @@ class SeimtraThor < Thor
 
 		info 				= {}
 		path 				= get_custom_info.first
-		cfg 				= SCFG.load :path => path, :return => true
+		cfg 				= Sfile.read path
 
+		info 				= Sbase::Infos[:module]
 		info[:name] 		= name
 		info[:email] 		= cfg.include?('email') ? cfg['email'] : ask("What is the email of your ?")
 		info[:author]		= cfg.include?('author') ? cfg['author'] : ask("What is your name ?")
@@ -41,10 +42,7 @@ class SeimtraThor < Thor
 		end
 
 		#write the module_name/install/module.cfg file
-		SCFG.load :name => name, :init => true
-		info.each do | key, val |
-			SCFG.set key, val
-		end
+		Sfile.write info, "modules/#{name}/install/module.cfg"
 	end
 
 	long_desc <<-DOC

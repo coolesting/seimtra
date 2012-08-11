@@ -84,7 +84,7 @@ class SeimtraThor < Thor
 		error(db.msg) if db.error
 
 		time			= Time.now.strftime('%Y%m%d%H%M%S')
-		module_current	= options[:to] || SCFG.get(:module_focus)
+		module_current	= options[:to] || get_default_module
 		path 			= "/modules/#{module_current}/migrations"
 		mpath 			= Dir.pwd + path
 		gpath 			= Dir.pwd + "/db/migrations"

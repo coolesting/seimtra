@@ -15,6 +15,11 @@ module Seimtra
 			:description	=>	'Seimtra is a web application system.'
 		}
 
+		#root directory files
+		Files_root			= {
+			:seimfile		=> 'Seimfile'
+		}
+
 		#the installed files is required
 		Files 				= 	{
 			:info			=>	'install/module.cfg',

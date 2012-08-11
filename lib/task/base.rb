@@ -29,22 +29,25 @@ class SeimtraThor < Thor
 # 		all_status.delete(status)
 # 		without_status = all_status.join(" ")
 
-		SCFG.load :path => "#{Dir.pwd}/Seimfile"
-		SCFG.set :status, status
-		SCFG.set :root_privilege, random_string
+		#write the project info
+		spath = "#{Dir.pwd}/Seimfile"
+		seimfile = Sfile.read spath
+		seimfile[:status] = status
+		seimfile[:root_privilege] = random_string
 		Sbase::Infos[:project].each do | key, val |
-			SCFG.set key, val
+			seimfile[key] = val
 		end
-		
+		Sfile.write seimfile, spath
+
 		#write the admin user to user module
-		require "digest/sha1"
-		user_path = "modules/user/install/user.cfg"
-		user_salt = random_string 5
-		user_pawd = Digest::SHA1.hexdigest(Sbase::Root_user[:pawd] + user_salt)		
-		user_content = "name=#{Sbase::Root_user[:name]}\npawd=#{user_pawd}\nsalt=#{user_salt}\ncreated=#{Time.now}"
-		File.open(user_path, 'w+') do |f|
-			f.write(user_content)
-		end
+# 		require "digest/sha1"
+# 		user_path = "modules/user/install/user.cfg"
+# 		user_salt = random_string 5
+# 		user_pawd = Digest::SHA1.hexdigest(Sbase::Root_user[:pawd] + user_salt)		
+# 		user_content = "name=#{Sbase::Root_user[:name]}\npawd=#{user_pawd}\nsalt=#{user_salt}\ncreated=#{Time.now}"
+# 		File.open(user_path, 'w+') do |f|
+# 			f.write(user_content)
+# 		end
 
 		#install modules
 		run "3s install "
@@ -97,9 +100,14 @@ class SeimtraThor < Thor
 
 		# return the real module name, others is default module in config file
 		def get_module name = nil
-			curmod = name == nil ? SCFG.get(:module_focus) : name
+			curmod = name == nil ? get_default_module : name
 			error("The module #{curmod} is not existing") unless module_exist? curmod 
 			curmod
+		end
+
+		def get_default_module
+			seimfile = Sfile.read "#{Dir.pwd}/Seimfile"
+			seimfile[:module_focus]
 		end
 
 		# get the customize info
