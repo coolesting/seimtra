@@ -295,7 +295,7 @@ class Seimtra_system < Db
 		table 		= file_name.split(".").first
 		result 		= Sfile.read file
 
- 		unless result.empty?
+ 		unless result == nil
 			table_fields 	= DB[table.to_sym].columns!
 			table_types 	= DB.schema(table.to_sym)
 
