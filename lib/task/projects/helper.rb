@@ -26,7 +26,7 @@ class SeimtraThor < Thor
 
 		if name != ""
 			error("The module #{name} is not existing") unless module_exist? name 
-			result = Sfile.read "modules/#{name}/install/module.cfg"
+			result = Sfile.read "modules/#{name}/install/module.sfile"
 			str = "#{name} module infomation"
 		elsif options.configs?
 			path = get_custom_info.first

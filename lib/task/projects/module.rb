@@ -41,8 +41,8 @@ class SeimtraThor < Thor
 			f.write("## INTRODUCTION\n\n#{info[:description]}")
 		end
 
-		#write the module_name/install/module.cfg file
-		Sfile.write info, "modules/#{name}/install/module.cfg"
+		#write the module_name/install/module.sfile file
+		Sfile.write info, "modules/#{name}/install/module.sfile"
 	end
 
 	long_desc <<-DOC

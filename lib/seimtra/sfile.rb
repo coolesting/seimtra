@@ -79,7 +79,7 @@ class Sfile
 		#
 		# == Arguments
 		# content, an array, or hash
-		# path, string, likes this modules/install/menu.cfg
+		# path, string, likes this modules/install/menu.sfile
 		def write data, path
 
 			content = ""

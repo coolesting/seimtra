@@ -22,20 +22,17 @@ module Seimtra
 
 		#the installed files is required
 		Files 				= 	{
-			:info			=>	'install/module.cfg',
+			:info			=>	'install/module.sfile',
 			:readme			=>	'README.md'
 		}
 
 		#the other installeed files is optional
 		File_install		 = {
-# 			:tag			=>	'install/tag.cfg',
-# 			:user			=>	'install/user.list',
-# 			:setting		=>	'install/setting.cfg',
-			:menu			=>	'install/menu.list'
+# 			:tag			=>	'install/tag.sfile',
+# 			:user			=>	'install/user.sfile',
+# 			:setting		=>	'install/setting.sfile',
+			:menu			=>	'install/menu.sfile'
 		}
-
-		#file type of scfg class
-		File_type 			= [:cfg, :list] 
 
 		#the required folders
 		Folders 			= {

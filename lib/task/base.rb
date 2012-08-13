@@ -41,7 +41,7 @@ class SeimtraThor < Thor
 
 		#write the admin user to user module
 # 		require "digest/sha1"
-# 		user_path = "modules/user/install/user.cfg"
+# 		user_path = "modules/user/install/user.sfile"
 # 		user_salt = random_string 5
 # 		user_pawd = Digest::SHA1.hexdigest(Sbase::Root_user[:pawd] + user_salt)		
 # 		user_content = "name=#{Sbase::Root_user[:name]}\npawd=#{user_pawd}\nsalt=#{user_salt}\ncreated=#{Time.now}"
