@@ -135,7 +135,7 @@ class SeimtraThor < Thor
 			run "3s db -r --to=#{name}"
 
 			#inject the info to db
-			ss.update_module name
+			ss.add_module name
 
 		end
 

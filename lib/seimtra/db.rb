@@ -200,7 +200,6 @@ class Db
 
 end
 
-
 #a db extension for several business methods
 class Seimtra_system < Db
 
@@ -236,50 +235,42 @@ class Seimtra_system < Db
 		return_modules = local_modules if db_modules.empty?
 
 		return_modules.empty? ? nil : return_modules
+
 	end
 
 	def add_module install_modules
 		
-		#first of all, install all of module, read the module info, and put into database
-		install_modules.each do | name |
-			path = Dir.pwd + "/modules/#{name}/" + Sbase::Files[:info]
-			result = Sfile.read path
-			unless result.empty?
-				module_info_item = Sbase::Infos[:module].keys
-				options = {}
-				result.each do | item |
-					key, val = item
-					options[key.to_sym] = val if module_info_item.include? key.to_sym
-				end
-				insert :module, options
+		#first of all, load the installed library
+		modules = get_module
+		install_modules.each do | m |
+			modules << m unless modules.include? m
+		end
+
+		modules.each do | name |
+			path = Dir.pwd + "/modules/#{name}/install/install.rb"
+			if File.exist? path
+				require path 
 			end
 		end
 
 		#second, scan the file info in the install folder to database
 		install_modules.each do | name |
-			Dir["modules/#{name}/install/*"].each do | file |
-				write_to_db file
+			Dir["modules/#{name}/install/*.sfile"].each do | file |
+				file_name	= file.split("/").last
+				table 		= file_name.split(".").first
+				result 		= Sfile.read file
+
+				if Seimtra_system.public_method_defined? "system_add_#{table}".to_sym
+					if result.class.to_s == "Hash"
+						arr = []
+						arr << result
+						result = arr
+					end
+					eval "system_add_#{table}(#{result})"
+				else
+					write_to_db table, result
+				end
 			end
-		end
-
-	end
-
-	# == get_module
-	# get all of modules in database
-	def get_module
-
-		modules = []
-		DB[:module].each do | row |
-			modules << row[:name]
-		end
-		modules
-
-	end
-
-	def update_module module_name
-
-		Dir["modules/#{module_name}/install/*"].each do | file |
-			write_to_db file
 		end
 
 	end
@@ -289,13 +280,10 @@ class Seimtra_system < Db
 	#
 	# == input
 	# @file, string, a file path
-	def write_to_db file
+	def write_to_db table, result = nil
 
-		file_name	= file.split("/").last
-		table 		= file_name.split(".").first
-		result 		= Sfile.read file
+		unless result == nil
 
- 		unless result == nil
 			table_fields 	= DB[table.to_sym].columns!
 			table_types 	= DB.schema(table.to_sym)
 
@@ -323,6 +311,18 @@ class Seimtra_system < Db
 				end
 			end
 		end
+
+	end
+
+	# == get_module
+	# get all of modules that have been installed to database
+	def get_module
+
+		modules = []
+		DB[:module].each do | row |
+			modules << row[:name]
+		end
+		modules
 
 	end
 
