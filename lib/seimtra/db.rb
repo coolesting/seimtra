@@ -260,14 +260,17 @@ class Seimtra_system < Db
 				table 		= file_name.split(".").first
 				result 		= Sfile.read file
 
-				if Seimtra_system.public_method_defined? "system_add_#{table}".to_sym
+				unless result == nil
 					if result.class.to_s == "Hash"
 						arr = []
 						arr << result
 						result = arr
 					end
-					eval "system_add_#{table}(#{result})"
-				else
+
+					if Seimtra_system.public_method_defined? "preprocess_#{table}".to_sym
+						eval "result = preprocess_#{table}(#{result})"
+					end
+
 					write_to_db table, result
 				end
 			end
@@ -278,23 +281,17 @@ class Seimtra_system < Db
 	# == write_to_db
 	# write a file to db
 	#
-	# == input
-	# @file, string, a file path
-	def write_to_db table, result = nil
+	# == Arguments
+	# table, string, a table name
+	# result, array, a hash array
+	def write_to_db table, result = []
 
-		unless result == nil
+		if result.class.to_s == "Array"
 
 			table_fields 	= DB[table.to_sym].columns!
 			table_types 	= DB.schema(table.to_sym)
 
-			data_arr = []
-			if result.class.to_s == "Hash"
-				data_arr << result
-			else
-				data_arr = result
-			end
-
-			data_arr.each do | line |
+			result.each do | line |
 				options = {}
 				line.each do | item |
 					key, val = item	
