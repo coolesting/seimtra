@@ -260,6 +260,12 @@ class Seimtra_system < Db
 				table 		= file_name.split(".").first
 				result 		= Sfile.read file
 
+				#initailize data
+				if Seimtra_system.public_method_defined? "init_#{table}".to_sym
+					eval "init_#{table}"
+				end
+
+				#insert data
 				unless result == nil
 					if result.class.to_s == "Hash"
 						arr = []
