@@ -260,11 +260,6 @@ class Seimtra_system < Db
 				table 		= file_name.split(".").first
 				result 		= Sfile.read file
 
-				#initailize data
-				if Seimtra_system.public_method_defined? "init_#{table}".to_sym
-					eval "init_#{table}"
-				end
-
 				#insert data
 				unless result == nil
 					if result.class.to_s == "Hash"
@@ -273,11 +268,13 @@ class Seimtra_system < Db
 						result = arr
 					end
 
-					if Seimtra_system.public_method_defined? "preprocess_#{table}".to_sym
-						eval "result = preprocess_#{table}(#{result})"
-					end
+					result.each do | row |
+						if Seimtra_system.public_method_defined? "preprocess_#{table}".to_sym
+							eval "row = preprocess_#{table}(#{row})"
+						end
 
-					write_to_db table, result
+						write_to_db table, row
+					end
 				end
 			end
 		end
@@ -285,33 +282,31 @@ class Seimtra_system < Db
 	end
 
 	# == write_to_db
-	# write a file to db
+	# write a file to db with row by row
 	#
 	# == Arguments
 	# table, string, a table name
-	# result, array, a hash array
-	def write_to_db table, result = []
+	# result, hash, table field data
+	def write_to_db table, row
 
-		if result.class.to_s == "Array"
+		table			= table.to_sym
+		table_fields 	= DB[table].columns!
 
-			table_fields 	= DB[table.to_sym].columns!
-			table_types 	= DB.schema(table.to_sym)
-
-			result.each do | line |
-				options = {}
-				line.each do | item |
-					key, val = item	
-					if table_fields.include? key.to_sym
-						options[key.to_sym] = val
-					end
+		fields = {}
+		if row.class.to_s == "Hash"
+			row.each do | key, val |
+				if table_fields.include? key.to_sym
+					fields[key.to_sym] = val
 				end
+			end
 
-				#do not insert if the data is exsiting
-				unless DB[table.to_sym].filter(options).get(table_fields[0])
-					options[:changed] = Time.now if table_fields.include? :changed 
-					options[:created] = Time.now if table_fields.include? :created 
- 					insert table.to_sym, options
-				end
+			return if fields.empty?
+
+			#do not insert if the data is exsiting
+			unless DB[table].filter(fields).get(table_fields[0])
+				fields[:changed] = Time.now if table_fields.include? :changed 
+				fields[:created] = Time.now if table_fields.include? :created 
+ 				insert table, fields
 			end
 		end
 
