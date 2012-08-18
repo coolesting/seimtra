@@ -308,6 +308,9 @@ class Seimtra_system < Db
 			return if fields.empty?
 
 			#do not insert if the data is exsiting
+			#delete the time
+			fields.delete :created if fields.include? :created
+			fields.delete :changed if fields.include? :changed
 			if DB[table].filter(fields).count == 0
  				fields[:changed] = Time.now if table_fields.include? :changed 
  				fields[:created] = Time.now if table_fields.include? :created 
