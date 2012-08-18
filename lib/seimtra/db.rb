@@ -242,6 +242,11 @@ class Seimtra_system < Db
 		
 		#first of all, load the installed library
 		modules = get_module
+		unless install_modules.class.to_s == "Array"
+			arr = []
+			arr << install_modules
+			install_modules = arr
+		end
 		install_modules.each do | m |
 			modules << m unless modules.include? m
 		end
@@ -303,9 +308,9 @@ class Seimtra_system < Db
 			return if fields.empty?
 
 			#do not insert if the data is exsiting
-			unless DB[table].filter(fields).get(table_fields[0])
-				fields[:changed] = Time.now if table_fields.include? :changed 
-				fields[:created] = Time.now if table_fields.include? :created 
+			if DB[table].filter(fields).count == 0
+ 				fields[:changed] = Time.now if table_fields.include? :changed 
+ 				fields[:created] = Time.now if table_fields.include? :created 
  				insert table, fields
 			end
 		end
