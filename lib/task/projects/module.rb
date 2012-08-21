@@ -29,7 +29,7 @@ class SeimtraThor < Thor
 		module_init name
 
 		info 				= {}
-		cfg 				= Sfile.read Sbase::Paths[:config_lx]
+		cfg 				= Sfile.read config_path
 
 		info 				= Sbase::Infos[:module]
 		info[:name] 		= name

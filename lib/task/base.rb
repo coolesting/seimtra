@@ -15,24 +15,23 @@ class SeimtraThor < Thor
 	method_option :status, :type => :string
 	def init project_name = 'seimtra_project'
 
+		#check the config file of customization
+		config_path
+		
+		#get the docs
 		if File.exists?(Sbase::Paths[:docs_local] + "/config.ru")
 			directory Sbase::Paths[:docs_local], project_name
 		else
 			run "git clone #{Sbase::Paths[:docs_remote]} #{project_name}"
 		end
 
+		#write the docs
 		Dir.chdir(Dir.pwd + '/' + project_name)
 
-		all_status = ["development", "production", "test"]
-		status = all_status.include?(options[:status]) ? options[:status] : "production"
-
-# 		all_status.delete(status)
-# 		without_status = all_status.join(" ")
-
-		#write the project info
+		#set the project info
 		spath = "#{Dir.pwd}/Seimfile"
 		seimfile = Sfile.read spath
-		seimfile[:status] = status
+		seimfile[:status] = options[:status] if Sbase::Status_type.include?(options[:status])
 		seimfile[:root_privilege] = random_string
 		Sbase::Infos[:project].each do | key, val |
 			seimfile[key] = val
@@ -111,7 +110,8 @@ class SeimtraThor < Thor
 		end
 
 		# get the customize info
-		def get_custom_info 
+		# write it if the file is not existing
+		def config_path write = false
 			path = Dir.pwd
 			#windows
 			if /\w:\\?/.match(path)
@@ -122,7 +122,11 @@ class SeimtraThor < Thor
 				path = Sbase::Paths[:config_lx]
 				file = "touch #{path}"
 			end
-			[path,file]
+
+			unless File.exist? path
+				system file
+			end
+			path
 		end
 
 		def blank?(var)

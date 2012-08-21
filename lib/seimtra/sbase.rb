@@ -52,6 +52,7 @@ module Seimtra
 		Infos 				= {
 			#the Seimfile default config option
 			:project			=> {
+				:status			=> "development",
 				:log 			=> 'off',
 				:log_path 		=> Dir.pwd + '/log/default',
 				:module_focus 	=> 'front'
@@ -91,6 +92,8 @@ module Seimtra
 		Settings 			= {
 			:lang			=> 'en'
 		}
+
+		Status_type 		= ["development", "production", "test"]
 
 		Block 				=	{
 			:display		=> ["center", "header", "footer", "left", "right", "none"],
