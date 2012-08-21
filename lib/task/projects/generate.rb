@@ -66,12 +66,12 @@ class SeimtraThor < Thor
 
 			#add menu
 			menu_name	= options[:name] ? options[:name] : @t[:file_name]
-			menu_des	= options[:description] ? options[:description] : ""
+			menu_des	= options[:description] ? options[:description] : "No description about the #{@t[:file_name]}"
 
 			path 		= "modules/#{module_name}/#{Sbase::File_install[:menu]}"
-			menu 		= "\nname=#{menu_name}"
-			menu 		+= "\nlink=/#{@t[:module_name]}/#{@t[:file_name]}"
-			menu 		+= "\ndescription=#{menu_des}"
+			menu 		= "\nname=#{menu_name}\n"
+			menu 		+= "link=/#{@t[:module_name]}/#{@t[:file_name]}\n"
+			menu 		+= "description=#{menu_des}\n"
 
 			append_to_file path, menu
 

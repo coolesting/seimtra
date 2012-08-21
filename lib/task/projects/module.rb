@@ -24,16 +24,17 @@ class SeimtraThor < Thor
 	map "new" => :create
 	def create name
 		error('The module is existing.') if module_exist?(name)
+
+		#create the basic folder of module
 		module_init name
 
 		info 				= {}
-		path 				= get_custom_info.first
-		cfg 				= Sfile.read path
+		cfg 				= Sfile.read Sbase::Paths[:config_lx]
 
 		info 				= Sbase::Infos[:module]
 		info[:name] 		= name
-		info[:email] 		= cfg.include?('email') ? cfg['email'] : ask("What is the email of your ?")
-		info[:author]		= cfg.include?('author') ? cfg['author'] : ask("What is your name ?")
+		info[:email] 		= cfg.include?(:email) ? cfg[:email] : ask("What is the email of your ?")
+		info[:author]		= cfg.include?(:author) ? cfg[:author] : ask("What is your name ?")
 		info[:description] 	= ask("The description of the module ?")
 
 		#write the README.md file
