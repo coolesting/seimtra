@@ -83,9 +83,9 @@ class Sfile
 		def write data, path
 
 			content = ""
-			file_type = content.class.to_s
+			file_type = data.class.to_s
 
-			if file_type == 'array'
+			if file_type == 'Array'
 				data.each do | line |
 					line.each do | key, val |
 						content << "#{key.to_s}=#{val}\n"
@@ -93,12 +93,13 @@ class Sfile
 					content << "\n"
 				end
 
-			elsif file_type == 'hash'
+			elsif file_type == 'Hash'
 				data.each do | key, val |
 					content << "#{key.to_s}=#{val}\n"
 				end
 			end
 
+			path = File.expand_path path
 			File.open(path, 'w+') do |f|
 				f.write content
 			end

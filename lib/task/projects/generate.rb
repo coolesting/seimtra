@@ -20,6 +20,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash, :default => {}
+	method_option :norun, :type => :boolean
 	map 'g' => :generate
 	def generate *argv
 
@@ -77,8 +78,10 @@ class SeimtraThor < Thor
 
 		end
 
-		run "3s db #{data[:table]} #{argv.join(' ')} --to=#{module_name}"
-		run "3s update #{module_name}"
+		unless options.norun?
+			run "3s db #{data[:table]} #{argv.join(' ')} --to=#{module_name}"
+			run "3s update #{module_name}"
+		end
 	end
 
 end
