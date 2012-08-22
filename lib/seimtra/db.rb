@@ -100,7 +100,7 @@ class Db
 	# == arrange_fields
 	# arrange the fields with specifying format
 	# 
-	# == input
+	# == Arguments
 	# @data array, the details as following
 	# @auto boolen, 
 	#
@@ -110,12 +110,15 @@ class Db
 	# ['drop', 'field1', 'field2', 'field3']
 	# ['alter', 'table_name', 'field1', 'field2', 'field3']
 	#
-	# == output
-	# it is a hash value, the key-val as the following
+	# == Returned
+	# it is a hash value, the options as the following
 	# :operator, symbol ---- :create, :alter, :drop, :rename
 	# :table, 	string 	---- table name
 	# :fields	array 	---- 
 	# :types,	hash	---- {field1 => type_name, field2 => type_name}
+	# :assocc_table, as below
+	# :assocc_field, as below
+	# :assocc_view, as below
 
 	def arrange_fields data, auto = false
 		res = {}
@@ -140,8 +143,20 @@ class Db
 			data.each do | item |
 				if item.include?(":")
 					arr = item.split(":")
-					res[:fields] << arr[0]
-					res[:types][arr[0]] = arr[1]
+					field = arr.shift
+					res[:fields] << field
+					res[:types][field] = arr.shift
+
+					#other attributes
+					if arr.length > 0
+						arr.each do | a |
+							if a.include? "="
+								key, val = a.split "="
+								res = {} unless res.include? key.to_sym
+								res[key.to_sym][field] = val
+							end
+						end
+					end
 				else
 					res[:fields] << item
 					res[:types][item] = "string"
