@@ -152,7 +152,7 @@ class Db
 						arr.each do | a |
 							if a.include? "="
 								key, val = a.split "="
-								res = {} unless res.include? key.to_sym
+								res[key.to_sym] = {} unless res.include? key.to_sym
 								res[key.to_sym][field] = val
 							end
 						end
