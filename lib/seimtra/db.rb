@@ -114,11 +114,10 @@ class Db
 	# it is a hash value, the options as the following
 	# :operator, symbol ---- :create, :alter, :drop, :rename
 	# :table, 	string 	---- table name
-	# :fields	array 	---- 
+	# :fields	array 	---- [field1, field2, field3]
 	# :types,	hash	---- {field1 => type_name, field2 => type_name}
-	# :assocc_table, as below
-	# :assocc_field, as below
-	# :assocc_view, as below
+	# :others,	hash	---- {field1 => {attr => val}, field2 => {attr1 => val1, attr2 => val2}}
+	# :assocc,	hash	---- {field1 => [table, field1, assocc_field], field2 => [table, field2, assocc_field]}
 
 	def arrange_fields data, auto = false
 		res = {}
@@ -134,9 +133,11 @@ class Db
 			res[:table] = data.shift
 		end
 
-		#fields and field types
 		res[:fields] = []
 		res[:types] = {}
+		res[:others] = {}
+		res[:assocc] = {}
+
 		if data.length > 0
 			#auto the fields
 			data = autocomplete(res[:table], data) if auto == true
@@ -147,13 +148,23 @@ class Db
 					res[:fields] << field
 					res[:types][field] = arr.shift
 
-					#other attributes
+					#other attributes and assocc table-field
 					if arr.length > 0
 						arr.each do | a |
 							if a.include? "="
 								key, val = a.split "="
-								res[key.to_sym] = {} unless res.include? key.to_sym
-								res[key.to_sym][field] = val
+								key = key.to_sym
+								if key == :assocc
+									#the assocc attribute format as assocc=table-assocc_field
+									res[:assocc][field] = {} unless res[:assocc].include? field
+									if val.include? "-"
+										table, assocc_field = val.split "-"
+										res[:assocc][field] = [table, field, assocc_field]
+									end
+								else
+									res[:others][field] = {} unless res[:others].include? field
+									res[:others][field][key] = val
+								end
 							end
 						end
 					end

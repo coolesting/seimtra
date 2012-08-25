@@ -88,5 +88,14 @@ helpers do
 		throw_error "The <%=field%> field cannot be empty." if @fields[:<%=field%>] == ""
 		<% end %><% end %>
 	end
-
+	
+	<%
+		unless @t[:assocc].empty?
+			@t[:assocc].each do | key, val | %>
+	def 
+	end
+	<%
+			end
+		end 
+	%>
 end
