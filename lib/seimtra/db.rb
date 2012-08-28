@@ -155,10 +155,10 @@ class Db
 								key, val = a.split "="
 								key = key.to_sym
 								if key == :assocc
-									#the assocc attribute format as assocc=table-assocc_field
+									#the assocc attribute format as field:integer:assocc=table.field
 									res[:assocc][field] = {} unless res[:assocc].include? field
-									if val.include? "-"
-										table, assocc_field = val.split "-"
+									if val.include? "."
+										table, assocc_field = val.split "."
 										res[:assocc][field] = [table, field, assocc_field]
 									end
 								else
