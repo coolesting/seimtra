@@ -99,7 +99,6 @@ helpers do
 			end 
 		end %>
 	end
-	
 	<%
 		assoc_record = []
 		unless @t[:assoc].empty?

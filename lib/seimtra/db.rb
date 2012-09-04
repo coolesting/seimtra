@@ -154,7 +154,7 @@ class Db
 					res[:fields] << field
 
 					#field type
-					if Sbase::Field_type.include? arr[0].to_sym
+					if Sbase::Field_type.include?(arr[0].to_sym) or Sbase::Main_key.include?(arr[0].to_sym)
 						res[:types][field] = arr.shift
 					else
 						res[:types][field] = "string"
