@@ -72,6 +72,7 @@ class SeimtraThor < Thor
 			menu_des	= options[:description] ? options[:description] : "No description about the #{@t[:file_name]}"
 
 			path 		= "modules/#{module_name}/#{Sbase::File_install[:menu]}"
+
 			menu 		= "\nname=#{menu_name}\n"
 			menu 		+= "prename=#{module_name}\n"
 			menu 		+= "type=#{@t[:module_name]}\n"

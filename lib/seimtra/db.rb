@@ -106,8 +106,8 @@ class Db
 	#
 	# ['table_name', 'field1', 'field2', 'field3']
 	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:null=false']
-	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:assoc=table.field_name']
-	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:assoc=hash.val1.val2.val3']
+	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:assoc=table.field_name']
+	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:assoc=table.field_name:html=select']
 	# ['rename', 'old_table', 'new_table]
 	# ['drop', 'field1', 'field2', 'field3']
 	# ['alter', 'table_name', 'field1', 'field2', 'field3']
@@ -148,9 +148,18 @@ class Db
 			data.each do | item |
 				if item.include?(":")
 					arr = item.split(":")
+
+					#field name
 					field = arr.shift
 					res[:fields] << field
-					res[:types][field] = arr.shift
+
+					#field type
+					if Sbase::Field_type.include? arr[0].to_sym
+						res[:types][field] = arr.shift
+					else
+						res[:types][field] = "string"
+					end
+
 					res[:htmls][field] = res[:types][field]
 
 					#other attributes and assoc table-field
@@ -168,6 +177,7 @@ class Db
 										res[:assoc][field] = [table, field, assoc_field]
 									end
 									res[:htmls][field] = "select"
+									res[:types][field] = "integer"
 								elsif key == :html
 									res[:htmls][field] = val
 								else
