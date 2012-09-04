@@ -84,18 +84,41 @@ helpers do
 	end
 
 	def <%=@t[:file_name]%>_valid_fields
-		<% @t[:fields].each do | field | %><% unless Sbase::Main_key.include? @t[:types][field].to_sym %>
+		<% @t[:fields].each do | field | 
+			unless Sbase::Main_key.include? @t[:types][field].to_sym 
+				if @t[:assoc].has_key? field
+		%>
+		field = <%=@t[:assoc][field][0]%>_record :<%=@t[:assoc][field][1]%>, :<%=@t[:assoc][field][2]%>
+		throw_error "The <%=@t[:assoc][field][1]%> field isn't existing." unless field.include? @fields[:<%=@t[:assoc][field][1]%>].to_i
+		<%
+				else
+		%>
 		throw_error "The <%=field%> field cannot be empty." if @fields[:<%=field%>] == ""
-		<% end %><% end %>
+		<%
+				end
+			end 
+		end %>
 	end
 	
 	<%
-		unless @t[:assocc].empty?
-			@t[:assocc].each do | key, val | %>
-	def 
-	end
-	<%
+		assoc_record = []
+		unless @t[:assoc].empty?
+			@t[:assoc].each do | field, data |
+				assoc_record << data[0] unless assoc_record.include? data[0]
 			end
 		end 
+
+		unless assoc_record.empty?
+			assoc_record.each do | table | %>
+	def <%=table%>_record key, val
+		res = {}
+		DB[:<%=table%>].all.each do | row |
+			res[row[key]] = row[val]
+		end
+		res
+	end
+		<%
+			end
+		end
 	%>
 end

@@ -42,6 +42,8 @@ class SeimtraThor < Thor
 		@t[:key_id]			= data[:fields][0]
 		@t[:fields]			= data[:fields]
 		@t[:types]			= data[:types]
+		@t[:htmls]			= data[:htmls]
+		@t[:assoc]			= data[:assoc]
 
 		files 				= {}
 
@@ -65,7 +67,7 @@ class SeimtraThor < Thor
 				end
 			end
 
-			#add menu
+			#add content to menu.sfile
 			menu_name	= options[:name] ? options[:name] : @t[:file_name]
 			menu_des	= options[:description] ? options[:description] : "No description about the #{@t[:file_name]}"
 

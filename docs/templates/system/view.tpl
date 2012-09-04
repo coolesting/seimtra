@@ -1,11 +1,13 @@
 table.table
-	thead<% @t[:fields].each do | field | %>
+	thead<% @t[:fields].each do | field | %><% field = @t[:assoc][field][2] if @t[:assoc].has_key?(field) %>
 		th = L[:<%=field%>]<% end %>
 		th
-	tbody
+	tbody<% unless @t[:assoc].empty? ; @t[:assoc].each do | field, data | %>
+		- <%=data[0]%>s = <%=data[0]%>_record(:<%=data[1]%>, :<%=data[2]%>)<% end %><% end %>
 		- @<%=@t[:file_name]%>.each do | row |
-			tr<% @t[:fields].each do | field | %>
-				td = row[:<%=field%>]<% end %>
+			tr<% @t[:fields].each do | field | if @t[:assoc].has_key? field %>
+				td = <%=@t[:assoc][field][0]%>s[row[:<%=field%>]]<% else %>
+				td = row[:<%=field%>]<% end %><% end %>
 				td : a href="/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/#{row[:<%=@t[:key_id]%>]}" fix
 				td : a href="/<%=@t[:module_name]%>/<%=@t[:file_name]%>/rm/#{row[:<%=@t[:key_id]%>]}" del
 

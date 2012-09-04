@@ -106,6 +106,8 @@ class Db
 	#
 	# ['table_name', 'field1', 'field2', 'field3']
 	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:null=false']
+	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:assoc=table.field_name']
+	# ['table_name', 'field1:primary_id', 'field2:string', 'field3:string:assoc=hash.val1.val2.val3']
 	# ['rename', 'old_table', 'new_table]
 	# ['drop', 'field1', 'field2', 'field3']
 	# ['alter', 'table_name', 'field1', 'field2', 'field3']
@@ -116,8 +118,9 @@ class Db
 	# :table, 	string 	---- table name
 	# :fields	array 	---- [field1, field2, field3]
 	# :types,	hash	---- {field1 => type_name, field2 => type_name}
+	# :htmls,	hash	---- {field1 => html_type, field2 => html_type}
 	# :others,	hash	---- {field1 => {attr => val}, field2 => {attr1 => val1, attr2 => val2}}
-	# :assocc,	hash	---- {field1 => [table, field1, assocc_field], field2 => [table, field2, assocc_field]}
+	# :assoc,	hash	---- {field1 => [table, field1, assoc_field], field2 => [table, field2, assoc_field]}
 
 	def arrange_fields data, auto = false
 		res = {}
@@ -133,10 +136,11 @@ class Db
 			res[:table] = data.shift
 		end
 
-		res[:fields] = []
-		res[:types] = {}
-		res[:others] = {}
-		res[:assocc] = {}
+		res[:htmls] 	= {}
+		res[:types] 	= {}
+		res[:fields] 	= []
+		res[:others] 	= {}
+		res[:assoc] 	= {}
 
 		if data.length > 0
 			#auto the fields
@@ -147,34 +151,41 @@ class Db
 					field = arr.shift
 					res[:fields] << field
 					res[:types][field] = arr.shift
+					res[:htmls][field] = res[:types][field]
 
-					#other attributes and assocc table-field
+					#other attributes and assoc table-field
 					if arr.length > 0
 						arr.each do | a |
 							if a.include? "="
 								key, val = a.split "="
 								key = key.to_sym
-								if key == :assocc
-									#the assocc attribute format as field:integer:assocc=table.field
-									res[:assocc][field] = {} unless res[:assocc].include? field
+
+								if key == :assoc
+									#the assocciated attribute format as field:integer:assoc=table.field
+									res[:assoc][field] = {} unless res[:assoc].include? field
 									if val.include? "."
-										table, assocc_field = val.split "."
-										res[:assocc][field] = [table, field, assocc_field]
+										table, assoc_field = val.split "."
+										res[:assoc][field] = [table, field, assoc_field]
 									end
+									res[:htmls][field] = "select"
+								elsif key == :html
+									res[:htmls][field] = val
 								else
 									res[:others][field] = {} unless res[:others].include? field
 									res[:others][field][key] = val
 								end
+								
 							end
 						end
 					end
 				else
 					res[:fields] << item
 					res[:types][item] = "string"
+					res[:htmls][item] = "string"
 				end
 			end
 		end
-
+		
 		res
 	end
 
