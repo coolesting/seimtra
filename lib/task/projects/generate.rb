@@ -73,6 +73,8 @@ class SeimtraThor < Thor
 
 			path 		= "modules/#{module_name}/#{Sbase::File_install[:menu]}"
 			menu 		= "\nname=#{menu_name}\n"
+			menu 		+= "prename=#{module_name}\n"
+			menu 		+= "type=#{@t[:module_name]}\n"
 			menu 		+= "link=/#{@t[:module_name]}/#{@t[:file_name]}\n"
 			menu 		+= "description=#{menu_des}\n"
 
