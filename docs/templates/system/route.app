@@ -1,8 +1,24 @@
 #display
 get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
 
-	sys_opt :new
-	ds = DB[:<%=@t[:table_name]%>]
+	sys_opt :new, :search
+
+	if @qs[:sw] and @qs[:sc]
+		ds = DB[:<%=@t[:table_name]%>].filter(@qs[:sw].to_sym => @qs[:sc])
+	else
+		ds = DB[:<%=@t[:table_name]%>]
+	end
+
+	#set the search condition
+	if settings.sys_opt.include? :search
+		@search = {<% @t[:fields].each do | field | %>:<%=field%> => '<%
+			if @t[:assoc].has_key? field
+				%><%=@t[:assoc][field][2]%>', <%
+			else
+				%><%=field%>', <%
+			end
+		end %>}
+	end
 
 	Sequel.extension :pagination
  	@<%=@t[:table_name]%> = ds.paginate(@page_curr, @page_size, ds.count)
