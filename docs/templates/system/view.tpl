@@ -1,6 +1,6 @@
 table.table
 	thead<% @t[:fields].each do | field | %><% field = @t[:assoc][field][2] if @t[:assoc].has_key?(field) %>
-		th = L[:<%=field%>]<% end %>
+		th : a href="#{sys_url('/<%=@t[:module_name]%>/<%=@t[:file_name]%>', :order => '<%=field%>')}" = L[:<%=field%>]<% end %>
 		th
 	tbody<% unless @t[:assoc].empty? ; @t[:assoc].each do | field, data | %>
 		- <%=data[0]%>s = <%=data[0]%>_record(:<%=data[1]%>, :<%=data[2]%>)<% end %><% end %>
@@ -15,5 +15,5 @@ table.table
 	p.page_bar
 		- for i in 1..@page_count
 			- page_focus = i == @page_curr ? "page_focus" : ""
-			a class="#{page_focus}" href="/system/<%=@t[:file_name]%>?page_curr=#{i}" = i
+			a class="#{page_focus}" href="#{sys_url('/system/<%=@t[:file_name]%>', :page_curr => i)}" = i
 			label &nbsp;&nbsp;

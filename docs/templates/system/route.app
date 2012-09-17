@@ -18,6 +18,17 @@ get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
 		end %>}
 	end
 
+	#order
+	if @qs[:order]
+		if @qs.has_key? :desc
+			ds = ds.reverse_order(@qs[:order].to_sym)
+			@qs.delete :desc
+		else
+			ds = ds.order(@qs[:order].to_sym)
+			@qs[:desc] = 'yes'
+		end
+	end
+
 	Sequel.extension :pagination
  	@<%=@t[:table_name]%> = ds.paginate(@page_curr, @page_size, ds.count)
  	@page_count = @<%=@t[:table_name]%>.page_count
