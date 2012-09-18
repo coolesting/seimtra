@@ -157,7 +157,7 @@ class Db
 					if Sbase::Field_type.include?(arr[0].to_sym) or Sbase::Main_key.include?(arr[0].to_sym)
 						res[:types][field] = arr.shift
 					else
-						res[:types][field] = "string"
+						res[:types][field] = match_field_type field
 					end
 
 					res[:htmls][field] = res[:types][field]
@@ -190,13 +190,24 @@ class Db
 					end
 				else
 					res[:fields] << item
-					res[:types][item] = "string"
 					res[:htmls][item] = "string"
+					res[:types][item] = match_field_type item
 				end
 			end
 		end
 		
 		res
+	end
+
+	#judge the field type, automatically 
+	def match_field_type field
+		field = field.to_s
+		len   = field.length
+		if field[len-2] == 'i' and field[len-1] == 'd'
+			'integer'
+		else
+			'string'
+		end
 	end
 
 	def generate_migration data
