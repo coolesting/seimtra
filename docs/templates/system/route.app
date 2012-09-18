@@ -80,7 +80,10 @@ post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
 
 	<%=@t[:file_name]%>_set_fields
 	<%=@t[:file_name]%>_valid_fields
-	DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i).update(@fields)
+	<% if @t[:types][@t[:key_id]].to_sym == :integer 
+	%>DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i).update(@fields)<% 
+	else 
+	%>DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>]).update(@fields)<% end %>
 	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
 
 end
