@@ -346,9 +346,10 @@ class Seimtra_system < Db
 				lang_type 	= file.split("/").last.split(".").first
 				result 		= Sfile.read file
 				table		= :language
+				mid			= DB[:module].filter(:name => name).get(:mid)
 
  				result.each do | label, content |
-					fields = {:label => label.to_s, :lang_type => lang_type}
+					fields = {:label => label.to_s, :lang_type => lang_type, :mid => mid}
 					if DB[table].filter(fields).count == 0
 						fields[:content] = content
  						DB[table].insert(fields)
