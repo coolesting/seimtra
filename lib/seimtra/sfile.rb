@@ -24,7 +24,9 @@ class Sfile
 		# read the file to hash or array, return nil if the file is not existing
 		def read path
 
+			result = ""
 			path = File.expand_path path
+
 			if File.exist? path
 
 				content = ''

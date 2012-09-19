@@ -297,8 +297,8 @@ class Seimtra_system < Db
 	end
 
 	def add_module install_modules
-		
-		#first of all, load the installed library
+
+		#first of all, load the installation library
 		modules = get_module
 		unless install_modules.class.to_s == "Array"
 			arr = []
@@ -316,7 +316,7 @@ class Seimtra_system < Db
 			end
 		end
 
-		#second, scan the file info in the install folder to database
+		#second, scan the file info of installation folder to database
 		install_modules.each do | name |
 			Dir["modules/#{name}/install/*.sfile"].each do | file |
 				file_name	= file.split("/").last
@@ -339,6 +339,23 @@ class Seimtra_system < Db
 						write_to_db table, row
 					end
 				end
+			end
+
+			#scanning the language folder
+			Dir["modules/#{name}/languages/*.lang"].each do | file |
+				lang_type 	= file.split("/").last.split(".").first
+				result 		= Sfile.read file
+				table		= :language
+
+ 				result.each do | label, content |
+					fields = {:label => label.to_s, :lang_type => lang_type}
+					if DB[table].filter(fields).count == 0
+						fields[:content] = content
+ 						DB[table].insert(fields)
+					else
+						DB[table].filter(fields).update(:content => content)
+					end
+ 				end
 			end
 		end
 
