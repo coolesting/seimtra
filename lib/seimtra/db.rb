@@ -342,19 +342,18 @@ class Seimtra_system < Db
 			end
 
 			#scanning the language folder
-			Dir["modules/#{name}/languages/*.lang"].each do | file |
+			Dir["modules/#{name}/languages/en.lang"].each do | file |
 				lang_type 	= file.split("/").last.split(".").first
 				result 		= Sfile.read file
-				table		= :language
 				mid			= DB[:module].filter(:name => name).get(:mid)
 
  				result.each do | label, content |
-					fields = {:label => label.to_s, :lang_type => lang_type, :mid => mid}
-					if DB[table].filter(fields).count == 0
+					fields = {:label => label.to_s, :mid => mid}
+					if DB[:language].filter(fields).count == 0
 						fields[:content] = content
- 						DB[table].insert(fields)
+ 						DB[:language].insert(fields)
 					else
-						DB[table].filter(fields).update(:content => content)
+						DB[:language].filter(fields).update(:content => content)
 					end
  				end
 			end
