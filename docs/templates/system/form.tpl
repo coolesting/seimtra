@@ -16,6 +16,15 @@ form action="#{request.path}" method="post" id="form"
 		<% elsif html_type == "text" %>
 		li : label <%=lname%>
 		li : textarea name="<%=field%>" required="required" = @fields[:<%=field%>]
+		<% elsif html_type == "radio" %>
+		li : label <%=lname%>
+		- <%=@t[:assoc][field][0]%>s = <%=@t[:assoc][field][0]%>_record(:<%=@t[:assoc][field][1]%>, :<%=@t[:assoc][field][2]%>)
+		li
+			- <%=@t[:assoc][field][0]%>s.each do | k,v |
+				- checked = @fields[:<%=@t[:assoc][field][1]%>] == k ? "checked" : ""
+				input id="radio_<%=@t[:assoc][field][1]%>_#{k}" type="radio" name="<%=@t[:assoc][field][1]%>" checked="#{checked}" value="#{k}"
+				label for="radio_<%=@t[:assoc][field][1]%>_#{k}" = v
+				br
 		<% elsif html_type == "select" %>
 		li : label <%=lname%>
 		- <%=@t[:assoc][field][0]%>s = <%=@t[:assoc][field][0]%>_record(:<%=@t[:assoc][field][1]%>, :<%=@t[:assoc][field][2]%>)

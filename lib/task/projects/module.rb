@@ -21,6 +21,7 @@ class SeimtraThor < Thor
 	DOC
 
 	desc "create [NAME]", "Create some directories of module structure"
+	method_option :menu, :type => :boolean
 	map "new" => :create
 	def create name
 		error('The module is existing.') if module_exist?(name)
@@ -44,6 +45,17 @@ class SeimtraThor < Thor
 
 		#write the module_name/install/module.sfile file
 		Sfile.write info, "modules/#{name}/install/module.sfile"
+
+		#add the system menu 
+		if options.menu?
+			menu = {}
+			menu[:name] = "#{name}"
+			menu[:type] = "system"
+			menu[:link] = "/system/#{name}"
+			menu[:description] = "No description about the #{name}"
+			Sfile.write menu, "modules/#{name}/install/menu.sfile"
+		end
+
 	end
 
 	long_desc <<-DOC
