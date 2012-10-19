@@ -1,5 +1,5 @@
 #display
-get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
+get '/<%=@t[:layout]%>/<%=@t[:file_name]%>' do
 
 	sys_opt :new, :search
 	ds = DB[:<%=@t[:table_name]%>]
@@ -33,50 +33,50 @@ get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>' do
  	@<%=@t[:table_name]%> = ds.paginate(@page_curr, @page_size, ds.count)
  	@page_count = @<%=@t[:table_name]%>.page_count
 
-	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>
+	slim :<%=@t[:layout]%>_<%=@t[:file_name]%>
 
 end
 
 #new a record
-get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
+get '/<%=@t[:layout]%>/<%=@t[:file_name]%>/new' do
 
 	@title = 'Create a new <%=@t[:file_name]%>'
 	sys_opt :save
 	<%=@t[:file_name]%>_set_fields
-	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>_form
+	slim :<%=@t[:layout]%>_<%=@t[:file_name]%>_form
 
 end
 
-post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/new' do
+post '/<%=@t[:layout]%>/<%=@t[:file_name]%>/new' do
 
 	<%=@t[:file_name]%>_set_fields
 	<%=@t[:file_name]%>_valid_fields
 	DB[:<%=@t[:table_name]%>].insert(@fields)
-	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
+	redirect "/<%=@t[:layout]%>/<%=@t[:file_name]%>"
 
 end
 
 #delete the record
-get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/rm/:<%=@t[:key_id]%>' do
+get '/<%=@t[:layout]%>/<%=@t[:file_name]%>/rm/:<%=@t[:key_id]%>' do
 
 	@title = 'Delete the <%=@t[:file_name]%> by id <%=@t[:key_id]%>, are you sure ?'
 	DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i).delete
-	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
+	redirect "/<%=@t[:layout]%>/<%=@t[:file_name]%>"
 
 end
 
 #edit the record
-get '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
+get '/<%=@t[:layout]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
 
 	@title = 'Edit the <%=@t[:file_name]%>'
 	sys_opt :save
 	@fields = DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>]).all[0]
  	<%=@t[:file_name]%>_set_fields
- 	slim :<%=@t[:module_name]%>_<%=@t[:file_name]%>_form
+ 	slim :<%=@t[:layout]%>_<%=@t[:file_name]%>_form
 
 end
 
-post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
+post '/<%=@t[:layout]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
 
 	<%=@t[:file_name]%>_set_fields
 	<%=@t[:file_name]%>_valid_fields
@@ -84,7 +84,7 @@ post '/<%=@t[:module_name]%>/<%=@t[:file_name]%>/edit/:<%=@t[:key_id]%>' do
 	%>DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>].to_i).update(@fields)<% 
 	else 
 	%>DB[:<%=@t[:table_name]%>].filter(:<%=@t[:key_id]%> => params[:<%=@t[:key_id]%>]).update(@fields)<% end %>
-	redirect "/<%=@t[:module_name]%>/<%=@t[:file_name]%>"
+	redirect "/<%=@t[:layout]%>/<%=@t[:file_name]%>"
 
 end
 

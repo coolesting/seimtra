@@ -15,11 +15,8 @@ class SeimtraThor < Thor
 
 	3s g post title content:text -a -t=article
 
-	#create the template by specfiy templates
-	3s g post title body --with=tpl:front
-
-	#create the router by module front, likes /front/new,  /front/
-	3s g post title body --with=mod:front
+	#create by specifying scaffold
+	3s g post title body --with=scaffold:front
 
 	DOC
 
@@ -42,6 +39,7 @@ class SeimtraThor < Thor
 		#set the template variables
 		@t					= {}
 		@t[:module_name]	= module_name
+		@t[:layout]			= module_name
 		@t[:file_name]		= data[:table]
 		@t[:table_name]		= data[:table]
 
@@ -55,25 +53,24 @@ class SeimtraThor < Thor
 		files 				= {}
 
 		#add a scaffold
-		#--with=mod:front tpl:front
-		mod_name = options[:with]['mod'] ? options[:with]['mod'] : 'system'
-		tpl_name = options[:with]['tpl'] ? options[:with]['tpl'] : 'system'
-		if mod_name
+		#--with=scaffold:front
+		scaffold = options[:with]['scaffold'] ? "#{options[:with]['scaffold']}" : 'system'
 
-			@t[:module_name]	= mod_name
+		if scaffold
 
-# 			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}.slim"
-# 			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}_form.slim"
-# 			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{@t[:file_name]}.rb" 
+			#set the layout
+			tpl_cfg = Sfile.read "#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}/config.sfile"
+			@t[:layout] = tpl_cfg[:layout] if tpl_cfg.include? :layout
 
-			Dir["#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{tpl_name}/*"].each do | source |
+			#copy the template to the targer file
+			Dir["#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}/*.tpl"].each do | source |
 
 				filename = source.split("/").last
 				if filename == 'view.tpl'
-					target = "modules/#{module_name}/templates/#{@t[:file_name]}.slim"
+					target = "modules/#{module_name}/templates/#{@t[:layout]}_#{@t[:file_name]}.slim"
 				elsif filename == 'form.tpl'
-					target = "modules/#{module_name}/templates/#{@t[:file_name]}_form.slim"
-				elsif filename == 'route.app'
+					target = "modules/#{module_name}/templates/#{@t[:layout]}_#{@t[:file_name]}_form.slim"
+				elsif filename == 'route.tpl'
 					target = "modules/#{module_name}/applications/#{@t[:file_name]}.rb"
 				end
 
@@ -93,8 +90,8 @@ class SeimtraThor < Thor
 
 			menu 		= "\nname=#{menu_name}\n"
 			menu 		+= "prename=#{module_name}\n"
-			menu 		+= "type=#{@t[:module_name]}\n"
-			menu 		+= "link=/#{@t[:module_name]}/#{@t[:file_name]}\n"
+			menu 		+= "type=#{@t[:layout]}\n"
+			menu 		+= "link=/#{@t[:layout]}/#{@t[:file_name]}\n"
 			menu 		+= "description=#{menu_des}\n"
 
 			append_to_file path, menu
