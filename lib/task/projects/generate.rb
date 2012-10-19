@@ -14,6 +14,13 @@ class SeimtraThor < Thor
 	or
 
 	3s g post title content:text -a -t=article
+
+	#create the template by specfiy templates
+	3s g post title body --with=tpl:front
+
+	#create the router by module front, likes /front/new,  /front/
+	3s g post title body --with=mod:front
+
 	DOC
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
@@ -47,18 +54,29 @@ class SeimtraThor < Thor
 
 		files 				= {}
 
-		#add a scaffold for system module
-		unless options[:with][:type] == "system"
+		#add a scaffold
+		#--with=mod:front tpl:front
+		mod_name = options[:with]['mod'] ? options[:with]['mod'] : 'system'
+		tpl_name = options[:with]['tpl'] ? options[:with]['tpl'] : 'system'
+		if mod_name
 
-			@t[:module_name]	= "system"
+			@t[:module_name]	= mod_name
 
-			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}.slim"
-			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}_form.slim"
-			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{@t[:file_name]}.rb" 
+# 			files["view.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}.slim"
+# 			files["form.tpl"] 	= "#{Sbase::Folders[:tpl]}/#{@t[:module_name]}_#{@t[:file_name]}_form.slim"
+# 			files["route.app"] 	= "#{Sbase::Folders[:app]}/#{@t[:file_name]}.rb" 
 
-			files.each do | source, target |
-				source = "#{Sbase::Paths[:tpl_system]}/#{source}"
-				target = "modules/#{module_name}/#{target}"
+			Dir["#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{tpl_name}/*"].each do | source |
+
+				filename = source.split("/").last
+				if filename == 'view.tpl'
+					target = "modules/#{module_name}/templates/#{@t[:file_name]}.slim"
+				elsif filename == 'form.tpl'
+					target = "modules/#{module_name}/templates/#{@t[:file_name]}_form.slim"
+				elsif filename == 'route.app'
+					target = "modules/#{module_name}/applications/#{@t[:file_name]}.rb"
+				end
+
 				unless File.exist?(target)
 					template(source, target)
 				else

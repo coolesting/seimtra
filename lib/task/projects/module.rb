@@ -17,7 +17,9 @@ class SeimtraThor < Thor
 
 	== Example
 
-	3s new module_name	
+		3s new module_name	
+	or
+		3s new module_name2 --menu
 	DOC
 
 	desc "create [NAME]", "Create some directories of module structure"

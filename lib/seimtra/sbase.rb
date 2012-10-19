@@ -44,7 +44,7 @@ module Seimtra
 		Paths				= {
 			:config_ms		=> 'c:\.Seimtra',
 			:config_lx		=> '~/.Seimtra',
-			:tpl_system		=> 'docs/templates/system',
+			:docs_tpl		=> 'docs/templates',
 			:docs_local		=> '/src/seimtra',
 			:docs_remote	=> 'https://github.com/coolesting/seimtra-docs.git'
 		}
