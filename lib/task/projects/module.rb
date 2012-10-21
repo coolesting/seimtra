@@ -58,7 +58,7 @@ class SeimtraThor < Thor
 			menu[:description] = "No description about the #{name}"
 			Sfile.write menu, "modules/#{name}/install/menu.sfile"
 
-			path = "modules/#{name}/applications/routors.rb"
+			path = "modules/#{name}/applications/routes.rb"
 			create_file path unless File.exist? path
 			append_to_file path, "\nget '#{menu[:link]}' do\n\t'Nothing in current page'\nend\n"
 		end
