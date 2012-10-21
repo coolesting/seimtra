@@ -53,9 +53,7 @@ module Seimtra
 			#the Seimfile default config option
 			:project			=> {
 				:status			=> "development",
-				:log 			=> 'off',
-				:log_path 		=> Dir.pwd + '/log/default',
-				:module_focus 	=> 'front'
+				:module_focus 	=> 'custom'
 			},
 
 			#the default module field
