@@ -24,6 +24,7 @@ class SeimtraThor < Thor
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash, :default => {}, :aliases => '-w'
+	method_option :menu, :type => :hash, :default => {}, :aliases => '-m'
 	method_option :norun, :type => :boolean
 	map 'g' => :generate
 	def generate *argv
@@ -84,8 +85,8 @@ class SeimtraThor < Thor
 			end
 
 			#add content to menu.sfile
-			menu_name	= options[:name] ? options[:name] : @t[:file_name]
-			menu_des	= options[:description] ? options[:description] : "No description about the #{@t[:file_name]}"
+			menu_name	= options[:menu].include?('name') ? options[:menu]['menu'] : @t[:file_name]
+			menu_des	= options[:menu].include?('des') ? options[:menu]['des'] : "No description about the #{@t[:file_name]}"
 
 			path 		= "modules/#{module_name}/#{Sbase::File_install[:menu]}"
 
