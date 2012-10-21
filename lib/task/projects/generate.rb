@@ -23,7 +23,7 @@ class SeimtraThor < Thor
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
-	method_option :with, :type => :hash, :default => {}
+	method_option :with, :type => :hash, :default => {}, :aliases => '-w'
 	method_option :norun, :type => :boolean
 	map 'g' => :generate
 	def generate *argv
@@ -61,6 +61,7 @@ class SeimtraThor < Thor
 			#set the layout
 			tpl_cfg = Sfile.read "#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}/config.sfile"
 			@t[:layout] = tpl_cfg[:layout] if tpl_cfg.include? :layout
+			@t[:layout] = options[:with]['layout'] if options[:with].include? 'layout'
 
 			#copy the template to the targer file
 			Dir["#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}/*.tpl"].each do | source |
