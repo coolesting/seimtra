@@ -16,12 +16,14 @@ class SeimtraThor < Thor
 	3s g post title content:text -a -t=article
 
 	#create by specifying scaffold
-	3s g post title body --with=scaffold:front
+	3s g post title body --scaffold=front
 
 	DOC
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
+	method_option :scaffold, :type => :string, :aliases => '-s'
+	method_option :layout, :type => :string, :aliases => '-l'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash, :default => {}, :aliases => '-w'
 	method_option :menu, :type => :hash, :default => {}, :aliases => '-m'
@@ -53,19 +55,19 @@ class SeimtraThor < Thor
 
 		files 				= {}
 
-		#add a scaffold
-		#--with=scaffold:front
-		scaffold = options[:with]['scaffold'] ? "#{options[:with]['scaffold']}" : 'system'
+		#choose a scaffold, like --scaffold=front, by default that is system
+		scaffold = options.include?(:scaffold) ? "#{options[:scaffold]}" : 'system'
+		scaf_path = "#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}"
 
 		if scaffold
 
 			#set the layout
-			tpl_cfg = Sfile.read "#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}/config.sfile"
+			tpl_cfg = Sfile.read "#{scaf_path}/config.sfile"
 			@t[:layout] = tpl_cfg[:layout] if tpl_cfg.include? :layout
-			@t[:layout] = options[:with]['layout'] if options[:with].include? 'layout'
+			@t[:layout] = options[:layout] if options.include?(:layout)
 
 			#copy the template to the targer file
-			Dir["#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}/*.tpl"].each do | source |
+			Dir["#{scaf_path}/*.tpl"].each do | source |
 
 				filename = source.split("/").last
 				if filename == 'view.tpl'
@@ -84,19 +86,19 @@ class SeimtraThor < Thor
 				end
 			end
 
-			#add content to menu.sfile
-			menu_name	= options[:menu].include?('name') ? options[:menu]['menu'] : @t[:file_name]
-			menu_des	= options[:menu].include?('des') ? options[:menu]['des'] : "No description about the #{@t[:file_name]}"
+			#menu.install
+			@t[:menu] = {}
+			@t[:menu][:name] = options[:menu].include?('name') ? options[:menu]['menu'] : @t[:file_name]
+			@t[:menu][:des]	= options[:menu].include?('des') ? options[:menu]['des'] : "No description about the #{@t[:file_name]}"
 
-			path 		= "modules/#{module_name}/#{Sbase::File_install[:menu]}"
-
-			menu 		= "\nname=#{menu_name}\n"
-			menu 		+= "prename=#{module_name}\n"
-			menu 		+= "type=#{@t[:layout]}\n"
-			menu 		+= "link=/#{@t[:layout]}/#{@t[:file_name]}\n"
-			menu 		+= "description=#{menu_des}\n"
-
-			append_to_file path, menu
+			path = "modules/#{module_name}/#{Sbase::File_install[:menu]}"
+			menufile = "#{scaf_path}/menu.install"
+			if File.exist? menufile
+				content = File.read(menufile)
+				menu = ""
+				eval("menu = \"#{content}\"")
+				append_to_file path, menu
+			end
 
 		end
 

@@ -407,48 +407,4 @@ class Seimtra_system < Db
 
 	end
 
-	def add_block name
-
-		mid 	= DB[:modules].filter(:name => name).get(:mid)
-		path 	= Dir.pwd + "/modules/#{name}/" + Sbase::File_install[:block]
-		result	= Sfile.read path
-
- 		unless result.empty?
-			table_fields = DB[:block].columns!
-
-			data_arr = []
-			if result.class.to_s == "Hash"
-				data_arr << result
-			else
-				data_arr = result
-			end
-
-			data_arr.each do | line |
-				options = {}
-				line.each do | item |
-					key, val = item	
-					options[key.to_sym] = val if table_fields.include? key.to_sym
-				end
-				options[:mid] = mid
-					
-				#set the default value for some fields of table
-				default_num_id = 0
-				Sbase::Block.keys.each do | item |
-					if options.include? item
-						index_id = Sbase::Block[item].index(options[item])
-						options[item] = index_id == nil ? default_num_id : index_id
-					else
-						options[item] = default_num_id
-					end
-				end
-
-				unless DB[:block].filter(:name => options[:name], :mid => mid).get(:name)
- 					insert :block, options
-				end
-			end
-
-		end
-
-	end
-
 end
