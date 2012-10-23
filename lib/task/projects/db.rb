@@ -94,7 +94,7 @@ class SeimtraThor < Thor
 		empty_directory(gpath) unless File.exist?(gpath)
 
 		#create a migration record
- 		if argv.length > 2
+ 		if argv.length >= 2
 
 			empty_directory(mpath) unless File.directory?(mpath)
 

@@ -3,26 +3,31 @@ class SeimtraThor < Thor
 	long_desc <<-DOC
 	== Description
 
-	Create the scaffold for current module
+	Create the scaffold to specifing module
 
-	3s g table_name field1 field2 field3
+	3s g scaffold_name table_name field1 field2 field3
 
-	create a post to article module
+	Exampla 1, create a post table withe field title, content to current module you focus,
+	the '-' is default scaffold name
 
-	3s g post pid:integer title content:text created:time changed:time -t=article
+	3s g - post title content -a
 
-	or
 
-	3s g post title content:text -a -t=article
+	Example 2, just create a form for putting data to database
 
-	#create by specifying scaffold
-	3s g post title body --scaffold=front
+	3s g form myform title content
+
+
+	Example 3, or maybe create a view, and display the data, no changing the database structure.
+
+	3s g view article title content
+
+	certainly, the article table is existing in current database.
 
 	DOC
 
 	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
-	method_option :scaffold, :type => :string, :aliases => '-s'
 	method_option :layout, :type => :string, :aliases => '-l'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash, :default => {}, :aliases => '-w'
@@ -31,10 +36,11 @@ class SeimtraThor < Thor
 	map 'g' => :generate
 	def generate *argv
 
-		error 'At least two more arguments.' unless argv.length > 2
+		error 'the arguments must more than 2.' unless argv.length >= 3
 
 		db					= Db.new
 		module_name 		= options[:to] ? options[:to] : get_module
+		scaffold			= argv.shift
 
 		auto				= options.autocomplete? ? true : false
 		data				= db.arrange_fields argv, auto
@@ -64,7 +70,7 @@ class SeimtraThor < Thor
 		scfg = Sfile.read(Dir.pwd + "/Seimfile")
 
 		#choose a scaffold, like --scaffold=front, by default that is system
-		scaffold = options.include?(:scaffold) ? "#{options[:scaffold]}" : scfg[:default_scaffold]
+		scaffold = scfg[:default_scaffold] if scaffold == '-'
 		scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
 
 		if scaffold
@@ -72,9 +78,10 @@ class SeimtraThor < Thor
 			#set the layout
 			tcfg = Sfile.read("#{scaf_path}/config.sfile")
 			@t[:layout] = tcfg[:layout] if tcfg.include? :layout
+			@t[:layout] = scfg[:layout] if scfg.include? :layout
 			@t[:layout] = options[:layout] if options.include?(:layout)
 
-			#copy the template to the targer file
+			#render routes and template file
 			Dir["#{scaf_path}/*.tpl"].each do | source |
 
 				filename = source.split("/").last
@@ -94,27 +101,28 @@ class SeimtraThor < Thor
 				end
 			end
 
-			#menu.install
-			@t[:menu] = {}
-			@t[:menu][:name] = options[:menu].include?('name') ? options[:menu]['menu'] : @t[:file_name]
-			@t[:menu][:des]	= options[:menu].include?('des') ? options[:menu]['des'] : "No description about the #{@t[:file_name]}"
-
-			path = "modules/#{module_name}/#{Sbase::File_install[:menu]}"
+			#render install menu
 			menufile = "#{scaf_path}/menu.install"
 			if File.exist? menufile
+				menu_path = "modules/#{module_name}/#{Sbase::File_install[:menu]}"
+				@t[:menu] = {}
+				@t[:menu][:name] = options[:menu].include?('name') ? options[:menu]['menu'] : @t[:file_name]
+				@t[:menu][:des]	= options[:menu].include?('des') ? options[:menu]['des'] : "No description about the #{@t[:file_name]}"
 				content = File.read(menufile)
 				menu = ""
 				eval("menu = \"#{content}\"")
-				append_to_file path, menu
+				append_to_file menu_path, menu
 			end
 
+			#run the db
+			isrun = tcfg.include?(:run) ? tcfg[:run] : 'on'
+			isrun = 'off' if options.norun? 
+			if isrun == 'on'
+				run "3s db #{data[:table]} #{argv.join(' ')} --to=#{module_name}"
+				run "3s update #{module_name}"
+			end
 		end
 
-		run "3s db #{data[:table]} #{argv.join(' ')} --to=#{module_name}"
-
-		unless options.norun?
-			run "3s update #{module_name}"
-		end
 	end
 
 end
