@@ -55,9 +55,15 @@ class SeimtraThor < Thor
 
 		files 				= {}
 
+		#load all of scaffolds
+		scaffolds = {}
+		Dir["modules/*/scaffolds/*"].each do | path |
+			scaffolds[path.split("/").last] = path
+		end
+
 		#choose a scaffold, like --scaffold=front, by default that is system
 		scaffold = options.include?(:scaffold) ? "#{options[:scaffold]}" : 'system'
-		scaf_path = "#{ROOTPATH}/#{Sbase::Paths[:docs_tpl]}/#{scaffold}"
+		scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
 
 		if scaffold
 
