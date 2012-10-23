@@ -19,7 +19,7 @@ class Db
 	#@name symbol
 	def check_column name
 		columns = get_columns
-		columns.include?(name.to_sym) ? true : false
+		columns.include?(name) ? true : false
 	end
 
 	def get_tables
@@ -142,7 +142,9 @@ class Db
 		res[:others] 	= {}
 		res[:assoc] 	= {}
 
+
 		if data.length > 0
+
 			#auto the fields
 			data = autocomplete(res[:table], data) if auto == true
 			data.each do | item |

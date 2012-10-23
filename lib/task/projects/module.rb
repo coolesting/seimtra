@@ -63,6 +63,8 @@ class SeimtraThor < Thor
 			append_to_file path, "\nget '#{menu[:link]}' do\n\tslim :default\nend\n"
 		end
 
+		run "3s update #{name}"
+
 	end
 
 	long_desc <<-DOC
