@@ -61,15 +61,17 @@ class SeimtraThor < Thor
 			scaffolds[path.split("/").last] = path
 		end
 
+		scfg = Sfile.read(Dir.pwd + "/Seimfile")
+
 		#choose a scaffold, like --scaffold=front, by default that is system
-		scaffold = options.include?(:scaffold) ? "#{options[:scaffold]}" : 'system'
+		scaffold = options.include?(:scaffold) ? "#{options[:scaffold]}" : scfg[:default_scaffold]
 		scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
 
 		if scaffold
 
 			#set the layout
-			tpl_cfg = Sfile.read "#{scaf_path}/config.sfile"
-			@t[:layout] = tpl_cfg[:layout] if tpl_cfg.include? :layout
+			tcfg = Sfile.read("#{scaf_path}/config.sfile")
+			@t[:layout] = tcfg[:layout] if tcfg.include? :layout
 			@t[:layout] = options[:layout] if options.include?(:layout)
 
 			#copy the template to the targer file
