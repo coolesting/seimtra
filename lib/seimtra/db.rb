@@ -116,7 +116,7 @@ class Db
 	# it is a hash value, the options as the following
 	# :operator, symbol ---- :create, :alter, :drop, :rename
 	# :table, 	string 	---- table name
-	# :fields	array 	---- [field1, field2, field3]
+	# :fields,	array 	---- [field1, field2, field3]
 	# :types,	hash	---- {field1 => type_name, field2 => type_name}
 	# :htmls,	hash	---- {field1 => html_type, field2 => html_type}
 	# :others,	hash	---- {field1 => {attr => val}, field2 => {attr1 => val1, attr2 => val2}}
