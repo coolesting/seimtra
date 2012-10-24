@@ -204,9 +204,11 @@ class SeimtraThor < Thor
 			end
 		end
 
-		def get_erb_content path
+		def get_erb_content path, relative = true
 			require 'erb'
-			path = ROOTPATH + "/" + path
+
+			path = ROOTPATH + "/" + path if relative == true
+
 			if File.exist? path
 				content = File.read(path)
 				t = ERB.new(content)

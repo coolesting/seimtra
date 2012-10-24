@@ -19,9 +19,9 @@ class SeimtraThor < Thor
 	3s g form myform title content
 
 
-	Example 03, or maybe create a view, and display the data, no changing the database structure.
+	Example 03, or maybe create a view for displaying the data, no changing the database structure.
 
-	3s g view article title content
+	3s g view module mid name
 
 	certainly, the article table is existing in current database.
 
@@ -33,7 +33,7 @@ class SeimtraThor < Thor
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash, :default => {}, :aliases => '-w'
 	method_option :menu, :type => :hash, :default => {}, :aliases => '-m'
-	method_option :norun, :type => :boolean
+	method_option :norun, :type => :boolean, :aliases => '-nr'
 	map 'g' => :generate
 	def generate *argv
 
@@ -98,7 +98,7 @@ class SeimtraThor < Thor
 				unless File.exist?(target)
 					template(source, target)
 				else
-					content = get_erb_content source
+					content = get_erb_content source, false
 					append_to_file target, content
 				end
 			end
