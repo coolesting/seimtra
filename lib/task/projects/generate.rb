@@ -7,18 +7,19 @@ class SeimtraThor < Thor
 
 	3s g scaffold_name table_name field1 field2 field3
 
-	Exampla 1, create a post table withe field title, content to current module you focus,
+
+	Exampla 01, create a post table withe field title, content to current module you focus,
 	the '-' is default scaffold name
 
 	3s g - post title content -a
 
 
-	Example 2, just create a form for putting data to database
+	Example 02, just create a form for putting data to database
 
 	3s g form myform title content
 
 
-	Example 3, or maybe create a view, and display the data, no changing the database structure.
+	Example 03, or maybe create a view, and display the data, no changing the database structure.
 
 	3s g view article title content
 
@@ -69,7 +70,7 @@ class SeimtraThor < Thor
 
 		scfg = Sfile.read(Dir.pwd + "/Seimfile")
 
-		#choose a scaffold, like --scaffold=front, by default that is system
+		#set the default scaffold, like --scaffold=form, by default, that is admin scaffold
 		scaffold = scfg[:default_scaffold] if scaffold == '-'
 		scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
 

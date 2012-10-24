@@ -48,13 +48,13 @@ class SeimtraThor < Thor
 		#write the module_name/install/module.sfile file
 		Sfile.write info, "modules/#{name}/install/module.sfile"
 
-		#add the system menu 
+		#add the admin menu 
 		if options.menu?
 			#a menu to install/menu.sfile
 			menu = {}
 			menu[:name] = "#{name}"
-			menu[:type] = "system"
-			menu[:link] = "/system/#{name}"
+			menu[:type] = "admin"
+			menu[:link] = "/admin/#{name}"
 			menu[:description] = "No description about the #{name}"
 			Sfile.write menu, "modules/#{name}/install/menu.sfile"
 
