@@ -9,9 +9,9 @@ class SeimtraThor < Thor
 
 
 	Exampla 01, create a post table withe field title, content to current module you focus,
-	the '-' is default scaffold name
+	the ',' or '.' is the default scaffold name
 
-	3s g - post title content -a
+	3s g , post title content -a
 
 
 	Example 02, just create a form for putting data to database
