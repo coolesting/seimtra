@@ -27,7 +27,7 @@ class SeimtraThor < Thor
 
 	DOC
 
-	desc "generate [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
+	desc "generate [SCAFFOLD_NAME] [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :layout, :type => :string, :aliases => '-l'
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
@@ -37,7 +37,7 @@ class SeimtraThor < Thor
 	map 'g' => :generate
 	def generate *argv
 
-		error 'the arguments must more than 2.' unless argv.length >= 3
+		error 'the arguments must more than 2.' unless argv.length > 2
 
 		db					= Db.new
 		module_name 		= options[:to] ? options[:to] : get_module
@@ -71,7 +71,8 @@ class SeimtraThor < Thor
 		scfg = Sfile.read(Dir.pwd + "/Seimfile")
 
 		#set the default scaffold, like --scaffold=form, by default, that is admin scaffold
-		scaffold = scfg[:default_scaffold] if scaffold == '-'
+		scaffold = scfg[:default_scaffold] if scaffold == '.' or scaffold == ','
+		error "The scaffold called ''#{scaffold}'' is not existing." unless scaffolds.include? scaffold
 		scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
 
 		if scaffold

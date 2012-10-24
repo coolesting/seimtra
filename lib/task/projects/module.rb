@@ -48,8 +48,10 @@ class SeimtraThor < Thor
 		#write the module_name/install/module.sfile file
 		Sfile.write info, "modules/#{name}/install/module.sfile"
 
+		scfg = Sfile.read "#{Dir.pwd}/Seimfile"
+
 		#add the admin menu 
-		if options.menu?
+		if options.menu? or scfg.has_key? :auto_add_admin_menu
 			#a menu to install/menu.sfile
 			menu = {}
 			menu[:name] = "#{name}"
