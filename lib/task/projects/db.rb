@@ -76,7 +76,7 @@ class SeimtraThor < Thor
 	method_option :output, :type => :boolean, :aliases => '-o'
 	method_option :details, :type => :boolean, :aliases => '-d'
 	method_option :schema, :type => :boolean
-	desc "db [DATA]", "Create/Run the migrations, output schema/migration of database"
+	desc "db [ARGV]", "Create/Run the migrations, output schema/migration of database"
 	def db *argv
 
 		#initialize data
@@ -103,10 +103,15 @@ class SeimtraThor < Thor
  			file_nums 	= get_file_num(mpath)
 			file 		= mpath + "/#{file_nums}_#{data[:operator]}_#{data[:table]}.rb"
 
-			content = db.generate_migration data
-			isay "\n" + "#"*15 + " your migration content as the following " + "#"*15 + "\n"
- 			isay content
- 			create_file file, content
+			if db.get_tables.include? data[:table].to_sym
+				isay "\nNote that the table #{data[:table]} is existing, we haven't created again.\n"
+			else
+				content = db.generate_migration data
+				isay "\n" + "#"*15 + " your migration content as the following " + "#"*15 + "\n"
+ 				isay content
+ 				create_file file, content
+			end
+
 		end
 
 		#implement the migrations
