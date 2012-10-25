@@ -269,7 +269,6 @@ class Seimtra_system < Db
 	# == output
 	# return the local module that has not been installed to database, otherwise is null 
 	def check_module module_names
-
 		#get all of module if nothing be specified to installing
 		install_modules = []
 		local_modules	= []
@@ -293,13 +292,10 @@ class Seimtra_system < Db
 		end
 
 		return_modules = local_modules if db_modules.empty?
-
 		return_modules.empty? ? nil : return_modules
-
 	end
 
 	def add_module install_modules
-
 		#first of all, load the installation library
 		modules = get_module
 		unless install_modules.class.to_s == "Array"
@@ -360,7 +356,6 @@ class Seimtra_system < Db
  				end
 			end
 		end
-
 	end
 
 	# == write_to_db
@@ -370,7 +365,6 @@ class Seimtra_system < Db
 	# table, string, a table name
 	# result, hash, table field data
 	def write_to_db table, row
-
 		table			= table.to_sym
 		table_fields 	= DB[table].columns!
 
@@ -394,19 +388,16 @@ class Seimtra_system < Db
  				insert table, fields
 			end
 		end
-
 	end
 
 	# == get_module
 	# get all of modules that have been installed to database
 	def get_module
-
 		modules = []
 		DB[:module].each do | row |
 			modules << row[:name]
 		end
 		modules
-
 	end
 
 end

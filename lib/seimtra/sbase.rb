@@ -1,7 +1,6 @@
 module Seimtra
 
 	module Sbase
-
 		#the information about the Seimtra WAS
 		Version 			= 	{
 			:name			=>	'Seimtra',
@@ -101,7 +100,6 @@ module Seimtra
 		Main_key			= [:primary_key, :index, :foreign_key, :unique]
 
 		Field_type			= [:integer, :string, :text, :file, :float, :datetime, :data, :time, :numeric]
-
 	end
 
 end

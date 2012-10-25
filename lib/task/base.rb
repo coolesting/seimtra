@@ -14,7 +14,6 @@ class SeimtraThor < Thor
 	desc "init [NAME]", "Create a project with the name given"
 	method_option :status, :type => :string
 	def init project_name = 'seimtra_project'
-
 		#check the config file of customization
 		config_path
 		
@@ -37,16 +36,6 @@ class SeimtraThor < Thor
 			seimfile[key] = val
 		end
 		Sfile.write seimfile, spath
-
-		#write the admin user to user module
-# 		require "digest/sha1"
-# 		user_path = "modules/user/install/user.sfile"
-# 		user_salt = random_string 5
-# 		user_pawd = Digest::SHA1.hexdigest(Sbase::Root_user[:pawd] + user_salt)		
-# 		user_content = "name=#{Sbase::Root_user[:name]}\npawd=#{user_pawd}\nsalt=#{user_salt}\ncreated=#{Time.now}"
-# 		File.open(user_path, 'w+') do |f|
-# 			f.write(user_content)
-# 		end
 
 		#install modules
 		run "3s install "
@@ -206,7 +195,6 @@ class SeimtraThor < Thor
 
 		def get_erb_content path, relative = true
 			require 'erb'
-
 			path = ROOTPATH + "/" + path if relative == true
 
 			if File.exist? path

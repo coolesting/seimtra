@@ -36,7 +36,6 @@ class SeimtraThor < Thor
 	method_option :norun, :type => :boolean, :aliases => '-nr'
 	map 'g' => :generate
 	def generate *argv
-
 		error 'the arguments must more than 2.' unless argv.length > 2
 
 		db					= Db.new
@@ -124,7 +123,6 @@ class SeimtraThor < Thor
 				run "3s update #{module_name}"
 			end
 		end
-
 	end
 
 end

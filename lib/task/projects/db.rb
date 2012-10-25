@@ -78,7 +78,6 @@ class SeimtraThor < Thor
 	method_option :schema, :type => :boolean
 	desc "db [ARGV]", "Create/Run the migrations, output schema/migration of database"
 	def db *argv
-
 		#initialize data
 		db 				= Db.new
 		error(db.msg) if db.error
@@ -152,7 +151,6 @@ class SeimtraThor < Thor
 			end
 			puts "\n"
 		end
-
 	end
 
 end

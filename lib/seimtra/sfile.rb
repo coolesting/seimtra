@@ -23,7 +23,6 @@ class Sfile
 
 		# read the file to hash or array, return nil if the file is not existing
 		def read path
-
 			result = ""
 			path = File.expand_path path
 
@@ -73,7 +72,6 @@ class Sfile
 			end
 
 			result == "" ? nil : result
-
 		end
 
 		# == Description
@@ -83,7 +81,6 @@ class Sfile
 		# content, an array, or hash
 		# path, string, likes this modules/install/menu.sfile
 		def write data, path
-
 			content = ""
 			file_type = data.class.to_s
 
@@ -105,9 +102,7 @@ class Sfile
 			File.open(path, 'w+') do |f|
 				f.write content
 			end
-
 		end
-
 
 	end
 

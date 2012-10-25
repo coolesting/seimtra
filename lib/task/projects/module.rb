@@ -66,7 +66,6 @@ class SeimtraThor < Thor
 		end
 
 		run "3s update #{name}"
-
 	end
 
 	long_desc <<-DOC
@@ -105,7 +104,6 @@ class SeimtraThor < Thor
 	method_option :path, :type => :string
 	map "install" => :add
 	def add *module_names
-
 		ss = Seimtra_system.new
 		modules = ss.check_module module_names
 
@@ -127,7 +125,6 @@ class SeimtraThor < Thor
 				run "bundle install --gemfile=#{path}" if File.exist? path
 			end
 		end
-
 	end
 
 	long_desc <<-DOC
@@ -143,7 +140,6 @@ class SeimtraThor < Thor
 
 	desc 'update [MODULE_NAMES]', 'update the module'
 	def update *module_names
-
  		ss = Seimtra_system.new
  		modules = ss.check_module module_names
  
@@ -162,7 +158,6 @@ class SeimtraThor < Thor
 			ss.add_module name
 
 		end
-
 	end
 
 end

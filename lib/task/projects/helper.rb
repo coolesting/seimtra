@@ -23,7 +23,6 @@ class SeimtraThor < Thor
 	desc "info [MODULE_NAME]", "Show the info of project, config and module"
 	method_option :configs, :type => :boolean, :aliases => '-c'
 	def info name = ''
-
 		if name != ""
 			error("The module #{name} is not existing") unless module_exist? name 
 			result = Sfile.read "modules/#{name}/install/module.sfile"
@@ -38,7 +37,6 @@ class SeimtraThor < Thor
 		end
 
 		show_info(result, str)
-
 	end
 
 end
