@@ -69,17 +69,23 @@ class SeimtraThor < Thor
 
 		scfg = Sfile.read(Dir.pwd + "/Seimfile")
 
-		#set the default scaffold, like --scaffold=form, by default, that is admin scaffold
-		scaffold = scfg[:default_scaffold] if scaffold == '.' or scaffold == ','
-		error "The scaffold called ''#{scaffold}'' is not existing." unless scaffolds.include? scaffold
-		scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
+		#assign the scaffold value
+		if scaffold.length > 2 and scaffold.index(",")
+			loop_scaffolds = scaffold.split(",")
+		else
+			scaffold = scfg[:default_scaffold] if scaffold == ',' or scaffold == '.'
+			loop_scaffolds = Array[scaffold]
+		end
 
-		if scaffold
+		loop_scaffolds.each do | scaffold |
+
+			error "The scaffold called ''#{scaffold}'' is not existing." unless scaffolds.include? scaffold
+			scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
 
 			#set the layout
 			tcfg = Sfile.read("#{scaf_path}/config.sfile")
-			@t[:layout] = tcfg[:layout] if tcfg.include? :layout
 			@t[:layout] = scfg[:layout] if scfg.include? :layout
+			@t[:layout] = tcfg[:layout] if tcfg.include? :layout
 			@t[:layout] = options[:layout] if options.include?(:layout)
 
 			#render routes and template file
