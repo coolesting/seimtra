@@ -296,6 +296,10 @@ class Seimtra_system < Db
 	end
 
 	def add_module install_modules
+
+		scfg = Sfile.read Dir.pwd + "/Seimfile"
+		default_lang = scfg.include?(:lang) ? scfg[:lang] : 'en'
+
 		#first of all, load the installation library
 		modules = get_module
 		unless install_modules.class.to_s == "Array"
@@ -340,7 +344,7 @@ class Seimtra_system < Db
 			end
 
 			#scanning the language folder
-			Dir["modules/#{name}/languages/en.lang"].each do | file |
+			Dir["modules/#{name}/languages/#{default_lang}.lang"].each do | file |
 				lang_type 	= file.split("/").last.split(".").first
 				result 		= Sfile.read file
 				mid			= DB[:module].filter(:name => name).get(:mid)
