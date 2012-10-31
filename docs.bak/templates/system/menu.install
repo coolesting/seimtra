@@ -1,6 +1,0 @@
-name=#{@t[:menu][:name]}
-prename=#{@t[:module_name]}
-type=#{@t[:layout]}
-link=/#{@t[:layout]}/#{@t[:file_name]}
-description=#{@t[:menu][:des]}
-
