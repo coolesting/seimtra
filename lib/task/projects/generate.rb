@@ -12,6 +12,7 @@ class SeimtraThor < Thor
 	the ',' or '.' is the default scaffold name
 
 	3s g , post title content -a
+	3s g admin post title body
 
 
 	Example 02, just create a form for putting data to database
@@ -24,6 +25,11 @@ class SeimtraThor < Thor
 	3s g view module mid name
 
 	certainly, the article table is existing in current database.
+
+
+	Example 04, create admin and view simultaneously
+
+	3s g admin,view post title body
 
 	DOC
 
@@ -70,8 +76,12 @@ class SeimtraThor < Thor
 		scfg = Sfile.read(Dir.pwd + "/Seimfile")
 
 		#assign the scaffold value
-		if scaffold.length > 2 and scaffold.index(",")
-			loop_scaffolds = scaffold.split(",")
+		if scaffold.length > 2 and (scaffold.index(",") or scaffold.index("."))
+			if scaffold.index(",")
+				loop_scaffolds = scaffold.split(",")
+			else
+				loop_scaffolds = scaffold.split(".")
+			end
 		else
 			scaffold = scfg[:default_scaffold] if scaffold == ',' or scaffold == '.'
 			loop_scaffolds = Array[scaffold]
