@@ -172,7 +172,7 @@ class Db
 								key = key.to_sym
 
 								if key == :assoc
-									#the assocciated attribute format as field:integer:assoc=table.field
+									#the associated attribute format likes this, field:assoc=table.field
 									res[:assoc][field] = {} unless res[:assoc].include? field
 									if val.include? "."
 										table, assoc_field = val.split "."
@@ -182,6 +182,7 @@ class Db
 									res[:types][field] = "integer"
 								elsif key == :html
 									res[:htmls][field] = val
+									res[:types][field] = "string" if val == "checkbox"
 								else
 									res[:others][field] = {} unless res[:others].include? field
 									res[:others][field][key] = val
