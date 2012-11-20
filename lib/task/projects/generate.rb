@@ -107,7 +107,7 @@ class SeimtraThor < Thor
 				elsif filename == 'form.tpl'
 					target = "modules/#{module_name}/templates/#{@t[:layout]}_#{@t[:file_name]}_form.slim"
 				elsif filename == 'route.tpl'
-					target = "modules/#{module_name}/applications/#{@t[:file_name]}.rb"
+					target = "modules/#{module_name}/applications/#{@t[:layout]}_#{@t[:file_name]}.rb"
 				end
 
 				unless File.exist?(target)
