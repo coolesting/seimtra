@@ -92,14 +92,33 @@ module Seimtra
 
 		Status_type 		= ["development", "production", "test"]
 
-		Block 				=	{
-			:display		=> ["center", "header", "footer", "left", "right", "none"],
-			:type			=> ["link", "text"]
-		}
-
 		Main_key			= [:primary_key, :index, :foreign_key, :unique]
 
-		Field_type			= [:integer, :string, :text, :file, :float, :datetime, :data, :time, :numeric]
+		Field_type			= {
+
+			:integer		=> 	'integer',
+			:string 		=> 	'string',
+			:text 			=> 	'text',
+			:file			=>	'file',
+			:float			=>	'float',
+			:datetime		=>	'datetime',
+			:date			=>	'date',
+			:time			=>	'time',
+			:numeric		=>	'numeric',
+
+			:int			=>	'integer',
+			:str			=>	'string',
+			:dt				=>	'datetime',
+			:num			=>	'numeric',
+			:pk				=>	'primary_key',
+			:fk				=>	'foreign_key',
+
+			:primary_key	=>	'primary_key',
+			:foreign_key	=>	'foreign_key',
+			:index			=>	'index',
+			:unique			=>	'unique'
+
+		}
 	end
 
 end

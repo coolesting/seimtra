@@ -156,8 +156,8 @@ class Db
 					res[:fields] << field
 
 					#field type
-					if Sbase::Field_type.include?(arr[0].to_sym) or Sbase::Main_key.include?(arr[0].to_sym)
-						res[:types][field] = arr.shift
+					if Sbase::Field_type.has_key? arr[0].to_sym
+						res[:types][field] = Sbase::Field_type[arr.shift.to_sym]
 					else
 						res[:types][field] = match_field_type field
 					end
@@ -208,6 +208,10 @@ class Db
 		len   = field.length
 		if field[len-2] == 'i' and field[len-1] == 'd'
 			'integer'
+		elsif field == 'order'
+			'integer'
+		elsif field == 'created' or field == 'changed'
+			'datetime'
 		else
 			'string'
 		end
