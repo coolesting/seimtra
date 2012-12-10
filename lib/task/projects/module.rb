@@ -62,7 +62,7 @@ class SeimtraThor < Thor
 
 			path = "modules/#{name}/applications/routes.rb"
 			create_file path unless File.exist? path
-			append_to_file path, "\nget '#{menu[:link]}' do\n\tslim :default\nend\n"
+			append_to_file path, "\nget '#{menu[:link]}' do\n\tsys_tpl :default\nend\n"
 		end
 
 		run "3s update #{name}"

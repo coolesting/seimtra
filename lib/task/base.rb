@@ -175,7 +175,7 @@ class SeimtraThor < Thor
 			elsif result.class.to_s == "Array"
 				result.each do | item | 
 					str += "\n" + item.to_s
-				end
+			end
 			else
 				str += str
 			end

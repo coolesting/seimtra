@@ -25,6 +25,7 @@ class Sfile
 		def read path
 			result = ""
 			path = File.expand_path path
+			commend_sign = ['"', '\'', '#']
 
 			if File.exist? path
 
@@ -39,9 +40,11 @@ class Sfile
 					content.split("\n\n").each do | lines |
 						row = {}
 						lines.split("\n").each do | line |
-							unless line[0] == '"' and line.index("=")
-								key, val = line.split("=")
-								row[key.to_sym] = val
+							unless commend_sign.include? line[0]
+								if line.index("=")
+									key, val = line.split("=")
+									row[key.to_sym] = val
+								end
 							end
 						end
 						result << row unless row.empty?
