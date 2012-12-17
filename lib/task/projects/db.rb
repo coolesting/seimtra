@@ -49,7 +49,7 @@ class SeimtraThor < Thor
 
 		3s db alter table_name drop_column column_name
 
-	create a database with two fields, and autocomplete primary_id, created, changed time, then run the migration records :
+	create a database with two fields, and autocomplete primary_id, changed time, then run the migration records :
 
 		3s db table_name title,String body,text -a -r
 
@@ -103,7 +103,7 @@ class SeimtraThor < Thor
 			file 		= mpath + "/#{file_nums}_#{data[:operator]}_#{data[:table]}.rb"
 
 			if db.get_tables.include? data[:table].to_sym
-				isay "\nNote that the table #{data[:table]} is existing, we haven't created again.\n"
+				isay "\nNote that the table #{data[:table]} is existing, it hasn't created .\n"
 			else
 				content = db.generate_migration data
 				isay "\n" + "#"*15 + " your migration content as the following " + "#"*15 + "\n"

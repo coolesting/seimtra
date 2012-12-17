@@ -81,7 +81,7 @@ class Db
 	# @argv array, 	the fields
 	#
 	# == output
-	# an array, like this ['aid:primary_key', 'title', 'body', 'created:datetime', 'changed:datetime']
+	# an array, like this ['aid:primary_key', 'title', 'body', 'changed:datetime']
 	def autocomplete name, argv
 		#match a id
 		i = 1
@@ -92,7 +92,6 @@ class Db
 		argv.unshift("#{id}:primary_key")
 
 		#match time field
-		argv << 'created:datetime'
 		argv << 'changed:datetime'
 		argv
 	end
@@ -210,7 +209,7 @@ class Db
 			'integer'
 		elsif field == 'order'
 			'integer'
-		elsif field == 'created' or field == 'changed'
+		elsif field == 'changed'
 			'datetime'
 		else
 			'string'
@@ -389,11 +388,9 @@ class Seimtra_system < Db
 
 			#do not insert if the data is exsiting
 			#delete the time
-			fields.delete :created if fields.include? :created
 			fields.delete :changed if fields.include? :changed
 			if DB[table].filter(fields).count == 0
  				fields[:changed] = Time.now if table_fields.include? :changed 
- 				fields[:created] = Time.now if table_fields.include? :created 
  				insert table, fields
 			end
 		end
