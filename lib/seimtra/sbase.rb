@@ -7,7 +7,7 @@ module Seimtra
 			:created		=>	'2011-10-13',
 			:alias_name		=>	'3s',
 			:version		=>	'0.0.1',
-			:author			=>	'Bruce deng coolesting',
+			:author			=>	'Linyu den coolesting',
 			:email			=>	'coolesting@gmail.com',
 			:hoempage		=>	'https://github.com/coolesting/seimtra',
 			:summary		=>	'no summary, currentlly',
