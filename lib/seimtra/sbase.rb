@@ -10,7 +10,7 @@ module Seimtra
 			:author			=>	'Linyu den coolesting',
 			:email			=>	'coolesting@gmail.com',
 			:hoempage		=>	'https://github.com/coolesting/seimtra',
-			:summary		=>	'no summary, currentlly',
+			:summary		=>	'Seimtra is a web application system.',
 			:description	=>	'Seimtra is a web application system.'
 		}
 
@@ -19,25 +19,33 @@ module Seimtra
 			:seimfile		=> 'Seimfile'
 		}
 
-		#the installed files is required
+		#the installed files
 		Files 				= 	{
-			:info			=>	'install/module.sfile',
+			:info			=>	'install/_mods.sfile',
 			:readme			=>	'README.md'
 		}
 
-		#the other installeed files is optional
+		File_installer		=	'install/install.rb',
+
+		#other installed files
 		File_install		 = {
-# 			:tag			=>	'install/tag.sfile',
-# 			:user			=>	'install/user.sfile',
-# 			:setting		=>	'install/setting.sfile',
-			:menu			=>	'install/menu.sfile'
+			:menu			=>	'install/_menu.sfile'
 		}
 
-		#the required folders
+		File_app		 	= {
+			:routes			=>	'applications/routes.rb'
+		}
+
+		#the basic folder
 		Folders 			= {
 			:app			=>	'applications',
 			:tpl			=>	'templates',
 			:install		=>	'install'
+		}
+
+		Folders_others		= {
+			:lang			=> 	'languages',
+			:migrations		=> 	'migrations'
 		}
 
 		Paths				= {
@@ -58,14 +66,13 @@ module Seimtra
 			#the default module field
 			:module			 	=> {
 				:name			=> '',
-				:load_order		=> 9,
-				:opened			=> 'on',
-				:status 		=> 'development',
+				:order			=> 9,
+				:status 		=> 1,
 				:email			=> 'empty',
 				:author 		=> 'unknown',
 				:created 		=> Time.now,
 				:version 		=> '0.0.1',
-				:group 			=> 'common',
+				:tid 			=> 1,	#tag id
 				:dependon		=> '',
 				:description	=> 'No description'
 			},

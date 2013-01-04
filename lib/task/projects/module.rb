@@ -45,12 +45,12 @@ class SeimtraThor < Thor
 			f.write("## INTRODUCTION\n\n#{info[:description]}")
 		end
 
-		#write the module_name/install/module.sfile file
-		Sfile.write info, "modules/#{name}/install/module.sfile"
+		#write the module_name/install/_mods.sfile file
+		Sfile.write info, "modules/#{name}/#{Sbase::Files[:info]}"
 
-		scfg = Sfile.read "#{Dir.pwd}/Seimfile"
+		scfg = project_config
 
-		#add the admin menu 
+		#add menu of admin module
 		if options.menu? or scfg.has_key? :auto_add_admin_menu
 			#a menu to install/menu.sfile
 			menu = {}
@@ -58,11 +58,11 @@ class SeimtraThor < Thor
 			menu[:type] = "admin"
 			menu[:link] = "/admin/#{name}"
 			menu[:description] = "No description about the #{name}"
-			Sfile.write menu, "modules/#{name}/install/menu.sfile"
+			Sfile.write menu, "modules/#{name}/#{Sbase::File_install[:menu]}"
 
-			path = "modules/#{name}/applications/routes.rb"
+			path = "modules/#{name}/#{Sbase::File_app[:routes]}"
 			create_file path unless File.exist? path
-			append_to_file path, "\nget '#{menu[:link]}' do\n\tslim :default\nend\n"
+			append_to_file path, "\nget '#{menu[:link]}' do\n\t_tpl :default\nend\n"
 		end
 
 		run "3s update #{name}"

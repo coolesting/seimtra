@@ -84,7 +84,7 @@ class SeimtraThor < Thor
 
 		time			= Time.now.strftime('%Y%m%d%H%M%S')
 		module_current	= options[:to] || get_default_module
-		path 			= "/modules/#{module_current}/migrations"
+		path 			= "/modules/#{module_current}/#{Sbase::Folders_others[:migrations]}"
 		mpath 			= Dir.pwd + path
 		gpath 			= Dir.pwd + "/db/migrations"
 		dbcont 			= "'#{settings.db_connect}'"

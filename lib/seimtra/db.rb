@@ -81,18 +81,41 @@ class Db
 	# @argv array, 	the fields
 	#
 	# == output
-	# an array, like this ['aid:primary_key', 'title', 'body', 'changed:datetime']
+	# the field be passed like this ['title', 'body']
+	# output like this ['aid:primary_key', 'title', 'body', 'changed:datetime']
 	def autocomplete name, argv
-		#match a id
-		i = 1
-		while i > 0 
-			id 	= name[0, i] + 'id'
-			i 	= check_column(id.to_sym) ? (i + 1) : 0
+		item = [:pk, :changed]
+		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
+		if scfg.include? :autocomplete
+			if scfg[:autocomplete].index ','
+				item = []
+				scfg[:autocomplete].split(',').each do | i |
+					item << i.to_sym
+				end
+			else
+				item = [scfg[:autocomplete].to_sym]
+			end
 		end
-		argv.unshift("#{id}:primary_key")
+
+		#match a id
+		if item.include? :pk
+			i = 1
+			while i > 0 
+				id 	= name[0, i] + 'id'
+				i 	= check_column(id.to_sym) ? (i + 1) : 0
+			end
+			argv.unshift("#{id}:primary_key")
+		end
 
 		#match time field
-		argv << 'changed:datetime'
+		if item.include? :changed
+			argv << 'changed:datetime'
+		end
+
+		if item.include? :created
+			argv << 'created:datetime'
+		end
+
 		argv
 	end
 
@@ -301,73 +324,105 @@ class Seimtra_system < Db
 
 	def add_module install_modules
 
-		scfg = Sfile.read Dir.pwd + "/Seimfile"
+		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
 		default_lang = scfg.include?(:lang) ? scfg[:lang] : 'en'
 
 		#first of all, load the installation library
-		modules = get_module
+		module_installs = get_module
 		unless install_modules.class.to_s == "Array"
 			arr = []
 			arr << install_modules
 			install_modules = arr
 		end
+
+		#load all of module installer
 		install_modules.each do | m |
-			modules << m unless modules.include? m
+			module_installs << m unless module_installs.include? m
 		end
 
-		modules.each do | name |
-			path = Dir.pwd + "/modules/#{name}/install/install.rb"
-			if File.exist? path
-				require path 
-			end
+		module_installs << 'system' unless module_installs.include? 'system'
+
+		module_installs.each do | mod |
+			load_installer mod
 		end
 
 		#second, scan the file info of installation folder to database
 		install_modules.each do | name |
-			Dir["modules/#{name}/install/*.sfile"].each do | file |
+			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_mods.sfile"
+			if File.exist? file
+				write_sfile '_mods', file
+			end
+		end
+
+		install_modules.each do | name |
+			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_tags.sfile"
+			if File.exist? file
+				write_sfile '_tags', file
+			end
+		end
+
+		install_modules.each do | name |
+			@module_name = name
+			Dir["modules/#{name}/#{Sbase::Folders[:install]}/*.sfile"].each do | file |
 				file_name	= file.split("/").last
 				table 		= file_name.split(".").first
-				result 		= Sfile.read file
-
-				#insert data
-				unless result == nil
-					if result.class.to_s == "Hash"
-						arr = []
-						arr << result
-						result = arr
-					end
-
-					result.each do | row |
-						if Seimtra_system.public_method_defined? "preprocess_#{table}".to_sym
-							eval "row = preprocess_#{table}(#{row})"
-						end
-
-						write_to_db table, row
-					end
+				unless table == '_mods' or table == '_tags'
+					write_sfile table, file
 				end
 			end
 
 			#scanning the language folder
-			Dir["modules/#{name}/languages/#{default_lang}.lang"].each do | file |
+			Dir["modules/#{name}/#{Sbase::Folders_others[:lang]}/#{default_lang}.lang"].each do | file |
 				lang_type 	= file.split("/").last.split(".").first
 				result 		= Sfile.read file
-				mid			= DB[:module].filter(:name => name).get(:mid)
 
  				result.each do | label, content |
-					fields = {:label => label.to_s, :mid => mid}
-					if DB[:language].filter(fields).count == 0
+					fields = {:label => label.to_s, :uid => 1}
+					if DB[:_lang].filter(fields).count == 0
 						fields[:content] = content
- 						DB[:language].insert(fields)
+ 						DB[:_lang].insert(fields)
 					else
-						DB[:language].filter(fields).update(:content => content)
+						DB[:_lang].filter(fields).update(:content => content)
 					end
  				end
 			end
 		end
+
+	end
+
+	# write the sfile to db
+	#
+	# @table, table name
+	# @file, sfile path
+	def write_sfile table, file
+		result = Sfile.read file
+
+		#insert data
+		unless result == nil
+			if result.class.to_s == "Hash"
+				arr = []
+				arr << result
+				result = arr
+			end
+
+			result.each do | row |
+				if Seimtra_system.public_method_defined? "preprocess_#{table}".to_sym
+					eval "row = preprocess_#{table}(#{row})"
+				end
+				write_to_db table, row
+			end
+		end
+	end
+
+	def load_installer name
+		path = Dir.pwd + "/modules/#{name}/#{Sbase::File_installer[0]}"
+		if File.exist? path
+			require path 
+		end
 	end
 
 	# == write_to_db
-	# write a file to db with row by row
+	# write a sfile to db with row by row
 	#
 	# == Arguments
 	# table, string, a table name
@@ -400,7 +455,7 @@ class Seimtra_system < Db
 	# get all of modules that have been installed to database
 	def get_module
 		modules = []
-		DB[:module].each do | row |
+		DB[:_mods].each do | row |
 			modules << row[:name]
 		end
 		modules

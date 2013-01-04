@@ -13,7 +13,7 @@
 #
 # Example 02, key-value file
 #
-# name=linyu den coolesting
+# name=bruce dengx
 # email=coolesting@gmail.com
 # website=http://github.com/coolseting
 

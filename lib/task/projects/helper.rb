@@ -25,14 +25,14 @@ class SeimtraThor < Thor
 	def info name = ''
 		if name != ""
 			error("The module #{name} is not existing") unless module_exist? name 
-			result = Sfile.read "modules/#{name}/install/module.sfile"
+			result = Sfile.read "modules/#{name}/#{Sbase::Files[:info]}"
 			str = "#{name} module infomation"
 		elsif options.configs?
 			path = get_custom_info.first
 			result = Sfile.read path
 			str = "configure infomation at #{path}"
 		else
-			result = Sfile.read Dir.pwd + "/Seimfile"
+			result = project_config
 			str = "project infomation"
 		end
 

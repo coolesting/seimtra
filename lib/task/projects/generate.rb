@@ -73,7 +73,7 @@ class SeimtraThor < Thor
 			scaffolds[path.split("/").last] = path
 		end
 
-		scfg = Sfile.read(Dir.pwd + "/Seimfile")
+		scfg = project_config
 
 		#assign the scaffold value
 		if scaffold.length > 2 and (scaffold.index(",") or scaffold.index("."))
@@ -103,11 +103,11 @@ class SeimtraThor < Thor
 
 				filename = source.split("/").last
 				if filename == 'view.tpl'
-					target = "modules/#{module_name}/templates/#{@t[:layout]}_#{@t[:file_name]}.slim"
+					target = "modules/#{module_name}/#{Sbase::Folders[:tpl]}/#{@t[:layout]}_#{@t[:file_name]}.slim"
 				elsif filename == 'form.tpl'
-					target = "modules/#{module_name}/templates/#{@t[:layout]}_#{@t[:file_name]}_form.slim"
+					target = "modules/#{module_name}/#{Sbase::Folders[:tpl]}/#{@t[:layout]}_#{@t[:file_name]}_form.slim"
 				elsif filename == 'route.tpl'
-					target = "modules/#{module_name}/applications/#{@t[:layout]}_#{@t[:file_name]}.rb"
+					target = "modules/#{module_name}/#{Sbase::Folders[:app]}/#{@t[:layout]}_#{@t[:file_name]}.rb"
 				end
 
 				unless File.exist?(target)
