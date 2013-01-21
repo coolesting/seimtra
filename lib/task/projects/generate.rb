@@ -5,48 +5,48 @@ class SeimtraThor < Thor
 
 	Create the scaffold to specifing module
 
-	3s g scaffold_name table_name field1 field2 field3
+	3s g table_name field1 field2 field3 -s=scaffold_name 
 
 
-	Exampla 01, create a post table withe field title, content to current module you focus,
-	the ',' or '.' is the default scaffold name
+	Exampla 01, create a post table with the fields title, content to current module you focus,
 
-	3s g , post title content -a
-	3s g admin post title body
+	3s g post title content -a
+	3s g post title body
 
 
 	Example 02, just create a form for putting data to database
 
-	3s g form myform title content
+	3s g myform title content -s=form
 
 
 	Example 03, or maybe create a view for displaying the data, no changing the database structure.
 
-	3s g view module mid name
+	3s g module mid name -s=view
 
 	certainly, the article table is existing in current database.
 
 
-	Example 04, create admin and view simultaneously
+	Example 04, create multiple scaffold at once, such as admin and view scaffold
 
-	3s g admin,view post title body
+	3s g post title body -s=admin,view 
 
 	DOC
 
 	desc "generate [SCAFFOLD_NAME] [TABLE_NAME] [FIELDS]", "Generate a scaffold for module"
 	method_option :to, :type => :string, :aliases => '-t'
 	method_option :layout, :type => :string, :aliases => '-l'
+	method_option :scaffold, :type => :string, :aliases => '-s', :default => ''
 	method_option :autocomplete, :type => :boolean, :aliases => '-a'
 	method_option :with, :type => :hash, :default => {}, :aliases => '-w'
 	method_option :menu, :type => :hash, :default => {}, :aliases => '-m'
 	method_option :norun, :type => :boolean, :aliases => '-nr'
 	map 'g' => :generate
 	def generate *argv
-		error 'the arguments must more than 2.' unless argv.length > 2
+		error 'the arguments must more than 2.' unless argv.length > 1
 
 		db					= Db.new
 		module_name 		= options[:to] ? options[:to] : get_module
-		scaffold			= argv.shift
+		scaffold			= 'admin'
 
 		auto				= options.autocomplete? ? true : false
 		data				= db.arrange_fields argv, auto
@@ -75,19 +75,18 @@ class SeimtraThor < Thor
 
 		scfg = project_config
 
-		#assign the scaffold value
-		if scaffold.length > 2 and (scaffold.index(",") or scaffold.index("."))
-			if scaffold.index(",")
-				loop_scaffolds = scaffold.split(",")
-			else
-				loop_scaffolds = scaffold.split(".")
-			end
+		#get scaffold
+		scaffold = scfg[:default_scaffold] if scfg[:default_scaffold]
+		scaffold = options[:scaffold] unless options[:scaffold] == ''
+
+		multi_scaffolds = []
+		if scaffold.length > 2 and scaffold.index(",")
+			multi_scaffolds = scaffold.split(",")
 		else
-			scaffold = scfg[:default_scaffold] if scaffold == ',' or scaffold == '.'
-			loop_scaffolds = Array[scaffold]
+			multi_scaffolds << scaffold
 		end
 
-		loop_scaffolds.each do | scaffold |
+		multi_scaffolds.each do | scaffold |
 
 			error "The scaffold called ''#{scaffold}'' is not existing." unless scaffolds.include? scaffold
 			scaf_path = Dir.pwd + '/' + scaffolds[scaffold]
