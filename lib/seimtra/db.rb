@@ -348,16 +348,16 @@ class Seimtra_system < Db
 
 		#second, scan the file info of installation folder to database
 		install_modules.each do | name |
-			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_mods.sfile"
+			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_tags.sfile"
 			if File.exist? file
-				write_sfile '_mods', file
+				write_sfile '_tags', file
 			end
 		end
 
 		install_modules.each do | name |
-			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_tags.sfile"
+			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_mods.sfile"
 			if File.exist? file
-				write_sfile '_tags', file
+				write_sfile '_mods', file
 			end
 		end
 
