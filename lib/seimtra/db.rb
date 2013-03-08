@@ -84,7 +84,7 @@ class Db
 	# the field be passed like this ['title', 'body']
 	# output like this ['aid:primary_key', 'title', 'body', 'changed:datetime']
 	def autocomplete name, argv
-		item = [:pk, :changed, :created]
+		item = [:pk, :changed]
 		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
 		if scfg.include? :autocomplete
 			if scfg[:autocomplete].index ','
@@ -230,7 +230,11 @@ class Db
 			'integer'
 		elsif field == 'order'
 			'integer'
+		elsif field == 'level'
+			'integer'
 		elsif field == 'changed'
+			'datetime'
+		elsif field == 'created'
 			'datetime'
 		else
 			'string'
