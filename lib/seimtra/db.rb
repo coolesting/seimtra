@@ -84,7 +84,7 @@ class Db
 	# the field be passed like this ['title', 'body']
 	# output like this ['aid:primary_key', 'title', 'body', 'changed:datetime']
 	def autocomplete name, argv
-		item = [:pk, :changed]
+		item = [:pk, :changed, :created]
 		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
 		if scfg.include? :autocomplete
 			if scfg[:autocomplete].index ','
@@ -111,11 +111,9 @@ class Db
 		if item.include? :changed
 			argv << 'changed:datetime'
 		end
-
 		if item.include? :created
 			argv << 'created:datetime'
 		end
-
 		argv
 	end
 
