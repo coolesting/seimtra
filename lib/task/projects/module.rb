@@ -62,7 +62,7 @@ class SeimtraThor < Thor
 
 			path = "modules/#{name}/#{Sbase::File_app[:routes]}"
 			create_file path unless File.exist? path
-			append_to_file path, "\nget '#{menu[:link]}' do\n\t_tpl :default\nend\n"
+			append_to_file path, "\nget '#{menu[:link]}' do\n\t_tpl :_default\nend\n"
 		end
 
 		run "3s update #{name}"
