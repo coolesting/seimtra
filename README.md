@@ -8,16 +8,21 @@ Seimtra consists of the famous applications **sinatra**, **sequel**, **slim** (S
 
 # How to install the Seimtra ?
 
-Install as a gem
+Installing dependon gem at first
 
-	gem install seimtra
+	gem install sequel
+	gem install thor
 
-or
+	git clone git://github.com/sinatra/sinatra.git sinatra
 
-	git clone git://github.com/coolesting/seimtra.git
-	cd seimtra
-	gem build seimtra.gemspec
-	gem install seimtra --local
+	git clone git://github.com/slim-template/slim slim
+	git checkout 845a899ffd785d63180adb85491bc178a7e057a2
+
+	git clone git://github.com/coolesting/seimtra.git seimtra
+
+	cd gem_dir
+	gem build gem_name.gemspec
+	gem install gem_name.x.x.x --local
 
 
 

@@ -3,7 +3,7 @@ module Seimtra
 	module Sbase
 		#the information about the Seimtra WAS
 		Version 			= 	{
-			:name			=>	'Seimtra',
+			:name			=>	'seimtra',
 			:created		=>	'2011-10-13',
 			:alias_name		=>	'3s',
 			:version		=>	'0.0.1',
