@@ -2,7 +2,7 @@ class Db
 
 	# A interface class for Sequel ORM
 
-	attr_accessor :msg, :error
+	attr_accessor :msg, :error, :connect
 
 	def initialize path = './environment.rb'
 		@msg 	= ''
@@ -10,6 +10,7 @@ class Db
 		epath 	= File.expand_path(path)
 		if File.exist?(epath)
 			require epath
+			@connect = DB_connect
 		else
 			@error 	= true
 			@msg	= 'No such the file ' + epath

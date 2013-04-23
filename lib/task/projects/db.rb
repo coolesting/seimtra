@@ -87,7 +87,7 @@ class SeimtraThor < Thor
 		path 			= "/modules/#{module_current}/#{Sbase::Folders_others[:migrations]}"
 		mpath 			= Dir.pwd + path
 		gpath 			= Dir.pwd + "/db/migrations"
-		dbcont 			= "'#{settings.db_connect}'"
+		dbcont 			= db.connect
 		version			= options[:version] == nil ? '' : "-M #{options[:version]}"
 
 		empty_directory(gpath) unless File.exist?(gpath)
