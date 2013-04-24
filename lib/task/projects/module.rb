@@ -112,16 +112,13 @@ class SeimtraThor < Thor
 		#throw the error
 		error "No module to be installed" if modules == nil
 
-		#get module from remote
-		if options.remote?
-			modules.each do | m |
-				run "git clone git://github.com/#{git_repo_path}/seimtra-module-#{m}.git modules/#{m}"
-			end
-		end
-
 		#run the db schema
 		modules.each do | name |
 			run "3s db -r --to=#{name}"
+			#bundle gem
+			if options.bundle?
+				run "bundle install --gemfile=modules/#{name}/Gemfile"
+			end
 		end
 
 		#inject the info to db
