@@ -38,13 +38,9 @@ class SeimtraThor < Thor
 		Sfile.write seimfile, spath
 
 		#install bundle gem
-		begin
-			Gem::Sepecification.find_by_name 'bundler'
-		rescue Gem::LoadError
+		if `gem list`.index('bundler ') == nil
 			run 'gem install bundler'
 			run "bundle install --gemfile=modules/system/Gemfile"
-		else
-			isay 'you need to install bundle rubygem at first'
 		end
 
 		#install modules

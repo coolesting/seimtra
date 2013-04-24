@@ -100,7 +100,6 @@ class SeimtraThor < Thor
 	DOC
 
 	desc 'add [MODULE_NAMES]', 'Add a module to current module'
-	method_option :remote, :type => :boolean, :aliases => '-r'
 	method_option :bundle, :type => :boolean, :aliases => '-b'
 	method_option :path, :type => :string
 	map "install" => :add
@@ -123,7 +122,6 @@ class SeimtraThor < Thor
 		#run the db schema
 		modules.each do | name |
 			run "3s db -r --to=#{name}"
-			run "bundle install --gemfile=modules/#{name}/Gemfile" if options.bundle?
 		end
 
 		#inject the info to db
@@ -163,6 +161,30 @@ class SeimtraThor < Thor
 		end
 
 		ss.add_module update_modules
+	end
+
+	long_desc <<-DOC
+	== Description
+
+	fetch the module from remote repository
+
+	== Example
+
+	3s fetch module_name
+	DOC
+
+	desc 'fetch [MODULE_NAMES]', 'fetch a module by name from remote repository'
+	def fetch *module_names
+		git_repo_path = 'coolesting'
+
+		#get module from remote
+		module_names.each do | m |
+			if File.exist? "modules/#{m}"
+				isay "the modules/#{m} is existing ."
+			else
+				run "git clone git://github.com/#{git_repo_path}/seimtra-module-#{m}.git modules/#{m}"
+			end
+		end
 	end
 
 end
