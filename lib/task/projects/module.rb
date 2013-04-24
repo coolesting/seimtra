@@ -101,6 +101,7 @@ class SeimtraThor < Thor
 
 	desc 'add [MODULE_NAMES]', 'Add a module to current module'
 	method_option :remote, :type => :boolean, :aliases => '-r'
+	method_option :bundle, :type => :boolean, :default => false
 	method_option :path, :type => :string
 	map "install" => :add
 	def add *module_names
