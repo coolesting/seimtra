@@ -39,9 +39,9 @@ class SeimtraThor < Thor
 
 		#install bundle gem
 		begin
-			Gem::Sepecification.find_by_name 'bundle'
+			Gem::Sepecification.find_by_name 'bundler'
 		rescue Gem::LoadError
-			run 'gem install bundle'
+			run 'gem install bundler'
 			run "bundle install --gemfile=modules/system/Gemfile"
 		else
 			isay 'you need to install bundle rubygem at first'
