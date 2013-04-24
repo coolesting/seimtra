@@ -101,31 +101,34 @@ class SeimtraThor < Thor
 
 	desc 'add [MODULE_NAMES]', 'Add a module to current module'
 	method_option :remote, :type => :boolean, :aliases => '-r'
-	method_option :bundle, :type => :boolean, :default => false
+	method_option :bundle, :type => :boolean, :aliases => '-b'
 	method_option :path, :type => :string
 	map "install" => :add
 	def add *module_names
+
 		ss = Seimtra_system.new
+		git_repo_path = 'coolesting'
 		modules = ss.check_module module_names
 
 		#throw the error
 		error "No module to be installed" if modules == nil
 
+		#get module from remote
+		if options.remote?
+			modules.each do | m |
+				run "git clone git://github.com/#{git_repo_path}/seimtra-module-#{m}.git modules/#{m}"
+			end
+		end
+
 		#run the db schema
 		modules.each do | name |
 			run "3s db -r --to=#{name}"
+			run "bundle install --gemfile=modules/#{name}/Gemfile" if options.bundle?
 		end
 
 		#inject the info to db
 		ss.add_module modules
 
-		#bundle install each Gemfile
-		modules.each do | name |
-			if options.bundle?
-				path = Dir.pwd + "/modules/#{name}/Gemfile"
-				run "bundle install --gemfile=#{path}" if File.exist? path
-			end
-		end
 	end
 
 	long_desc <<-DOC
@@ -139,6 +142,7 @@ class SeimtraThor < Thor
 	3s update specifying_module_name
 	DOC
 
+	method_option :bundle, :type => :boolean, :aliases => '-b'
 	desc 'update [MODULE_NAMES]', 'update the module'
 	def update *module_names
  		ss = Seimtra_system.new
@@ -152,13 +156,13 @@ class SeimtraThor < Thor
 		end
 
 		update_modules.each do | name |
-
 			run "3s db -r --to=#{name}"
-
-			#inject the info to db
-			ss.add_module name
-
+			if options.bundle?
+				run "bundle install --gemfile=modules/#{name}/Gemfile"
+			end
 		end
+
+		ss.add_module update_modules
 	end
 
 end

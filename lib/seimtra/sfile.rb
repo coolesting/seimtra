@@ -25,7 +25,7 @@ class Sfile
 		def read path
 			result = ""
 			path = File.expand_path path
-			commend_sign = ['"', '\'', '#']
+			commend_sign = ['"', '\'', '#', '//']
 
 			if File.exist? path
 

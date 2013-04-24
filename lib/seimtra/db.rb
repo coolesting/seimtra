@@ -325,6 +325,7 @@ class Seimtra_system < Db
 		return_modules.empty? ? nil : return_modules
 	end
 
+	#add module to db
 	def add_module install_modules
 
 		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
@@ -393,7 +394,7 @@ class Seimtra_system < Db
 
 	end
 
-	# write the sfile to db
+	# write the *.sfile of install dir to db
 	#
 	# @table, table name
 	# @file, sfile path
@@ -431,25 +432,29 @@ class Seimtra_system < Db
 	# table, string, a table name
 	# result, hash, table field data
 	def write_to_db table, row
-		table			= table.to_sym
-		table_fields 	= DB[table].columns!
+		table	= table.to_sym
+		tables	= get_tables
+		
+		if tables.include? table
+			table_fields = DB[table].columns!
 
-		fields = {}
-		if row.class.to_s == "Hash"
-			row.each do | key, val |
-				if table_fields.include? key.to_sym
-					fields[key.to_sym] = val
+			fields = {}
+			if row.class.to_s == "Hash"
+				row.each do | key, val |
+					if table_fields.include? key.to_sym
+						fields[key.to_sym] = val
+					end
 				end
-			end
 
-			return if fields.empty?
+				return if fields.empty?
 
-			#do not insert if the data is exsiting
-			#delete the time
-			fields.delete :changed if fields.include? :changed
-			if DB[table].filter(fields).count == 0
- 				fields[:changed] = Time.now if table_fields.include? :changed 
- 				insert table, fields
+				#do not insert if the data is exsiting
+				#delete the time
+				fields.delete :changed if fields.include? :changed
+				if DB[table].filter(fields).count == 0
+					fields[:changed] = Time.now if table_fields.include? :changed 
+					insert table, fields
+				end
 			end
 		end
 	end
