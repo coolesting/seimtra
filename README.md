@@ -16,13 +16,10 @@ Installing dependon gem at first
 	gem install seimtra.x.x.x --local
 
 
+
 # How to deploy a web project with Seimtra ?
 
 	3s init myproject
-
-or
-
-	3s new myproject
 
 start the web application myproject
 
@@ -61,6 +58,11 @@ or
 
 install all of modules that have not been installed yet
 
+fetch the module from git repository to local
+
+	3s fetch cms
+
+
 
 # How to create a module ?
 
@@ -81,7 +83,6 @@ see the database schema
 	3s db -od
 
 create a migration record
-	
 
 	3s db article title body
 
