@@ -99,14 +99,13 @@ class SeimtraThor < Thor
 	3s install specifying_module_name
 	DOC
 
-	desc 'add [MODULE_NAMES]', 'Add a module to current module'
 	method_option :bundle, :type => :boolean, :aliases => '-b'
-	method_option :path, :type => :string
+	desc 'add [MODULE_NAMES]', 'Add a module to current module'
 	map "install" => :add
 	def add *module_names
 
+		gem_install module_names if options.bundle?
 		ss = Seimtra_system.new
-		git_repo_path = 'coolesting'
 		modules = ss.check_module module_names
 
 		#throw the error
@@ -115,10 +114,6 @@ class SeimtraThor < Thor
 		#run the db schema
 		modules.each do | name |
 			run "3s db -r --to=#{name}"
-			#bundle gem
-			if options.bundle?
-				run "bundle install --gemfile=modules/#{name}/Gemfile"
-			end
 		end
 
 		#inject the info to db
@@ -140,6 +135,8 @@ class SeimtraThor < Thor
 	method_option :bundle, :type => :boolean, :aliases => '-b'
 	desc 'update [MODULE_NAMES]', 'update the module'
 	def update *module_names
+
+		gem_install module_names if options.bundle?
  		ss = Seimtra_system.new
  		modules = ss.check_module module_names
  
@@ -152,9 +149,6 @@ class SeimtraThor < Thor
 
 		update_modules.each do | name |
 			run "3s db -r --to=#{name}"
-			if options.bundle?
-				run "bundle install --gemfile=modules/#{name}/Gemfile"
-			end
 		end
 
 		ss.add_module update_modules

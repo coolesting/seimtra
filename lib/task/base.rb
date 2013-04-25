@@ -40,11 +40,10 @@ class SeimtraThor < Thor
 		#install bundle gem
 		if `gem list`.index('bundler ') == nil
 			run 'gem install bundler'
-			run "bundle install --gemfile=modules/system/Gemfile"
 		end
 
 		#install modules
-		run "3s install "
+		run "3s install -b"
 		isay "The project Initializes completely"
 	end
 
@@ -214,6 +213,15 @@ class SeimtraThor < Thor
 			else
 				"No such the file at #{path}" 
 			end
+		end
+
+		def gem_install module_names
+			
+			module_names.each do | name |
+				path = "modules/#{name}/Gemfile"
+				run "bundle install --gemfile=#{path}" if File.exist? path
+			end
+
 		end
 
 	end
