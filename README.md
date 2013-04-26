@@ -8,23 +8,24 @@ Seimtra consists of the famous applications **sinatra**, **sequel**, **slim** (S
 
 # How to install the Seimtra ?
 
-Installing dependon gem at first
+copy a instance of seimtra, and run it
 
-	git clone git://github.com/coolesting/seimtra.git seimtra
-	cd seimtra
-	gem seimtra.gemspec
-	gem install seimtra.x.x.x --local
+	git clone git://github.com/coolesting/seimtra-docs.git myapp
+	bundle install --gemfile=myapp/modules/system/Gemfile
+
+
+
+# Create an application instance by seimtra
+
+	3s init myapp
 
 
 
 # How to deploy a web project with Seimtra ?
 
-	3s init myproject
-
-start the web application myproject
-
-	cd myproject
+	cd myapp
 	thin start
+
 
 check the information about the project
 
@@ -48,19 +49,13 @@ list the modules
 
 # How to extend your web application ?
 
-add a module called post
-
-	3s add post
-
-or
-
-	3s install post
-
-install all of modules that have not been installed yet
-
 fetch the module from git repository to local
 
 	3s fetch cms
+
+install the module
+
+	3s install cms
 
 
 
@@ -68,7 +63,7 @@ fetch the module from git repository to local
 
 some structure direstoris is required as you see when you type this command to create a module folders tree.
 
-	3s create my_module
+	3s new my_module
 
 create a scaffold to your module
 
