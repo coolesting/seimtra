@@ -14,9 +14,6 @@ Gem::Specification.new do |s|
 	s.executables = ['seimtra', '3s']
 	s.default_executable = 'seimtra'
   	s.files = `git ls-files`.split("\n")
-  	s.add_dependency 'sinatra'
-  	s.add_dependency 'sequel'
-  	s.add_dependency 'slim'
   	s.add_dependency 'thor'
 
 end
