@@ -98,16 +98,15 @@ class SeimtraThor < Thor
 			@t[:layout] = options[:layout] if options.include?(:layout)
 
 			#render routes and template file
-			Dir["#{scaf_path}/*.tpl"].each do | source |
+			Dir["#{scaf_path}/*.tpl", "#{scaf_path}/*.app"].each do | source |
 
-				filename = source.split("/").last
-				if filename == 'view.tpl'
-					target = "modules/#{module_name}/#{Sbase::Folders[:tpl]}/#{@t[:layout]}_#{@t[:file_name]}.slim"
-				elsif filename == 'form.tpl'
-					target = "modules/#{module_name}/#{Sbase::Folders[:tpl]}/#{@t[:layout]}_#{@t[:file_name]}_form.slim"
-				elsif filename == 'route.tpl'
-					target = "modules/#{module_name}/#{Sbase::Folders[:app]}/#{@t[:layout]}_#{@t[:file_name]}.rb"
-				end
+                filename    = source.split("/").last
+                name, ext   = filename.split('.')
+                if ext == 'tpl'
+                    target = "modules/#{module_name}/#{Sbase::Folders[:tpl]}/#{@t[:file_name]}_#{name}.slim"
+                elsif ext == 'app'
+                    target = "modules/#{module_name}/#{Sbase::Folders[:app]}/#{@t[:file_name]}.rb"
+                end
 
 				unless File.exist?(target)
 					template(source, target)
