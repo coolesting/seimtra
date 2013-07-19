@@ -201,7 +201,7 @@ class Db
 									end
 									res[:htmls][field] = "select"
 									res[:types][field] = "integer"
-								elsif key == :html
+								elsif key == :html or key == :htmls
 									res[:htmls][field] = val
 									res[:types][field] = "string" if val == "checkbox"
 								else
