@@ -64,6 +64,7 @@ class SeimtraThor < Thor
 		@t[:types]			= data[:types]
 		@t[:htmls]			= data[:htmls]
 		@t[:assoc]			= data[:assoc]
+		@t[:others]			= data[:others]
 
 		files 				= {}
 
