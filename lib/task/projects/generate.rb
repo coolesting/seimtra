@@ -70,7 +70,7 @@ class SeimtraThor < Thor
 
 		#load all of scaffolds
 		scaffolds = {}
-		Dir["modules/*/scaffolds/*"].each do | path |
+		Dir["modules/*/#{Sbase::Folders_others[:tool]}/*"].each do | path |
 			scaffolds[path.split("/").last] = path
 		end
 
@@ -120,7 +120,7 @@ class SeimtraThor < Thor
 			#render install menu
 			menufile = "#{scaf_path}/menu.install"
 			if File.exist? menufile
-				menu_path = "modules/#{module_name}/#{Sbase::File_install[:menu]}"
+				menu_path = "modules/#{module_name}/#{Sbase::File_installed[:menu]}"
 				@t[:menu] = {}
 				@t[:menu][:name] = options[:menu].include?('name') ? options[:menu]['menu'] : @t[:file_name]
 				@t[:menu][:des]	= options[:menu].include?('des') ? options[:menu]['des'] : "No description about the #{@t[:file_name]}"

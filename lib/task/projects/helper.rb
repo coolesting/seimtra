@@ -25,7 +25,7 @@ class SeimtraThor < Thor
 	def info name = ''
 		if name != ""
 			error("The module #{name} is not existing") unless module_exist? name 
-			result = Sfile.read "modules/#{name}/#{Sbase::Files[:info]}"
+			result = Sfile.read "modules/#{name}/#{Sbase::File_generated[:info]}"
 			str = "#{name} module infomation"
 		elsif options.configs?
 			path = get_custom_info.first

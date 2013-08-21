@@ -23,7 +23,7 @@ Dir[ROOTPATH + '/lib/task/*.rb'].each do | file |
 end
 
 #load the task for project
-if File.exist? Sbase::Files_root[:seimfile]
+if File.exist? Sbase::File_config[:seimfile]
 	Dir[ROOTPATH + '/lib/task/projects/*.rb'].each do | file |
 		require file
 	end

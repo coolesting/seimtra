@@ -86,7 +86,7 @@ class Db
 	# output like this ['aid:primary_key', 'title', 'body', 'changed:datetime']
 	def autocomplete name, argv
 		item = [:pk, :changed]
-		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
+		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::File_config[:seimfile]}"
 		if scfg.include? :autocomplete
 			if scfg[:autocomplete].index ','
 				item = []
@@ -304,7 +304,7 @@ class Seimtra_system < Db
 		local_modules	= []
 		db_modules		= []
 
-		Dir["modules/*/#{Sbase::Files[:info]}"].each do | item |
+		Dir["modules/*/#{Sbase::File_generated[:info]}"].each do | item |
 			local_modules << item.split("/")[1]
 		end
 
@@ -328,7 +328,7 @@ class Seimtra_system < Db
 	#add module to db
 	def add_module install_modules
 
-		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
+		scfg = Sfile.read "#{Dir.pwd}/#{Sbase::File_config[:seimfile]}"
 		default_lang = scfg.include?(:lang) ? scfg[:lang] : 'en'
 
 		#first of all, load the installation library
@@ -352,14 +352,14 @@ class Seimtra_system < Db
 
 		#second, scan the file info of installation folder to database
 		install_modules.each do | name |
-			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_tags.sfile"
+			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_tags"
 			if File.exist? file
 				write_sfile '_tags', file
 			end
 		end
 
 		install_modules.each do | name |
-			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_mods.sfile"
+			file = Dir.pwd + "/modules/#{name}/#{Sbase::Folders[:install]}/_mods"
 			if File.exist? file
 				write_sfile '_mods', file
 			end
@@ -367,19 +367,17 @@ class Seimtra_system < Db
 
 		install_modules.each do | name |
 			@module_name = name
-			Dir["modules/#{name}/#{Sbase::Folders[:install]}/*.sfile"].each do | file |
-				file_name	= file.split("/").last
-				table 		= file_name.split(".").first
+			Dir["modules/#{name}/#{Sbase::Folders[:install]}/*"].each do | file |
+				table = file.split("/").last
 				unless table == '_mods' or table == '_tags'
 					write_sfile table, file
 				end
 			end
 
 			#scanning the language folder
-			Dir["modules/#{name}/#{Sbase::Folders_others[:lang]}/#{default_lang}.lang"].each do | file |
-				lang_type 	= file.split("/").last.split(".").first
-				result 		= Sfile.read file
-
+			path = Dir.pwd + "modules/#{name}/#{Sbase::Folders_others[:lang]}/#{default_lang}"
+			if File.exist? path
+				result = Sfile.read path
  				result.each do | label, content |
 					fields = {:label => label.to_s, :uid => 1}
 					if DB[:_lang].filter(fields).count == 0

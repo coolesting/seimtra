@@ -28,7 +28,7 @@ class SeimtraThor < Thor
 		Dir.chdir(Dir.pwd + '/' + project_name)
 
 		#set the project info
-		spath = "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
+		spath = "#{Dir.pwd}/#{Sbase::File_config[:seimfile]}"
 		seimfile = Sfile.read spath
 		seimfile[:status] = options[:status] if Sbase::Status_type.include?(options[:status])
 		seimfile[:root_privilege] = random_string
@@ -74,7 +74,7 @@ class SeimtraThor < Thor
 
 		#get content of Seimfile
 		def project_config
-			Sfile.read "#{Dir.pwd}/#{Sbase::Files_root[:seimfile]}"
+			Sfile.read "#{Dir.pwd}/#{Sbase::File_config[:seimfile]}"
 		end
 
 		#return a random string with the size given
@@ -148,12 +148,12 @@ class SeimtraThor < Thor
 				empty_directory(path) unless File.exist? path
 			end
 
-			Sbase::Files.values.each do | file |
+			Sbase::File_generated.values.each do | file |
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path
 			end
 
-			Sbase::File_install.values.each do | file |
+			Sbase::File_installed.values.each do | file |
 				path = "modules/#{name}/#{file}"
 				create_file(path) unless File.exist? path
 			end

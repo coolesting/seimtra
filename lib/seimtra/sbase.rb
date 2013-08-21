@@ -7,45 +7,48 @@ module Seimtra
 			:created		=>	'2011-10-13',
 			:alias_name		=>	'3s',
 			:version		=>	'0.0.1',
-			:author			=>	'Linyu den coolesting',
+			:author			=>	'Bruce Deng',
 			:email			=>	'coolesting@gmail.com',
 			:hoempage		=>	'https://github.com/coolesting/seimtra',
 			:summary		=>	'Seimtra is a web application system.',
 			:description	=>	'Seimtra is a web application system.'
 		}
 
-		#root directory files
-		Files_root			= {
+		#seimtra config file
+		File_config			= {
 			:seimfile		=> 'Seimfile'
 		}
 
-		#the installed files
-		Files 				= 	{
-			:info			=>	'install/_mods.sfile',
+		#generated file when module is created
+		File_generated 		= 	{
+			:info			=>	'stores/install/_mods',
 			:readme			=>	'README.md'
 		}
 
-		File_installer		=	'install/install.rb',
+		#installed module files
+		File_installer		=	'stores/install.rb',
 
 		#other installed files
-		File_install		 = {
-			:menu			=>	'install/_menu.sfile'
+		File_installed		= {
+			:menu			=>	'stores/install/_menu'
 		}
 
-		File_app		 	= {
-			:routes			=>	'applications/routes.rb'
+		#application file
+		File_logic		 	= {
+			:routes			=>	'logics/routes.rb'
 		}
 
 		#the basic folder
 		Folders 			= {
-			:app			=>	'applications',
-			:tpl			=>	'templates',
-			:install		=>	'install'
+			:app			=>	'logics',
+			:tpl			=>	'views',
+			:store			=>	'stores',
+			:install		=>	'stores/install'
 		}
 
 		Folders_others		= {
-			:lang			=> 	'languages',
-			:migrations		=> 	'migrations'
+			:lang			=>	'stores/lang',
+			:tool			=>	'tools'
 		}
 
 		Paths				= {
@@ -72,7 +75,7 @@ module Seimtra
 				:author 		=> 'unknown',
 				:created 		=> Time.now,
 				:version 		=> '0.0.1',
-				:tid 			=> 1,	#tag id
+				:tid 			=> 1,
 				:dependon		=> '',
 				:description	=> 'No description'
 			},
@@ -102,7 +105,6 @@ module Seimtra
 		Main_key			= [:primary_key, :index, :foreign_key, :unique]
 
 		Field_type			= {
-
 			:integer		=> 	'integer',
 			:string 		=> 	'string',
 			:text 			=> 	'text',
@@ -124,8 +126,8 @@ module Seimtra
 			:foreign_key	=>	'foreign_key',
 			:index			=>	'index',
 			:unique			=>	'unique'
-
 		}
+
 	end
 
 end

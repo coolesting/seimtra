@@ -41,12 +41,12 @@ class SeimtraThor < Thor
 		info[:description] 	= ask("The description of the module ?")
 
 		#write the README.md file
-		File.open(Dir.pwd + "/modules/#{name}/" + Sbase::Files[:readme], "w+") do | f |
+		File.open(Dir.pwd + "/modules/#{name}/" + Sbase::File_generated[:readme], "w+") do | f |
 			f.write("## INTRODUCTION\n\n#{info[:description]}")
 		end
 
 		#write the module_name/install/_mods.sfile file
-		Sfile.write info, "modules/#{name}/#{Sbase::Files[:info]}"
+		Sfile.write info, "modules/#{name}/#{Sbase::File_generated[:info]}"
 
 		scfg = project_config
 
@@ -58,9 +58,9 @@ class SeimtraThor < Thor
 			menu[:type] = "admin"
 			menu[:link] = "/admin/#{name}"
 			menu[:description] = "No description about the #{name}"
-			Sfile.write menu, "modules/#{name}/#{Sbase::File_install[:menu]}"
+			Sfile.write menu, "modules/#{name}/#{Sbase::File_installed[:menu]}"
 
-			path = "modules/#{name}/#{Sbase::File_app[:routes]}"
+			path = "modules/#{name}/#{Sbase::File_logic[:routes]}"
 			create_file path unless File.exist? path
 			append_to_file path, "\nget '#{menu[:link]}' do\n\t_tpl :_default\nend\n"
 		end
