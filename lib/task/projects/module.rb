@@ -105,7 +105,7 @@ class SeimtraThor < Thor
 	def add *module_names
 
 		gem_install module_names if options.bundle?
-		ss = Seimtra_system.new
+		ss = Sapi.new
 		modules = ss.check_module module_names
 
 		#throw the error
@@ -137,7 +137,7 @@ class SeimtraThor < Thor
 	def update *module_names
 
 		gem_install module_names if options.bundle?
- 		ss = Seimtra_system.new
+ 		ss = Sapi.new
  		modules = ss.check_module module_names
  
  		update_modules = []

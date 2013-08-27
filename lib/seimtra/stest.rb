@@ -1,7 +1,7 @@
 class Stest
 
 	def initialize
-		@db = Db.new
+		@db = Sapi.new
 	end
 
 end

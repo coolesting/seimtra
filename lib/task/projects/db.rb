@@ -76,25 +76,31 @@ class SeimtraThor < Thor
 	method_option :output, :type => :boolean, :aliases => '-o'
 	method_option :details, :type => :boolean, :aliases => '-d'
 	method_option :schema, :type => :boolean
-	desc "db [ARGV]", "Create/Run the migrations, output schema/migration of database"
-	def db *argv
+	desc "db [MODULE_NAME]", "Create/Run the migrations, output schema/migration of database"
+	def db module_name = nil
 		#initialize data
-		db 				= Db.new
+		db 				= Sapi.new
 		error(db.msg) if db.error
-
 		time			= Time.now.strftime('%Y%m%d%H%M%S')
-		module_current	= options[:to] || get_default_module
-		path 			= "/modules/#{module_current}/#{Sbase::Folders_others[:migrations]}"
-		mpath 			= Dir.pwd + path
-		gpath 			= Dir.pwd + "/db/migrations"
 		dbcont 			= db.connect
 		version			= options[:version] == nil ? '' : "-M #{options[:version]}"
 
-		empty_directory(gpath) unless File.exist?(gpath)
+		#migration main dir
+		migrating_dir 	= Dir.pwd + "/db/migrations"
+		empty_directory(migrating_dir) unless File.exist?(migrating_dir)
+
+		#migration module sub dir
+		module_current	= options[:to] || get_default_module
+		mpath 			= migrating_dir + "/#{module_current}"
+
+		#get the data schema from file
+		#get the data schema from db
+
+		#compate the data schema, if different, create the migration file
+		is_different = false
 
 		#create a migration record
- 		if argv.length >= 2
-
+ 		if is_different
 			empty_directory(mpath) unless File.directory?(mpath)
 
 			auto		= options.autocomplete? ? true : false
@@ -110,17 +116,13 @@ class SeimtraThor < Thor
  				isay content
  				create_file file, content
 			end
-
 		end
 
 		#implement the migrations
 		if options.run? 
-			path = mpath
-			path = Dir[gpath + "/*"].sort.last if options.schema?
-			error("No schema at #{path}") unless File.exist?(path)
-			
-			unless Dir[path + "/*"].empty?
-				db.run path, :table => :schema_info, :column => module_current.to_sym
+			error("No schema at #{path}") unless File.exist?(migrating_dir)
+			unless Dir[migrating_dir + "/*"].empty?
+				db.run migrating_dir, :table => :schema_info, :column => module_current.to_sym
 			else
 				error "No migration files at #{path}"
 			end

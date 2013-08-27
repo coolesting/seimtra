@@ -2,16 +2,16 @@ ROOTPATH = File.expand_path('../../../', __FILE__)
 
 require 'thor'
 require 'seimtra/sbase'
-
 include Seimtra
-
 require 'seimtra/sfile'
-require 'seimtra/db'
+
+path = File.expand_path('./api.rb')
+if File.exist?(path)
+	require path
+end
 
 class SeimtraThor < Thor
-
 	include Seimtra
-
 	def self.source_root
 		ROOTPATH
 	end

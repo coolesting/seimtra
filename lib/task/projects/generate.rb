@@ -44,7 +44,7 @@ class SeimtraThor < Thor
 	def generate *argv
 		error 'the arguments must more than 2.' unless argv.length > 1
 
-		db					= Db.new
+		db					= Sapi.new
 		module_name 		= options[:to] ? options[:to] : get_module
 		scaffold			= 'admin'
 
